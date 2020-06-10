@@ -1,0 +1,34 @@
+#app-navigation {
+	color: #6f6f6f;
+}
+
+#select-category {
+	padding: 0.5em;
+}
+
+#select-category > select {
+	width: 100%;
+}
+
+#list-category > li {
+	padding: 0.5em 1em;
+	cursor: pointer;
+	flex-wrap: nowrap !important;
+}
+
+#list-category > li > .name {
+	flex-grow: 1;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+#list-category > li > .count {
+	min-width: 2em;
+	text-align: right;
+}
+
+#list-category > li:hover,
+#list-category > .active {
+	color: #000;
+}

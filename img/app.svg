@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="app.svg"
+   id="svg4"
+   viewBox="0 0 32 32"
+   version="1"
+   width="32"
+   height="32">
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg4"
+     inkscape:window-maximized="1"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:window-height="1005"
+     inkscape:window-width="1920"
+     inkscape:cy="20.425818"
+     inkscape:cx="10.715682"
+     inkscape:zoom="14.75" />
+  <path
+     style="stroke-width:1.55718;fill:#ffffff;fill-opacity:1"
+     d="M 16,14.871047 C 12.32506,11.445256 7.4043796,9.3430654 1.9854015,9.3430654 V 26.47202 C 7.4043796,26.47202 12.32506,28.574209 16,32 19.674939,28.589781 24.595621,26.47202 30.014598,26.47202 V 9.3430654 C 24.595621,9.3430654 19.674939,11.445256 16,14.871047 Z m 0,-5.5279816 c 2.584915,0 4.671534,-2.0866177 4.671534,-4.6715326 C 20.671534,2.086618 18.584915,0 16,0 c -2.584914,0 -4.671534,2.086618 -4.671534,4.6715328 0,2.5849149 2.086619,4.6715326 4.671534,4.6715326 z"
+     id="path11314" />
+  <metadata
+     id="metadata12154">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

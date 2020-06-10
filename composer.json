@@ -1,0 +1,15 @@
+{
+    "name": "Alexandria",
+    "description": "Manage your ebook collection",
+    "type": "project",
+    "license": "AGPL",
+    "authors": [
+        {
+            "name": "Author Name"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
+}
