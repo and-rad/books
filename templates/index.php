@@ -1,5 +1,5 @@
 <?php
-script('alexandria', 'script');
+script('alexandria', 'app');
 style('alexandria', 'style');
 ?>
 
