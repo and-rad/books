@@ -1,5 +1,5 @@
 #app-navigation {
-	color: #6f6f6f;
+	color: #222;
 }
 
 #select-category {
@@ -14,6 +14,12 @@
 	padding: 0.5em 1em;
 	cursor: pointer;
 	flex-wrap: nowrap !important;
+	opacity: 0.57;
+}
+
+#list-category > li.app-navigation-new {
+	opacity: inherit;
+	border-top: 1px solid var(--color-border);
 }
 
 #list-category > li > .name {
@@ -30,5 +36,25 @@
 
 #list-category > li:hover,
 #list-category > .active {
-	color: #000;
+	opacity: 1;
+}
+
+.app-settings-item {
+	background-position: 0 center;
+	opacity: 0.57;
+}
+
+.app-settings-item:hover {
+	opacity: 1;
+}
+
+.app-settings-item > button,
+.app-settings-item > button:active {
+	margin: 0;
+	padding: 0.25em 1.5em;
+	border: none;
+	background: none !important;
+	font-weight: inherit;
+	width: 100%;
+	text-align: left;
 }
