@@ -37,13 +37,13 @@ OCA.Books.Backend = {
 
 	scan: function(dir) {
 		let data = `dir=${dir}`;
-		this.post(OC.generateUrl("apps/alexandria/api/0.1/scan"), data, function() {
+		this.post(OC.generateUrl("apps/books/api/0.1/scan"), data, function() {
 			console.log(JSON.parse(this.response));
 		});
 	},
 
 	reset: function() {
-		this.post(OC.generateUrl("apps/alexandria/api/0.1/reset"), "", function() {
+		this.post(OC.generateUrl("apps/books/api/0.1/reset"), "", function() {
 			console.log(JSON.parse(this.response));
 		});
 	}

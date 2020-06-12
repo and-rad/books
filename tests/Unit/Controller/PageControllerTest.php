@@ -1,12 +1,12 @@
 <?php
 
-namespace OCA\Alexandria\Tests\Unit\Controller;
+namespace OCA\Books\Tests\Unit\Controller;
 
 use PHPUnit_Framework_TestCase;
 
 use OCP\AppFramework\Http\TemplateResponse;
 
-use OCA\Alexandria\Controller\PageController;
+use OCA\Books\Controller\PageController;
 
 
 class PageControllerTest extends PHPUnit_Framework_TestCase {
@@ -17,7 +17,7 @@ class PageControllerTest extends PHPUnit_Framework_TestCase {
 		$request = $this->getMockBuilder('OCP\IRequest')->getMock();
 
 		$this->controller = new PageController(
-			'alexandria', $request, $this->userId
+			'books', $request, $this->userId
 		);
 	}
 

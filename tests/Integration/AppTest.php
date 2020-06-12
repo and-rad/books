@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\Alexandria\Tests\Integration\Controller;
+namespace OCA\Books\Tests\Integration\Controller;
 
 use OCP\AppFramework\App;
 use Test\TestCase;
@@ -17,13 +17,13 @@ class AppTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        $app = new App('alexandria');
+        $app = new App('books');
         $this->container = $app->getContainer();
     }
 
     public function testAppInstalled() {
         $appManager = $this->container->query('OCP\App\IAppManager');
-        $this->assertTrue($appManager->isInstalled('alexandria'));
+        $this->assertTrue($appManager->isInstalled('books'));
     }
 
 }

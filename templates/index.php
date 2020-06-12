@@ -1,6 +1,6 @@
 <?php
-script('alexandria', 'app');
-style('alexandria', 'style');
+script('books', 'app');
+style('books', 'style');
 ?>
 
 <div id="app">

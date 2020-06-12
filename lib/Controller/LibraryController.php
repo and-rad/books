@@ -1,5 +1,5 @@
 <?php
-namespace OCA\Alexandria\Controller;
+namespace OCA\Books\Controller;
 
 use OCP\IRequest;
 use OCP\IConfig;
@@ -7,7 +7,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\Files\IRootFolder;
 
-use OCA\Alexandria\Service\LibraryService;
+use OCA\Books\Service\LibraryService;
 
 class LibraryController extends Controller {
 	private $userId;

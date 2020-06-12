@@ -1,5 +1,5 @@
 <?php
-namespace OCA\Alexandria\Controller;
+namespace OCA\Books\Controller;
 
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -19,7 +19,7 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
-		return new TemplateResponse('alexandria', 'index');  // templates/index.php
+		return new TemplateResponse('books', 'index');  // templates/index.php
 	}
 
 }

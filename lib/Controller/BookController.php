@@ -1,5 +1,5 @@
 <?php
-namespace OCA\Alexandria\Controller;
+namespace OCA\Books\Controller;
 
 use OCP\IRequest;
 use OCP\AppFramework\Controller;

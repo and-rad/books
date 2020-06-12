@@ -1,5 +1,5 @@
 <?php
-namespace OCA\Alexandria\Service;
+namespace OCA\Books\Service;
 
 use SQLite3;
 use OCP\IConfig;
