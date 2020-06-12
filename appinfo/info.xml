@@ -4,13 +4,20 @@
     <id>books</id>
     <name>Books</name>
     <summary>Manage your ebook collection</summary>
-    <description><![CDATA[Detailed description, can contain Markdown.]]></description>
+    <description><![CDATA[An app for managing and reading ebooks in the browser. Planned features include:
+
+- EPUB 3.2 compliance
+- Support for offline reading
+- Highlights & annotations are saved directly in the book
+- Easy access to the library for third-party and desktop apps
+- Edit books' contents & metadata
+- Eventual support for PDF & CBR/CBZ]]></description>
     <version>0.0.1</version>
     <licence>agpl</licence>
-    <author mail="name@example.com" >Author Name</author>
+    <author mail="and.rad@posteo.de" >Andreas Raddau</author>
     <namespace>Books</namespace>
     <category>organization</category>
-    <bugs>http://issues.example.com</bugs>
+    <bugs>https://github.com/and-rad/books/issues</bugs>
     <dependencies>
         <nextcloud min-version="15" max-version="19"/>
     </dependencies>
