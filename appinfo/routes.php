@@ -5,8 +5,9 @@
  * e.g. page#index -> OCA\Alexandria\Controller\PageController->index()
  */
 return [
-    'routes' => [
-	   ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+	'routes' => [
+		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		['name' => 'book#index', 'url' => '/api/0.1/books', 'verb' => 'GET'],
-    ]
+		['name' => 'library#scan', 'url' => '/api/0.1/scan', 'verb' => 'POST'],
+	]
 ];
