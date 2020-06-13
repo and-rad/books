@@ -120,6 +120,13 @@ class LibraryService {
 			return;
 		}
 
+		try {
+			$meta = new MetadataEPUB($package, $file);
+		} catch (Exception $e) {
+			$this->log->error($e->getMessage());
+			return;
+		}
+
 		if ($this->writeMetadataEPUB(new MetadataEPUB($package, $file))) {
 			$this->log->info(sprintf('added to library: "%s"', $file));
 		}

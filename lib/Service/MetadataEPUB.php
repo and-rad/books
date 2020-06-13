@@ -1,6 +1,7 @@
 <?php
 namespace OCA\Books\Service;
 
+use Exception;
 use SimpleXMLElement;
 
 class MetadataEPUB {
@@ -11,9 +12,14 @@ class MetadataEPUB {
 	public $languages = [];
 
 	public function __construct(SimpleXMLElement $package, string $file) {
-		$meta = $package->metadata->children('dc', true);
-		if (count($meta->identifier) == 0) {
-			$meta = $package->children('opf', true)->metadata->children('dc', true);
+		$meta = $package->metadata;
+		if (!$meta) {
+			$meta = $package->children('opf', true)->metadata;
+		}
+
+		$meta = $meta->children('dc', true);
+		if (!$meta->identifier) {
+			throw new Exception('identifier missing');
 		}
 
 		$this->identifier = $meta->identifier[0];
