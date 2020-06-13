@@ -1,49 +1,50 @@
 <?php
 namespace OCA\Books\Service;
 
+use Exception;
+use SimpleXMLElement;
 use SQLite3;
+use OC\Archive\ZIP;
 use OCP\IConfig;
-use OCP\Files\Folder;
+use OCP\Files\FileInfo;
+use OCP\Files\Node;
 
 class LibraryService {
-	private const DBNAME = '/books.db';
+	private const DBNAME = 'books.db';
 
-	private $rootFolder;
-	private $dir;
-	private $dbPath;
+	private $root;
+	private $node;
+	private $log;
 
-	public function __construct(IConfig $config, Folder $rootFolder, $dir) {
-		$node = $rootFolder->get($dir);
-		$this->dbPath = $config->getSystemValue('datadirectory').$node->getPath().$this::DBNAME;
-		$this->rootFolder = $rootFolder;
-		$this->dir = $dir;
+	public function __construct(Node $booksDir, IEventLog $log, IConfig $config) {
+		$this->root = $config->getSystemValue('datadirectory');
+		$this->node = $booksDir;
+		$this->log = $log;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function scan() {
-		if (!$this->rootFolder->nodeExists($this->dir.$this::DBNAME)) {
+	public function scan() : bool {
+		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
 				return false;
 			}
 		}
 
-		$this->rootFolder->get($this->dir.$this::DBNAME)->touch();
+		$this->scanDir($this->node);
+		$this->node->get($this::DBNAME)->touch();
+
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
-	private function create() {
-		$db = new SQLite3($this->dbPath);
+	private function create() : bool {
+		error_log("creating database...");
+
+		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 		$db->exec("pragma foreign_keys=ON");
 		$db->exec("begin");
 
 		$ok = $db->exec("create table if not exists book(
 			id integer primary key autoincrement,
-			identifier text not null,
+			identifier text not null unique,
 			filename text not null)"
 		)
 		&& $db->exec("create table if not exists title(
@@ -78,8 +79,68 @@ class LibraryService {
 
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
-		$this->rootFolder->get($this->dir.$this::DBNAME)->touch();
+		$this->node->get($this::DBNAME)->touch();
 
 		return $ok;
+	}
+
+	private function scanDir(Node $node) {
+		$files = $node->getDirectoryListing();
+		foreach ($files as $file) {
+			if ($file->getType() == FileInfo::TYPE_FOLDER) {
+				$this->scanDir($file);
+			} else if (strcasecmp($file->getExtension(), 'epub') == 0) {
+				$this->scanMetadataEPUB($this->abs($node).$file->getName());
+			}
+		}
+	}
+
+	private function scanMetadataEPUB(string $path) {
+		$file = str_replace($this->abs($this->node), '', $path);
+		$this->log->info(sprintf('scanning file: "%s"', $file));
+
+		$zip = new ZIP($path);
+		try {
+			$container = new SimpleXMLElement($zip->getFile('META-INF/container.xml'));
+		} catch (Exception $e) {
+			$this->log->error(sprintf('error parsing container.xml: "%s"', basename($path)));
+			return;
+		}
+
+		$rootFile = $container->rootfiles->rootfile['full-path'];
+		if (empty($rootFile)) {
+			$this->log->error(sprintf('no rootfile declared: "%s"', basename($path)));
+			return;
+		}
+
+		try {
+			$package = new SimpleXMLElement($zip->getFile($rootFile));
+		} catch (Exception $e) {
+			$this->log->error(sprintf('package document missing: "%s"', basename($path)));
+			return;
+		}
+
+		if ($this->writeMetadataEPUB(new MetadataEPUB($package, $file))) {
+			$this->log->info(sprintf('added to library: "%s"', $file));
+		}
+	}
+
+	private function writeMetadataEPUB(MetadataEPUB $meta) : bool {
+		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+		$db->exec("pragma foreign_keys=ON");
+
+		$stmt = $db->prepare("insert into book(identifier,filename)values(:id,:fn)");
+		$stmt->bindValue(':id', $meta->identifier);
+		$stmt->bindValue(':fn', $meta->filename);
+		if ($stmt->execute() === false) {
+			$db->close();
+			return false;
+		}
+
+		return true;
+	}
+
+	private function abs(Node $node) : string {
+		return $this->root.$node->getPath().'/';
 	}
 }

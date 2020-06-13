@@ -9,10 +9,10 @@ class EventLog implements IEventLog {
 	}
 
 	public function warn(string $msg) {
-		error_log($msg);
+		$this->info();
 	}
 
 	public function error(string $msg) {
-		error_log($msg);
+		$this->info();
 	}
 }

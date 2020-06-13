@@ -7,6 +7,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\Files\IRootFolder;
 
+use OCA\Books\Http\EventLog;
 use OCA\Books\Service\LibraryService;
 
 class LibraryController extends Controller {
@@ -29,11 +30,8 @@ class LibraryController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 *
-	 * @param string $dir
-	 * @return JSONResponse
 	 */
-	public function scan(string $dir) {
+	public function scan(string $dir) : JSONResponse {
 		$root = $this->rootFolder->getUserFolder($this->userId);
 		if (!$root->nodeExists($dir)) {
 			return new JSONResponse(['success' => false, 'message' => "directory doesn't exist"]);
@@ -48,7 +46,7 @@ class LibraryController extends Controller {
 			return new JSONResponse(['success' => false, 'message' => "read-only directory"]);
 		}
 
-		$lib = new LibraryService($this->config, $root, $dir);
+		$lib = new LibraryService($node, new EventLog(), $this->config);
 		if (!$lib->scan()) {
 			return new JSONResponse(['success' => false, 'message' => "scan failed"]);
 		}
