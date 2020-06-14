@@ -60,6 +60,17 @@ class LibraryController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function reset() : JSONResponse {
-		return new JSONResponse(['success' => false]);
+		$lib = $this->config->getUserValue($this->userId, $this->appName, 'library');
+		$root = $this->rootFolder->getUserFolder($this->userId);
+
+		if (!$root->nodeExists($lib)) {
+			return new JSONResponse(['success' => false, 'message' => sprintf("directory %s doesn't exist anymore", $lib)]);
+		}
+
+		if (!(new LibraryService($root->get($lib), new EventLog(), $this->config))->reset()) {
+			return new JSONResponse(['success' => false, 'message' => "reset failed"]);
+		}
+
+		return new JSONResponse(['success' => true]);
 	}
 }

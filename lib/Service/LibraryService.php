@@ -23,8 +23,6 @@ class LibraryService {
 	}
 
 	public function scan() : bool {
-		$this->node->get($this::DBNAME)->delete(); // debug stuff
-
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
 				return false;
@@ -35,6 +33,19 @@ class LibraryService {
 		$this->node->get($this::DBNAME)->touch();
 
 		return true;
+	}
+
+	public function reset() : bool {
+		if (!$this->node->nodeExists($this::DBNAME)) {
+			return $this->create();
+		}
+
+		if ($this->clear()) {
+			$this->node->get($this::DBNAME)->touch();
+			return true;
+		}
+
+		return false;
 	}
 
 	private function create() : bool {
@@ -78,6 +89,21 @@ class LibraryService {
 			foreign key(author_id) references author(id) on delete cascade,
 			foreign key(book_id) references book(id) on delete cascade)"
 		);
+
+		$db->exec($ok ? "commit" : "rollback");
+		$db->close();
+		$this->node->get($this::DBNAME)->touch();
+
+		return $ok;
+	}
+
+	public function clear() : bool {
+		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+		$db->exec("pragma foreign_keys=ON");
+		$db->exec("begin");
+
+		$ok = $db->exec("delete from book")
+		&& $db->exec("delete from language");
 
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
