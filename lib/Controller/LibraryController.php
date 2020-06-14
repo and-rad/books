@@ -53,4 +53,11 @@ class LibraryController extends Controller {
 
 		return new JSONResponse(['success' => true]);
 	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function reset() : JSONResponse {
+		return new JSONResponse(['success' => false]);
+	}
 }
