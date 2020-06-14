@@ -46,6 +46,8 @@ class LibraryController extends Controller {
 			return new JSONResponse(['success' => false, 'message' => "read-only directory"]);
 		}
 
+		$this->config->setUserValue($this->userId, $this->appName, 'library', $dir);
+
 		$lib = new LibraryService($node, new EventLog(), $this->config);
 		if (!$lib->scan()) {
 			return new JSONResponse(['success' => false, 'message' => "scan failed"]);
