@@ -1,6 +1,7 @@
 <?php
 namespace OCA\Books\Http;
 
+use OCP\Util;
 use OCA\Books\Service\IEventLog;
 
 class EventLog implements IEventLog {
@@ -13,6 +14,7 @@ class EventLog implements IEventLog {
 	}
 
 	public function error(string $msg) {
+		Util::writeLog('books', $msg, Util::ERROR);
 		$this->info($msg);
 	}
 }
