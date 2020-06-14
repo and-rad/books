@@ -23,6 +23,8 @@ class LibraryService {
 	}
 
 	public function scan() : bool {
+		$this->node->get($this::DBNAME)->delete(); // debug stuff
+
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
 				return false;
@@ -55,7 +57,7 @@ class LibraryService {
 		)
 		&& $db->exec("create table if not exists language(
 			id integer primary key autoincrement,
-			language text not null)"
+			language text not null unique)"
 		)
 		&& $db->exec("create table if not exists language_book(
 			id integer primary key autoincrement,
@@ -143,6 +145,32 @@ class LibraryService {
 			$db->close();
 			return false;
 		}
+
+		$bookId = $db->lastInsertRowID();
+
+		$vals = array_fill(0, count($meta->titles), sprintf('(?,%d)',$bookId));
+		$query = sprintf('insert into title (title,book_id) values %s', implode(',', $vals));
+		$stmt = $db->prepare($query);
+		for ($i = 0; $i < count($meta->titles); $i++) {
+			$stmt->bindValue($i+1, $meta->titles[$i]);
+		}
+		$stmt->execute();
+
+		$vals = array_fill(0, count($meta->languages), sprintf('(?)'));
+		$query = sprintf('insert or ignore into language (language) values %s', implode(',', $vals));
+		$stmt = $db->prepare($query);
+		for ($i = 0; $i < count($meta->languages); $i++) {
+			$stmt->bindValue($i+1, $meta->languages[$i]);
+		}
+		$stmt->execute();
+
+		$vals = array_fill(0, count($meta->languages), sprintf('((select id from language where language=?),%d)',$bookId));
+		$query = sprintf('insert into language_book (language_id,book_id) values %s', implode(',', $vals));
+		$stmt = $db->prepare($query);
+		for ($i = 0; $i < count($meta->languages); $i++) {
+			$stmt->bindValue($i+1, $meta->languages[$i]);
+		}
+		$stmt->execute();
 
 		return true;
 	}

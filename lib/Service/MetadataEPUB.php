@@ -16,10 +16,19 @@ class MetadataEPUB {
 		if (!$meta) {
 			$meta = $package->children('opf', true)->metadata;
 		}
+		if (!$meta) {
+			throw new Exception(sprintf('metadata missing in file "%s"', $file));
+		}
 
 		$meta = $meta->children('dc', true);
 		if (!$meta->identifier) {
-			throw new Exception('identifier missing');
+			throw new Exception(sprintf('identifier missing in file "%s"', $file));
+		}
+		if (!$meta->title) {
+			throw new Exception(sprintf('title missing in file "%s"', $file));
+		}
+		if (!$meta->language) {
+			throw new Exception(sprintf('language missing in file "%s"', $file));
 		}
 
 		$this->identifier = $meta->identifier[0];
