@@ -29,9 +29,20 @@ class LibraryService {
 			}
 		}
 
-		$this->scanDir($this->node);
-		$this->node->get($this::DBNAME)->touch();
+		$metadata = [];
+		$this->scanDir($this->node, $metadata);
+		if (!$this->syncRemoved(array_column($metadata, 'filename'))) {
+			$this->log->error('filename sync failed');
+			return false;
+		}
 
+		foreach ($metadata as $meta) {
+			if ($this->writeMetadataEPUB($meta)) {
+				$this->log->info(sprintf('added to library: "%s"', $meta->filename));
+			}
+		}
+
+		$this->node->get($this::DBNAME)->touch();
 		return true;
 	}
 
@@ -112,18 +123,52 @@ class LibraryService {
 		return $ok;
 	}
 
-	private function scanDir(Node $node) {
+	private function syncRemoved(array $filenames) : bool {
+		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+		$db->exec("pragma foreign_keys=ON");
+
+		$names = [];
+		$res = $db->query('select filename from book');
+		while ($set = $res->fetchArray()) {
+			$names[] = $set['filename'];
+		}
+
+		$removed = array_values(array_diff($names, $filenames));
+		if (count($removed) == 0) {
+			return true;
+		}
+
+		$vals = array_fill(0, count($removed), '?');
+		$query = sprintf('delete from book where filename in (%s)', implode(',', $vals));
+		$stmt = $db->prepare($query);
+		for ($i = 0; $i < count($removed); $i++) {
+			$stmt->bindValue($i+1, $removed[$i]);
+		}
+
+		$ok = ($stmt->execute() !== false);
+		$db->close();
+
+		return $ok;
+	}
+
+	private function scanDir(Node $node, array &$metadata) {
 		$files = $node->getDirectoryListing();
 		foreach ($files as $file) {
+			$data = NULL;
+
 			if ($file->getType() == FileInfo::TYPE_FOLDER) {
-				$this->scanDir($file);
+				$this->scanDir($file, $metadata);
 			} else if (strcasecmp($file->getExtension(), 'epub') == 0) {
-				$this->scanMetadataEPUB($this->abs($node).$file->getName());
+				$data = $this->scanMetadataEPUB($this->abs($node).$file->getName());
+			}
+
+			if ($data) {
+				$metadata[] = $data;
 			}
 		}
 	}
 
-	private function scanMetadataEPUB(string $path) {
+	private function scanMetadataEPUB(string $path) : MetadataEPUB {
 		$file = str_replace($this->abs($this->node), '', $path);
 		$this->log->info(sprintf('scanning file: "%s"', $file));
 
@@ -132,32 +177,30 @@ class LibraryService {
 			$container = new SimpleXMLElement($zip->getFile('META-INF/container.xml'));
 		} catch (Exception $e) {
 			$this->log->error(sprintf('error parsing container.xml: "%s"', basename($path)));
-			return;
+			return NULL;
 		}
 
 		$rootFile = $container->rootfiles->rootfile['full-path'];
 		if (empty($rootFile)) {
 			$this->log->error(sprintf('no rootfile declared: "%s"', basename($path)));
-			return;
+			return NULL;
 		}
 
 		try {
 			$package = new SimpleXMLElement($zip->getFile($rootFile));
 		} catch (Exception $e) {
 			$this->log->error(sprintf('package document missing: "%s"', basename($path)));
-			return;
+			return NULL;
 		}
 
 		try {
 			$meta = new MetadataEPUB($package, $file);
 		} catch (Exception $e) {
 			$this->log->error($e->getMessage());
-			return;
+			return NULL;
 		}
 
-		if ($this->writeMetadataEPUB(new MetadataEPUB($package, $file))) {
-			$this->log->info(sprintf('added to library: "%s"', $file));
-		}
+		return $meta;
 	}
 
 	private function writeMetadataEPUB(MetadataEPUB $meta) : bool {
