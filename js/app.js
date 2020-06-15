@@ -5,6 +5,7 @@ if (!OCA.Books) {
 OCA.Books.Core = {
 	init: function() {
 		this.initControls();
+		this.initLibrary();
 	},
 
 	initControls: function() {
@@ -13,6 +14,12 @@ OCA.Books.Core = {
 		});
 		document.querySelector("#settings-item-reset").addEventListener("click", function() {
 			OCA.Books.Backend.reset();
+		});
+	},
+
+	initLibrary: function() {
+		OCA.Books.Backend.getBooks(function(obj) {
+			console.log(obj);
 		});
 	}
 };
@@ -33,6 +40,12 @@ OCA.Books.Backend = {
 		xhr.setRequestHeader("requesttoken", OC.requestToken);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhr.send(data);
+	},
+
+	getBooks: function(callback) {
+		this.get(OC.generateUrl("apps/books/api/0.1/books"), function() {
+			callback(JSON.parse(this.response));
+		});
 	},
 
 	scan: function(dir) {
