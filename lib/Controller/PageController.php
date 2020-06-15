@@ -4,7 +4,6 @@ namespace OCA\Books\Controller;
 use OCP\IConfig;
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
 
 class PageController extends Controller {
