@@ -22,6 +22,19 @@ class LibraryService {
 		$this->log = $log;
 	}
 
+	public function books() : array {
+		if (!$this->node->nodeExists($this::DBNAME)) {
+			return [[], true];
+		}
+
+		$metadata = [];
+		if ($this->readAll($metadata)) {
+			return [$metadata, true];
+		}
+
+		return [[], false];
+	}
+
 	public function scan() : bool {
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
@@ -57,6 +70,25 @@ class LibraryService {
 		}
 
 		return false;
+	}
+
+	private function readAll(array &$metadata) : bool {
+		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+
+		$res = $db->query('select book_id,title from title order by id asc');
+		while ($set = $res->fetchArray()) {
+			$id = $set['book_id'];
+			$metadata[$id]->id = $id;
+			$metadata[$id]->titles[] = $set['title'];
+		}
+
+		$res = $db->query('select language_book.book_id,language.language from language left join language_book on language.id=language_book.language_id order by language_book.id asc');
+		while ($set = $res->fetchArray()) {
+			$metadata[$set['book_id']]->languages[] = $set['language'];
+		}
+
+		$db->close();
+		return true;
 	}
 
 	private function create() : bool {

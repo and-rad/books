@@ -1,13 +1,35 @@
 <?php
 namespace OCA\Books\Controller;
 
+use OCP\IConfig;
+use OCP\IL10N;
 use OCP\IRequest;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\JSONResponse;
+use OCP\Files\IRootFolder;
+
+use OCA\Books\Http\EventLog;
+use OCA\Books\Service\LibraryService;
 
 class BookController extends Controller {
-	public function __construct(string $AppName, IRequest $request) {
+	private $userId;
+	private $config;
+	private $rootFolder;
+	private $l;
+
+	public function __construct(
+		string $AppName,
+		IRequest $request,
+		$userId,
+		IConfig $config,
+		IRootFolder $rootFolder,
+		IL10N $l
+	) {
 		parent::__construct($AppName, $request);
+		$this->userId = $userId;
+		$this->config = $config;
+		$this->rootFolder = $rootFolder;
+		$this->l = $l;
 	}
 
 	/**
@@ -16,6 +38,16 @@ class BookController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function index() {
-		return new JSONResponse([]);
+		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');
+		$root = $this->rootFolder->getUserFolder($this->userId);
+
+		if (!$root->nodeExists($dir)) {
+			return new JSONResponse(['success' => false, 'message' => sprintf("directory %s doesn't exist", $lib)]);
+		}
+
+		list($books, $ok) = (new LibraryService($root->get($dir), new EventLog(), $this->config))->books();
+		$msg = $this->l->t($ok ? 'books.ok' : 'books.err');
+
+		return new JSONResponse(['success' => $ok, 'message' => $msg, 'data' => $books]);
 	}
 }

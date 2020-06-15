@@ -1,7 +1,7 @@
 {
 	"translations": {
 		"books.ok": "Ok",
-		"books.err": "Error reading library"
+		"books.err": "There was an error reading the library"
 	},
 	"pluralForm": ""
 }
