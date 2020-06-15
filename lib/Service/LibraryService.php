@@ -194,7 +194,7 @@ class LibraryService {
 		}
 
 		try {
-			$meta = new MetadataEPUB($package, $file);
+			$meta = MetadataEPUB::fromXML($package, $file);
 		} catch (Exception $e) {
 			$this->log->error($e->getMessage());
 			return NULL;

@@ -11,7 +11,9 @@ class MetadataEPUB {
 	public $titles = [];
 	public $languages = [];
 
-	public function __construct(SimpleXMLElement $package, string $file) {
+	public function __construct() {}
+
+	public static function fromXML(SimpleXMLElement $package, string $file) : MetadataEPUB {
 		$meta = $package->metadata;
 		if (!$meta) {
 			$meta = $package->children('opf', true)->metadata;
@@ -31,9 +33,12 @@ class MetadataEPUB {
 			throw new Exception(sprintf('language missing in file "%s"', $file));
 		}
 
-		$this->identifier = $meta->identifier[0];
-		$this->filename = $file;
-		$this->titles = $meta->title;
-		$this->languages = $meta->language;
+		$m = new MetadataEPUB();
+		$m->identifier = $meta->identifier[0];
+		$m->filename = $file;
+		$m->titles = $meta->title;
+		$m->languages = $meta->language;
+
+		return $m;
 	}
 }
