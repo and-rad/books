@@ -1,3 +1,7 @@
+#app {
+	width: 100%;
+}
+
 #app-navigation {
 	color: #222;
 }
@@ -57,4 +61,54 @@
 	font-weight: inherit;
 	width: 100%;
 	text-align: left;
+}
+
+#app-shelf {
+	flex-grow: 1;
+}
+
+#app-shelf-head {
+	display: none;
+}
+
+.app-shelf-item {
+	border-bottom: 1px solid var(--color-border);
+	transition: background-color 0.3s ease;
+	padding: 0.5em;
+}
+
+.app-shelf-item:hover {
+	background: var(--color-background-hover);
+}
+
+@media only screen and (min-width: 960px) {
+	#app-shelf {
+		display: table;
+		width: 100%;
+	}
+
+	#app-shelf-head {
+		display: table-header-group;
+	}
+
+	#app-shelf-body {
+		display: table-row-group;
+	}
+
+	#app-shelf-head > div,
+	.app-shelf-item {
+		display: table-row;
+	}
+
+	#app-shelf-head > div > div,
+	.app-shelf-item > div {
+		display: table-cell;
+		padding: 0.5em;
+		vertical-align: middle;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	#app-shelf-head > div > div {
+		border-bottom: 2px solid  var(--color-border-dark);
+	}
 }

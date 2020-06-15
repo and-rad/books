@@ -24,7 +24,34 @@ OCA.Books.Core = {
 	initLibrary: function() {
 		OCA.Books.Backend.getBooks(function(obj) {
 			console.log(obj);
+			OCA.Books.UI.buildShelf(obj.data);
 		});
+	}
+};
+
+OCA.Books.UI = {
+	buildShelf: function(books) {
+		let frag = document.createDocumentFragment();
+		let tpl = document.createElement("div");
+		tpl.innerHTML = document.querySelector("#template-shelf-item").innerHTML;
+
+		for (let i = 0, book; book = books[i]; i++) {
+			let item = tpl.cloneNode(true);
+			item.dataset.id = book.id;
+			item.className = "app-shelf-item";
+
+			let fields = item.querySelectorAll(".field");
+			fields[0].textContent = book.titles[0];
+			fields[1].textContent = "TODO";
+			fields[2].textContent = "TODO";
+			fields[3].textContent = book.languages[0];
+
+			frag.appendChild(item);
+		}
+
+		let shelf = document.querySelector("#app-shelf-body");
+		shelf.textContent = "";
+		shelf.appendChild(frag);
 	}
 };
 
@@ -71,6 +98,6 @@ OCA.Books.Backend = {
 	}
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
 	OCA.Books.Core.init();
 });
