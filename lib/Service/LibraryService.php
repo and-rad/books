@@ -29,7 +29,7 @@ class LibraryService {
 
 		$metadata = [];
 		if ($this->readAll($metadata)) {
-			return [$metadata, true];
+			return [array_values($metadata), true];
 		}
 
 		return [[], false];
