@@ -10,10 +10,14 @@ OCA.Books.Core = {
 
 	initControls: function() {
 		document.querySelector("#settings-item-scan").addEventListener("click", function() {
-			OCA.Books.Backend.scan(document.querySelector("#path-settings").value);
+			OCA.Books.Backend.scan(document.querySelector("#path-settings").value, function(obj) {
+				console.log(obj);
+			});
 		});
 		document.querySelector("#settings-item-reset").addEventListener("click", function() {
-			OCA.Books.Backend.reset();
+			OCA.Books.Backend.reset(function(obj) {
+				console.log(obj);
+			});
 		});
 	},
 
@@ -24,6 +28,11 @@ OCA.Books.Core = {
 	}
 };
 
+/**
+ * Books.Backend communicates with the server. All public functions
+ * accept a callback function and pass the JSON-parsed response as
+ * the first parameter to that function.
+ */
 OCA.Books.Backend = {
 	get: function(uri, callback) {
 		let xhr = new XMLHttpRequest();
@@ -48,16 +57,16 @@ OCA.Books.Backend = {
 		});
 	},
 
-	scan: function(dir) {
+	scan: function(dir, callback) {
 		let data = `dir=${dir}`;
 		this.post(OC.generateUrl("apps/books/api/0.1/scan"), data, function() {
-			console.log(JSON.parse(this.response));
+			callback(JSON.parse(this.response));
 		});
 	},
 
-	reset: function() {
+	reset: function(callback) {
 		this.post(OC.generateUrl("apps/books/api/0.1/reset"), "", function() {
-			console.log(JSON.parse(this.response));
+			callback(JSON.parse(this.response));
 		});
 	}
 };
