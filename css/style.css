@@ -64,51 +64,60 @@
 }
 
 #app-shelf {
-	flex-grow: 1;
+	width: 100%;
 }
 
-#app-shelf-head {
-	display: none;
+#app-shelf thead,
+#app-shelf th {
+	position: sticky;
+	z-index: 60;
+	top: 50px;
+	background-color: var(--color-main-background-translucent);
+	color: var(--color-text-maxcontrast);
+	height: 4em;
+}
+
+#app-shelf th,
+#app-shelf td {
+	padding: 0.5em;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--color-border);
 }
 
 .app-shelf-item {
-	border-bottom: 1px solid var(--color-border);
-	transition: background-color 0.3s ease;
-	padding: 0.5em;
+	transition: background-color 0.2s ease;
 }
 
 .app-shelf-item:hover {
 	background: var(--color-background-hover);
 }
 
-@media only screen and (min-width: 960px) {
-	#app-shelf {
-		display: table;
-		width: 100%;
-	}
+#app-shelf th:first-child,
+.app-shelf-item .cover {
+	width: 4.5em;
+}
 
-	#app-shelf-head {
-		display: table-header-group;
-	}
+.app-shelf-item .cover div {
+	background-color: #db5343;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+	position: relative;
+	height: 3.5em;
+	width: 3.5em;
+	border-radius: 1.75em;
+}
 
-	#app-shelf-body {
-		display: table-row-group;
-	}
+.app-shelf-item .cover div .placeholder {
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #fff;
+	font-size: 2em;
+}
 
-	#app-shelf-head > div,
-	.app-shelf-item {
-		display: table-row;
-	}
-
-	#app-shelf-head > div > div,
-	.app-shelf-item > div {
-		display: table-cell;
-		padding: 0.5em;
-		vertical-align: middle;
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	#app-shelf-head > div > div {
-		border-bottom: 2px solid  var(--color-border-dark);
-	}
+.app-shelf-item .title-2 {
+	opacity: 0.5;
 }

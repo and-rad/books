@@ -1,11 +1,12 @@
-<div id='app-shelf'>
-	<div id='app-shelf-head'>
-		<div>
-			<div>Title</div>
-			<div>Author</div>
-			<div>Genre</div>
-			<div>Language</div>
-		</div>
-	</div>
-	<div id='app-shelf-body'></div>
-</div>
+<table id='app-shelf' class='list-container'>
+	<thead>
+		<tr>
+			<th></th>
+			<th>Title</th>
+			<th>Author</th>
+			<th>Genre</th>
+			<th>Language</th>
+		</tr>
+	</thead>
+	<tbody id='app-shelf-body'></tbody>
+</table>

@@ -32,7 +32,7 @@ OCA.Books.Core = {
 OCA.Books.UI = {
 	buildShelf: function(books) {
 		let frag = document.createDocumentFragment();
-		let tpl = document.createElement("div");
+		let tpl = document.createElement("tr");
 		tpl.innerHTML = document.querySelector("#template-shelf-item").innerHTML;
 
 		for (let i = 0, book; book = books[i]; i++) {
@@ -41,10 +41,14 @@ OCA.Books.UI = {
 			item.className = "app-shelf-item";
 
 			let fields = item.querySelectorAll(".field");
-			fields[0].textContent = book.titles[0];
-			fields[1].textContent = "TODO";
+			//fields[0].firstChild.style.backgroundImage = 'url("/apps/books/img/app.svg")';
+			fields[0].firstElementChild.style.backgroundColor = "#"+((1<<24)*Math.random()|0).toString(16);
+			fields[0].querySelector(".placeholder").textContent = book.titles[0].substring(0,2);
+			fields[1].firstElementChild.textContent = book.titles[0];
+			fields[1].lastElementChild.textContent = (book.titles.length > 1) ? book.titles[1] : "";
 			fields[2].textContent = "TODO";
-			fields[3].textContent = book.languages[0];
+			fields[3].textContent = "TODO";
+			fields[4].textContent = book.languages[0];
 
 			frag.appendChild(item);
 		}
