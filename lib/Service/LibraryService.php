@@ -9,6 +9,7 @@ use OCP\Files\Node;
 
 class LibraryService {
 	private const DBNAME = 'books.db';
+	public const CACHEDIR = '.cover-cache';
 
 	private $root;
 	private $node;
@@ -140,6 +141,10 @@ class LibraryService {
 		$db->close();
 		$this->node->get($this::DBNAME)->touch();
 
+		if (!$this->node->nodeExists($this::CACHEDIR)) {
+			$this->node->newFolder($this::CACHEDIR);
+		}
+
 		return $ok;
 	}
 
@@ -155,6 +160,11 @@ class LibraryService {
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
 		$this->node->get($this::DBNAME)->touch();
+
+		if ($this->node->nodeExists($this::CACHEDIR)) {
+			$this->node->get($this::CACHEDIR)->delete();
+			$this->node->newFolder($this::CACHEDIR);
+		}
 
 		return $ok;
 	}

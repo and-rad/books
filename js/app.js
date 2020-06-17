@@ -32,6 +32,10 @@ OCA.Books.Core = (function() {
 			OCA.Books.UI.buildShelf(obj.data);
 		});
 			});
+		},
+
+		coverUrl: function() {
+			return _coverUrl;
 	}
 };
 })();
