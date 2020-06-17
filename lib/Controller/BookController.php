@@ -34,10 +34,8 @@ class BookController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 *
-	 * @return JSONResponse
 	 */
-	public function index() {
+	public function index() : JSONResponse {
 		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');
 		$root = $this->rootFolder->getUserFolder($this->userId);
 
