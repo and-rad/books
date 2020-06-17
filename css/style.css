@@ -118,6 +118,21 @@
 	font-size: 2em;
 }
 
+.app-shelf-item .title {
+	min-width: 50%;
+}
+
+.app-shelf-item .title > div {
+	display: flex;
+}
+
+.app-shelf-item .title > div > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 0;
+	flex-grow: 1;
+}
+
 .app-shelf-item .title-2 {
 	opacity: 0.5;
 }
