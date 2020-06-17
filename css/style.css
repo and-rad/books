@@ -122,11 +122,13 @@
 	min-width: 50%;
 }
 
-.app-shelf-item .title > div {
+.app-shelf-item .title > div,
+.app-shelf-item .author > div {
 	display: flex;
 }
 
-.app-shelf-item .title > div > span {
+.app-shelf-item .title > div > span,
+.app-shelf-item .author > div > span {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 0;
@@ -135,4 +137,8 @@
 
 .app-shelf-item .title-2 {
 	opacity: 0.5;
+}
+
+.app-shelf-item .author {
+	min-width: 20%;
 }
