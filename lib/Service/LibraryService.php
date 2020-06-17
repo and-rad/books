@@ -2,9 +2,7 @@
 namespace OCA\Books\Service;
 
 use Exception;
-use SimpleXMLElement;
 use SQLite3;
-use OC\Archive\ZIP;
 use OCP\IConfig;
 use OCP\Files\FileInfo;
 use OCP\Files\Node;
@@ -186,49 +184,30 @@ class LibraryService {
 	private function scanDir(Node $node, array &$metadata) {
 		$files = $node->getDirectoryListing();
 		foreach ($files as $file) {
+			$path = $this->abs($node).$file->getName();
+			$name = str_replace($this->abs($this->node), '', $path);
 			$data = NULL;
+
+			$this->log->info(sprintf('scanning "%s"', $name));
 
 			if ($file->getType() == FileInfo::TYPE_FOLDER) {
 				$this->scanDir($file, $metadata);
 			} else if (strcasecmp($file->getExtension(), 'epub') == 0) {
-				$data = $this->scanMetadataEPUB($this->abs($node).$file->getName());
+				$data = $this->scanMetadataEPUB($path);
 			}
 
 			if ($data) {
+				$data->filename = $name;
 				$metadata[] = $data;
 			}
 		}
 	}
 
-	private function scanMetadataEPUB(string $path) : Metadata {
-		$file = str_replace($this->abs($this->node), '', $path);
-		$this->log->info(sprintf('scanning file: "%s"', $file));
-
-		$zip = new ZIP($path);
+	private function scanMetadataEPUB(string $path) : ?Metadata {
 		try {
-			$container = new SimpleXMLElement($zip->getFile('META-INF/container.xml'));
+			$meta = Metadata::fromEPUB($path);
 		} catch (Exception $e) {
-			$this->log->error(sprintf('error parsing container.xml: "%s"', basename($path)));
-			return NULL;
-		}
-
-		$rootFile = $container->rootfiles->rootfile['full-path'];
-		if (empty($rootFile)) {
-			$this->log->error(sprintf('no rootfile declared: "%s"', basename($path)));
-			return NULL;
-		}
-
-		try {
-			$package = new SimpleXMLElement($zip->getFile($rootFile));
-		} catch (Exception $e) {
-			$this->log->error(sprintf('package document missing: "%s"', basename($path)));
-			return NULL;
-		}
-
-		try {
-			$meta = Metadata::fromEPUB($package, $file);
-		} catch (Exception $e) {
-			$this->log->error($e->getMessage());
+			$this->log->error(sprintf('"%s": %s', basename($path), $e->getMessage()));
 			return NULL;
 		}
 
