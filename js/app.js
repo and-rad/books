@@ -2,10 +2,13 @@ if (!OCA.Books) {
 	OCA.Books = {};
 }
 
-OCA.Books.Core = {
+OCA.Books.Core = (function() {
+	let _coverUrl = "";
+
+	return {
 	init: function() {
-		this.initControls();
 		this.initLibrary();
+			this.initControls();
 	},
 
 	initControls: function() {
@@ -22,12 +25,16 @@ OCA.Books.Core = {
 	},
 
 	initLibrary: function() {
+			OCA.Books.Backend.getConfig(function(obj) {
+				_coverUrl = obj.coverUrl;
+				document.querySelector("#path-settings").value = obj.library;
 		OCA.Books.Backend.getBooks(function(obj) {
-			console.log(obj);
 			OCA.Books.UI.buildShelf(obj.data);
 		});
+			});
 	}
 };
+})();
 
 OCA.Books.UI = {
 	buildShelf: function(books) {
@@ -80,6 +87,12 @@ OCA.Books.Backend = {
 		xhr.setRequestHeader("requesttoken", OC.requestToken);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhr.send(data);
+	},
+
+	getConfig: function(callback) {
+		this.get(OC.generateUrl("apps/books/api/0.1/config"), function() {
+			callback(JSON.parse(this.response));
+		});
 	},
 
 	getBooks: function(callback) {

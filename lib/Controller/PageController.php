@@ -3,6 +3,7 @@ namespace OCA\Books\Controller;
 
 use OCP\IConfig;
 use OCP\IRequest;
+use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
 
@@ -20,11 +21,24 @@ class PageController extends Controller {
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 */
-	public function index() {
+	public function index() : TemplateResponse {
 		$lib = $this->config->getUserValue($this->userId, $this->appName, 'library');
 
 		return new TemplateResponse('books', 'index', [
 			'library' => $lib,
+		]);
+	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function config() : JSONResponse {
+		$lib = $this->config->getUserValue($this->userId, $this->appName, 'library');
+		$coverURL = sprintf('/remote.php/dav/files/%s/%s/.cover-cache', $this->userId, $lib);
+
+		return new JSONResponse([
+			'library' => $lib,
+			'coverUrl' => $coverURL,
 		]);
 	}
 }
