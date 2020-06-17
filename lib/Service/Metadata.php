@@ -4,7 +4,7 @@ namespace OCA\Books\Service;
 use Exception;
 use SimpleXMLElement;
 
-class MetadataEPUB {
+class Metadata {
 	public $id;
 	public $identifier;
 	public $filename;
@@ -13,7 +13,7 @@ class MetadataEPUB {
 
 	public function __construct() {}
 
-	public static function fromXML(SimpleXMLElement $package, string $file) : MetadataEPUB {
+	public static function fromEPUB(SimpleXMLElement $package, string $file) : Metadata {
 		$meta = $package->metadata;
 		if (!$meta) {
 			$meta = $package->children('opf', true)->metadata;
@@ -33,7 +33,7 @@ class MetadataEPUB {
 			throw new Exception(sprintf('language missing in file "%s"', $file));
 		}
 
-		$m = new MetadataEPUB();
+		$m = new Metadata();
 		$m->identifier = $meta->identifier[0];
 		$m->filename = $file;
 		$m->titles = $meta->title;

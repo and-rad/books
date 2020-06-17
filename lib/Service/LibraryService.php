@@ -50,7 +50,7 @@ class LibraryService {
 		}
 
 		foreach ($metadata as $meta) {
-			if ($this->writeMetadataEPUB($meta)) {
+			if ($this->writeMetadata($meta)) {
 				$this->log->info(sprintf('added to library: "%s"', $meta->filename));
 			}
 		}
@@ -200,7 +200,7 @@ class LibraryService {
 		}
 	}
 
-	private function scanMetadataEPUB(string $path) : MetadataEPUB {
+	private function scanMetadataEPUB(string $path) : Metadata {
 		$file = str_replace($this->abs($this->node), '', $path);
 		$this->log->info(sprintf('scanning file: "%s"', $file));
 
@@ -226,7 +226,7 @@ class LibraryService {
 		}
 
 		try {
-			$meta = MetadataEPUB::fromXML($package, $file);
+			$meta = Metadata::fromEPUB($package, $file);
 		} catch (Exception $e) {
 			$this->log->error($e->getMessage());
 			return NULL;
@@ -235,7 +235,7 @@ class LibraryService {
 		return $meta;
 	}
 
-	private function writeMetadataEPUB(MetadataEPUB $meta) : bool {
+	private function writeMetadata(Metadata $meta) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 		$db->exec("pragma foreign_keys=ON");
 
