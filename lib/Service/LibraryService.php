@@ -85,6 +85,11 @@ class LibraryService {
 			$metadata[$set['book_id']]->languages[] = $set['language'];
 		}
 
+		$res = $db->query('select author_book.book_id,author.author from author left join author_book on author.id=author_book.author_id order by author_book.id asc');
+		while ($set = $res->fetchArray()) {
+			$metadata[$set['book_id']]->authors[] = $set['author'];
+		}
+
 		$db->close();
 		return true;
 	}
@@ -120,7 +125,7 @@ class LibraryService {
 		)
 		&& $db->exec("create table if not exists author(
 			id integer primary key autoincrement,
-			author text not null,
+			author text not null unique,
 			file_as text not null)"
 		)
 		&& $db->exec("create table if not exists author_book(
@@ -144,7 +149,8 @@ class LibraryService {
 		$db->exec("begin");
 
 		$ok = $db->exec("delete from book")
-		&& $db->exec("delete from language");
+		&& $db->exec("delete from language")
+		&& $db->exec("delete from author");
 
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
@@ -249,6 +255,23 @@ class LibraryService {
 		$stmt = $db->prepare($query);
 		for ($i = 0; $i < count($meta->languages); $i++) {
 			$stmt->bindValue($i+1, $meta->languages[$i]);
+		}
+		$stmt->execute();
+
+		$vals = array_fill(0, count($meta->authors), sprintf('(?,?)'));
+		$query = sprintf('insert or ignore into author (author,file_as) values %s', implode(',', $vals));
+		$stmt = $db->prepare($query);
+		for ($i = 0; $i < count($meta->authors); $i+=2) {
+			$stmt->bindValue($i+1, $meta->authors[$i]);
+			$stmt->bindValue($i+2, $meta->authors[$i]);
+		}
+		$stmt->execute();
+
+		$vals = array_fill(0, count($meta->authors), sprintf('((select id from author where author=?),%d)',$bookId));
+		$query = sprintf('insert into author_book (author_id,book_id) values %s', implode(',', $vals));
+		$stmt = $db->prepare($query);
+		for ($i = 0; $i < count($meta->authors); $i++) {
+			$stmt->bindValue($i+1, $meta->authors[$i]);
 		}
 		$stmt->execute();
 

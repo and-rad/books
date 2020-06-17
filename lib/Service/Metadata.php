@@ -11,6 +11,7 @@ class Metadata {
 	public $filename;
 	public $titles = [];
 	public $languages = [];
+	public $authors = [];
 
 	public function __construct() {}
 
@@ -52,6 +53,12 @@ class Metadata {
 		$m->identifier = $meta->identifier[0];
 		$m->titles = $meta->title;
 		$m->languages = $meta->language;
+
+		if ($meta->creator) {
+			$m->authors = $meta->creator;
+		}
+
+		error_log($m->authors[0]);
 
 		return $m;
 	}
