@@ -58,8 +58,6 @@ class Metadata {
 			$m->authors = $meta->creator;
 		}
 
-		error_log($m->authors[0]);
-
 		return $m;
 	}
 }
