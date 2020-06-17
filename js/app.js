@@ -48,7 +48,7 @@ OCA.Books.UI = {
 			fields[1].lastElementChild.textContent = (book.titles.length > 1) ? book.titles[1] : "";
 			fields[2].textContent = "TODO";
 			fields[3].textContent = "TODO";
-			fields[4].textContent = book.languages[0];
+			fields[4].textContent = t("books", book.languages[0]);
 
 			frag.appendChild(item);
 		}
