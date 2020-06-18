@@ -8,7 +8,7 @@ use OCP\Files\FileInfo;
 use OCP\Files\Node;
 
 class LibraryService {
-	private const DBNAME = 'books.db';
+	private const DBNAME = '.books.db';
 	public const CACHEDIR = '.cover-cache';
 
 	private $root;
