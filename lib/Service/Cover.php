@@ -48,6 +48,12 @@ class Cover {
 				$filename = $item['href'];
 				break;
 			}
+
+			$id = $item['id'];
+			if ($id == 'cover') {
+				$filename = $item['href'];
+				break;
+			}
 		}
 
 		if ($filename != '') {
