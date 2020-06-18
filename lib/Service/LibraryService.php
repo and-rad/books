@@ -215,6 +215,10 @@ class LibraryService {
 	private function scanDir(Node $node, array &$metadata) {
 		$files = $node->getDirectoryListing();
 		foreach ($files as $file) {
+			if (in_array($file->getName(), [$this::DBNAME, $this::CACHEDIR])) {
+				continue;
+			}
+
 			$path = $this->abs($node).$file->getName();
 			$name = str_replace($this->abs($this->node), '', $path);
 			$data = NULL;
