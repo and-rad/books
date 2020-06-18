@@ -178,26 +178,36 @@ class LibraryService {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 		$db->exec("pragma foreign_keys=ON");
 
-		$names = [];
-		$res = $db->query('select filename from book');
+		$data = [];
+		$res = $db->query('select filename,cover from book');
 		while ($set = $res->fetchArray()) {
-			$names[] = $set['filename'];
+			$data[$set['filename']] = $set['cover'];
 		}
 
-		$removed = array_values(array_diff($names, $filenames));
-		if (count($removed) == 0) {
+		foreach ($filenames as $f) {
+			unset($data[$f]);
+		}
+
+		$names = array_keys($data);
+		if (count($names) == 0) {
 			return true;
 		}
 
-		$vals = array_fill(0, count($removed), '?');
+		$vals = array_fill(0, count($names), '?');
 		$query = sprintf('delete from book where filename in (%s)', implode(',', $vals));
 		$stmt = $db->prepare($query);
-		for ($i = 0; $i < count($removed); $i++) {
-			$stmt->bindValue($i+1, $removed[$i]);
+		for ($i = 0; $i < count($names); $i++) {
+			$stmt->bindValue($i+1, $names[$i]);
 		}
 
 		$ok = ($stmt->execute() !== false);
 		$db->close();
+
+		$covers = array_filter(array_values($data), function($val) { return $val != ''; });
+		$cache = $this->node->get($this::CACHEDIR);
+		foreach ($covers as $cover) {
+			$cache->get($cover)->delete();
+		}
 
 		return $ok;
 	}
