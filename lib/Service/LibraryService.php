@@ -85,12 +85,12 @@ class LibraryService {
 			$metadata[$id]->cover = $set['cover'];
 		}
 
-		$res = $db->query('select language_book.book_id,language.language from language left join language_book on language.id=language_book.language_id order by language_book.id asc');
+		$res = $db->query('select language_book.book_id,language.language from language_book left join language on language.id=language_book.language_id order by language_book.id asc');
 		while ($set = $res->fetchArray()) {
 			$metadata[$set['book_id']]->languages[] = $set['language'];
 		}
 
-		$res = $db->query('select author_book.book_id,author.author from author left join author_book on author.id=author_book.author_id order by author_book.id asc');
+		$res = $db->query('select author_book.book_id,author.author from author_book left join author on author.id=author_book.author_id order by author_book.id asc');
 		while ($set = $res->fetchArray()) {
 			$metadata[$set['book_id']]->authors[] = $set['author'];
 		}
