@@ -7,6 +7,8 @@ use OC\Archive\ZIP;
 
 class Metadata {
 	public $id;
+	public $cover;
+
 	public $identifier;
 	public $filename;
 	public $titles = [];

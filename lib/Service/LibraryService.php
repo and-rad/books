@@ -50,11 +50,14 @@ class LibraryService {
 
 		foreach ($metadata as $meta) {
 			if ($this->writeMetadata($meta)) {
+				$this->cacheCover($meta->filename);
 				$this->log->info(sprintf('added to library: "%s"', $meta->filename));
 			}
 		}
 
 		$this->node->get($this::DBNAME)->touch();
+		$this->node->get($this::CACHEDIR)->touch();
+
 		return true;
 	}
 
@@ -74,11 +77,12 @@ class LibraryService {
 	private function readAll(array &$metadata) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 
-		$res = $db->query('select book_id,title from title order by id asc');
+		$res = $db->query('select book.id,title.title,book.cover from book left join title on book.id=title.book_id order by title.id asc');
 		while ($set = $res->fetchArray()) {
-			$id = $set['book_id'];
+			$id = $set['id'];
 			$metadata[$id]->id = $id;
 			$metadata[$id]->titles[] = $set['title'];
+			$metadata[$id]->cover = $set['cover'];
 		}
 
 		$res = $db->query('select language_book.book_id,language.language from language left join language_book on language.id=language_book.language_id order by language_book.id asc');
@@ -105,7 +109,8 @@ class LibraryService {
 		$ok = $db->exec("create table if not exists book(
 			id integer primary key autoincrement,
 			identifier text not null unique,
-			filename text not null)"
+			filename text not null,
+			cover varchar(127) default '')"
 		)
 		&& $db->exec("create table if not exists title(
 			id integer primary key autoincrement,
@@ -286,6 +291,38 @@ class LibraryService {
 		$stmt->execute();
 
 		return true;
+	}
+
+	private function cacheCover(string $filename) : bool {
+		$path = $this->abs($this->node).$filename;
+		$cover = NULL;
+
+		try {
+			switch(pathinfo($filename, PATHINFO_EXTENSION)) {
+				case 'epub':
+					$cover = Cover::fromEPUB($path);
+					break;
+			}
+		} catch (Exception $e) {
+			$this->log->error(sprintf('"%s": %s', basename($filename), $e->getMessage()));
+			return false;
+		}
+
+		if (!$cover->exists()) {
+			return true;
+		}
+
+		if ($cover->save($this->abs($this->node).$this::CACHEDIR)) {
+			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+			$stmt = $db->prepare("update book set cover=? where filename=?");
+			$stmt->bindValue(1, $cover->filename());
+			$stmt->bindValue(2, $filename);
+			$ok = ($stmt->execute() !== false);
+			$db->close();
+			return $ok;
+		}
+
+		return false;
 	}
 
 	private function abs(Node $node) : string {
