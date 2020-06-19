@@ -111,7 +111,30 @@ class Metadata {
 
 			$filename = implode('/', array_slice($parts, 0, $cutoff));
 			if ($zip->fileExists($filename)) {
-				$m->cover = base64_encode($zip->getFile($filename));
+				$size = 192;
+				$data = $zip->getFile($filename);
+				list($w,$h) = getimagesizefromstring($data);
+				$r = $w / $h;
+				if ($w/$h > $r) {
+					$newwidth = $size*$r;
+					$newheight = $size;
+				} else {
+					$newheight = $size/$r;
+					$newwidth = $size;
+				}
+
+				$dst = imagecreatetruecolor($newwidth, $newheight);
+				$src = imagecreatefromstring($data);
+				if ($src !== false) {
+					imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $w, $h);
+					ob_start();
+					imagejpeg($dst);
+					$img = ob_get_contents();
+					ob_end_clean();
+					$m->cover = base64_encode($img);
+				}
+				imagedestroy($dst);
+				imagedestroy($src);
 			}
 		}
 
