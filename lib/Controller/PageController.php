@@ -7,8 +7,6 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
 
-use OCA\Books\Service\LibraryService;
-
 class PageController extends Controller {
 	private $userId;
 	private $config;
@@ -24,11 +22,7 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() : TemplateResponse {
-		$lib = $this->config->getUserValue($this->userId, $this->appName, 'library');
-
-		return new TemplateResponse('books', 'index', [
-			'library' => $lib,
-		]);
+		return new TemplateResponse('books', 'index');
 	}
 
 	/**
@@ -36,11 +30,9 @@ class PageController extends Controller {
 	 */
 	public function config() : JSONResponse {
 		$lib = $this->config->getUserValue($this->userId, $this->appName, 'library');
-		$coverURL = sprintf('/remote.php/dav/files/%s/%s/%s', $this->userId, $lib, LibraryService::CACHEDIR);
 
 		return new JSONResponse([
 			'library' => $lib,
-			'coverUrl' => $coverURL,
 		]);
 	}
 }
