@@ -15,6 +15,8 @@ class Cover {
 
 	private $epubCoverInternal;
 
+	public $data;
+
 	private function __construct($type, $path) {
 		$this->type = $type;
 		$this->path = $path;
@@ -82,6 +84,7 @@ class Cover {
 		$cover = new Cover(Cover::TYPE_EPUB, $path);
 		$cover->epubCoverInternal = $filename;
 		$cover->ext = pathinfo($filename, PATHINFO_EXTENSION);
+		$cover->data = base64_encode($zip->getFile($filename));
 
 		return $cover;
 	}

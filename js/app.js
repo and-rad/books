@@ -2,13 +2,10 @@ if (!OCA.Books) {
 	OCA.Books = {};
 }
 
-OCA.Books.Core = (function() {
-	let _coverUrl = "";
-
-	return {
+OCA.Books.Core = {
 	init: function() {
 		this.initLibrary();
-			this.initControls();
+		this.initControls();
 	},
 
 	initControls: function() {
@@ -25,20 +22,15 @@ OCA.Books.Core = (function() {
 	},
 
 	initLibrary: function() {
-			OCA.Books.Backend.getConfig(function(obj) {
-				_coverUrl = obj.coverUrl;
-				document.querySelector("#path-settings").value = obj.library;
+		OCA.Books.Backend.getConfig(function(obj) {
+			document.querySelector("#path-settings").value = obj.library;
+		});
 		OCA.Books.Backend.getBooks(function(obj) {
+			console.log(obj);
 			OCA.Books.UI.buildShelf(obj.data);
 		});
-			});
-		},
-
-		coverUrl: function() {
-			return _coverUrl;
 	}
 };
-})();
 
 OCA.Books.UI = {
 	buildShelf: function(books) {
@@ -52,16 +44,17 @@ OCA.Books.UI = {
 			item.className = "app-shelf-item";
 
 			let fields = item.querySelectorAll(".field");
+			fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
 			fields[1].querySelector(".title-1").textContent = book.titles[0];
 			fields[1].querySelector(".title-2").textContent = (book.titles.length > 1) ? book.titles[1] : "";
-			fields[2].querySelector(".author-1").textContent = book.authors[0];
+			fields[2].querySelector(".author-1").textContent = book.authors[0].name;
 			fields[3].textContent = "TODO";
 			fields[4].textContent = t("books", book.languages[0]);
 
-			if (book.cover) {
-				fields[0].firstElementChild.style.backgroundImage = `url("${OCA.Books.Core.coverUrl()}/${book.cover}")`;
+			if (book.hasCover) {
+				let url = `url("${OC.generateUrl("apps/books/api/0.1/cover")}/${book.id}")`;
+				fields[0].firstElementChild.style.backgroundImage = url;
 			} else {
-				fields[0].firstElementChild.style.backgroundColor = "#"+((1<<24)*Math.random()|0).toString(16);
 				fields[0].querySelector(".placeholder").textContent = book.titles[0].substring(0,2);
 			}
 

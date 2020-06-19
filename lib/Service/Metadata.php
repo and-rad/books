@@ -6,8 +6,16 @@ use SimpleXMLElement;
 use OC\Archive\ZIP;
 
 class Metadata {
+	private const COLORS = [
+		'#db5343','#e91e63','#ab47bc','#f44336',
+		'#673ab7','#3f51b5','#1793d1','#00bcd4',
+		'#009688','#4caf50','#8bc34a','#cddc39',
+		'#ffd54f','#ffc107','#ff9800','#ff5722',
+		'#795548','#9e9e9e','#607d8b','#424242',
+	];
+
 	public $id;
-	public $cover;
+	public $hasCover;
 
 	public $identifier;
 	public $filename;
@@ -57,7 +65,10 @@ class Metadata {
 		$m->languages = $meta->language;
 
 		if ($meta->creator) {
-			$m->authors = $meta->creator;
+			for ($i = 0; $i < count($meta->creator); $i++) {
+				$m->authors[$i]->name = $meta->creator[$i];
+				$m->authors[$i]->color = Metadata::COLORS[rand(0,count(Metadata::COLORS)-1)];
+			}
 		}
 
 		return $m;

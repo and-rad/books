@@ -34,6 +34,22 @@ class LibraryService {
 		return [[], false];
 	}
 
+	public function cover($id) : string {
+		$data = '';
+
+		if ($this->node->nodeExists($this::DBNAME)) {
+			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+			$stmt = $db->prepare('select cover from book where id=?');
+			$stmt->bindValue(1, $id);
+			if ($set = $stmt->execute()->fetchArray()) {
+				$data = $set['cover'];
+			}
+			$db->close();
+		}
+
+		return $data;
+	}
+
 	public function scan() : bool {
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
@@ -77,12 +93,12 @@ class LibraryService {
 	private function readAll(array &$metadata) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 
-		$res = $db->query('select book.id,title.title,book.cover from book left join title on book.id=title.book_id order by title.id asc');
+		$res = $db->query('select book.id,title.title,length(book.cover) as has_cover from book left join title on book.id=title.book_id order by title.id asc');
 		while ($set = $res->fetchArray()) {
 			$id = $set['id'];
 			$metadata[$id]->id = $id;
 			$metadata[$id]->titles[] = $set['title'];
-			$metadata[$id]->cover = $set['cover'];
+			$metadata[$id]->hasCover = ($set['has_cover'] != 0);
 		}
 
 		$res = $db->query('select language_book.book_id,language.language from language_book left join language on language.id=language_book.language_id order by language_book.id asc');
@@ -90,9 +106,9 @@ class LibraryService {
 			$metadata[$set['book_id']]->languages[] = $set['language'];
 		}
 
-		$res = $db->query('select author_book.book_id,author.author from author_book left join author on author.id=author_book.author_id order by author_book.id asc');
+		$res = $db->query('select author_book.book_id,author.author,author.color from author_book left join author on author.id=author_book.author_id order by author_book.id asc');
 		while ($set = $res->fetchArray()) {
-			$metadata[$set['book_id']]->authors[] = $set['author'];
+			$metadata[$set['book_id']]->authors[] = (object) ['name' => $set['author'], 'color' => $set['color']];
 		}
 
 		$db->close();
@@ -110,7 +126,7 @@ class LibraryService {
 			id integer primary key autoincrement,
 			identifier text not null unique,
 			filename text not null,
-			cover varchar(127) default '')"
+			cover text default '')"
 		)
 		&& $db->exec("create table if not exists title(
 			id integer primary key autoincrement,
@@ -132,7 +148,8 @@ class LibraryService {
 		&& $db->exec("create table if not exists author(
 			id integer primary key autoincrement,
 			author text not null unique,
-			file_as text not null)"
+			file_as text not null,
+			color varchar(15) not null)"
 		)
 		&& $db->exec("create table if not exists author_book(
 			id integer primary key autoincrement,
@@ -287,12 +304,13 @@ class LibraryService {
 		}
 		$stmt->execute();
 
-		$vals = array_fill(0, count($meta->authors), sprintf('(?,?)'));
-		$query = sprintf('insert or ignore into author (author,file_as) values %s', implode(',', $vals));
+		$vals = array_fill(0, count($meta->authors), sprintf('(?,?,?)'));
+		$query = sprintf('insert or ignore into author (author,file_as,color) values %s', implode(',', $vals));
 		$stmt = $db->prepare($query);
 		for ($i = 0; $i < count($meta->authors); $i+=2) {
-			$stmt->bindValue($i+1, $meta->authors[$i]);
-			$stmt->bindValue($i+2, $meta->authors[$i]);
+			$stmt->bindValue($i+1, $meta->authors[$i]->name);
+			$stmt->bindValue($i+2, $meta->authors[$i]->name);
+			$stmt->bindValue($i+3, $meta->authors[$i]->color);
 		}
 		$stmt->execute();
 
@@ -300,7 +318,7 @@ class LibraryService {
 		$query = sprintf('insert into author_book (author_id,book_id) values %s', implode(',', $vals));
 		$stmt = $db->prepare($query);
 		for ($i = 0; $i < count($meta->authors); $i++) {
-			$stmt->bindValue($i+1, $meta->authors[$i]);
+			$stmt->bindValue($i+1, $meta->authors[$i]->name);
 		}
 		$stmt->execute();
 
@@ -329,7 +347,7 @@ class LibraryService {
 		if ($cover->save($this->abs($this->node).$this::CACHEDIR)) {
 			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 			$stmt = $db->prepare("update book set cover=? where filename=?");
-			$stmt->bindValue(1, $cover->filename());
+			$stmt->bindValue(1, $cover->data);
 			$stmt->bindValue(2, $filename);
 			$ok = ($stmt->execute() !== false);
 			$db->close();

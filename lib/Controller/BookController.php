@@ -9,6 +9,7 @@ use OCP\AppFramework\Http\JSONResponse;
 use OCP\Files\IRootFolder;
 
 use OCA\Books\Http\EventLog;
+use OCA\Books\Http\CoverResponse;
 use OCA\Books\Service\LibraryService;
 
 class BookController extends Controller {
@@ -47,5 +48,21 @@ class BookController extends Controller {
 		$msg = $this->l->t($ok ? 'books.ok' : 'books.err');
 
 		return new JSONResponse(['success' => $ok, 'message' => $msg, 'data' => $books]);
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 */
+	public function cover($id) : CoverResponse {
+		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');
+		$root = $this->rootFolder->getUserFolder($this->userId);
+
+		if (!$root->nodeExists($dir)) {
+			return new CoverResponse('');
+		}
+
+		$data = (new LibraryService($root->get($dir), new EventLog(), $this->config))->cover($id);
+		return new CoverResponse($data);
 	}
 }
