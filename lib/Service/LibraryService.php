@@ -9,7 +9,6 @@ use OCP\Files\Node;
 
 class LibraryService {
 	private const DBNAME = '.books.db';
-	public const CACHEDIR = '.cover-cache';
 
 	private $root;
 	private $node;
@@ -65,15 +64,12 @@ class LibraryService {
 		}
 
 		foreach ($metadata as $meta) {
-			if ($this->writeMetadata($meta)) {
-				$this->cacheCover($meta->filename);
+			if ($this->writeMetadata($meta) && $this->writeCoverData($meta->filename)) {
 				$this->log->info(sprintf('added to library: "%s"', $meta->filename));
 			}
 		}
 
 		$this->node->get($this::DBNAME)->touch();
-		$this->node->get($this::CACHEDIR)->touch();
-
 		return true;
 	}
 
@@ -163,10 +159,6 @@ class LibraryService {
 		$db->close();
 		$this->node->get($this::DBNAME)->touch();
 
-		if (!$this->node->nodeExists($this::CACHEDIR)) {
-			$this->node->newFolder($this::CACHEDIR);
-		}
-
 		return $ok;
 	}
 
@@ -183,11 +175,6 @@ class LibraryService {
 		$db->close();
 		$this->node->get($this::DBNAME)->touch();
 
-		if ($this->node->nodeExists($this::CACHEDIR)) {
-			$this->node->get($this::CACHEDIR)->delete();
-			$this->node->newFolder($this::CACHEDIR);
-		}
-
 		return $ok;
 	}
 
@@ -195,36 +182,26 @@ class LibraryService {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 		$db->exec("pragma foreign_keys=ON");
 
-		$data = [];
-		$res = $db->query('select filename,cover from book');
+		$names = [];
+		$res = $db->query('select filename from book');
 		while ($set = $res->fetchArray()) {
-			$data[$set['filename']] = $set['cover'];
+			$names[] = $set['filename'];
 		}
 
-		foreach ($filenames as $f) {
-			unset($data[$f]);
-		}
-
-		$names = array_keys($data);
-		if (count($names) == 0) {
+		$removed = array_values(array_diff($names, $filenames));
+		if (count($removed) == 0) {
 			return true;
 		}
 
-		$vals = array_fill(0, count($names), '?');
+		$vals = array_fill(0, count($removed), '?');
 		$query = sprintf('delete from book where filename in (%s)', implode(',', $vals));
 		$stmt = $db->prepare($query);
-		for ($i = 0; $i < count($names); $i++) {
-			$stmt->bindValue($i+1, $names[$i]);
+		for ($i = 0; $i < count($removed); $i++) {
+			$stmt->bindValue($i+1, $removed[$i]);
 		}
 
 		$ok = ($stmt->execute() !== false);
 		$db->close();
-
-		$covers = array_filter(array_values($data), function($val) { return $val != ''; });
-		$cache = $this->node->get($this::CACHEDIR);
-		foreach ($covers as $cover) {
-			$cache->get($cover)->delete();
-		}
 
 		return $ok;
 	}
@@ -232,7 +209,7 @@ class LibraryService {
 	private function scanDir(Node $node, array &$metadata) {
 		$files = $node->getDirectoryListing();
 		foreach ($files as $file) {
-			if (in_array($file->getName(), [$this::DBNAME, $this::CACHEDIR])) {
+			if (in_array($file->getName(), [$this::DBNAME])) {
 				continue;
 			}
 
@@ -325,7 +302,7 @@ class LibraryService {
 		return true;
 	}
 
-	private function cacheCover(string $filename) : bool {
+	private function writeCoverData(string $filename) : bool {
 		$path = $this->abs($this->node).$filename;
 		$cover = NULL;
 
@@ -344,17 +321,14 @@ class LibraryService {
 			return true;
 		}
 
-		if ($cover->save($this->abs($this->node).$this::CACHEDIR)) {
-			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
-			$stmt = $db->prepare("update book set cover=? where filename=?");
-			$stmt->bindValue(1, $cover->data);
-			$stmt->bindValue(2, $filename);
-			$ok = ($stmt->execute() !== false);
-			$db->close();
-			return $ok;
-		}
+		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+		$stmt = $db->prepare("update book set cover=? where filename=?");
+		$stmt->bindValue(1, $cover->data);
+		$stmt->bindValue(2, $filename);
+		$ok = ($stmt->execute() !== false);
+		$db->close();
 
-		return false;
+		return $ok;
 	}
 
 	private function abs(Node $node) : string {

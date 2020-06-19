@@ -9,18 +9,11 @@ use OC\Archive\ZIP;
 class Cover {
 	private const TYPE_EPUB = 0;
 	private $type;
-	private $path;
-	private $hash;
-	private $ext;
-
-	private $epubCoverInternal;
 
 	public $data;
 
-	private function __construct($type, $path) {
+	private function __construct($type) {
 		$this->type = $type;
-		$this->path = $path;
-		$this->hash = bin2hex(random_bytes(8));
 	}
 
 	public static function fromEPUB(string $path) : Cover {
@@ -58,6 +51,8 @@ class Cover {
 			}
 		}
 
+		$cover = new Cover(Cover::TYPE_EPUB);
+
 		if ($filename != '') {
 			$filename = dirname($rootFile).'/'.$filename;
 			$parts = explode('/', $filename);
@@ -76,34 +71,17 @@ class Cover {
 			}
 
 			$filename = implode('/', array_slice($parts, 0, $cutoff));
-			if (!$zip->fileExists($filename)) {
-				throw new Exception(sprintf('cover file %s not found', $filename));
+			if ($zip->fileExists($filename)) {
+				$cover->data = base64_encode($zip->getFile($filename));
 			}
 		}
-
-		$cover = new Cover(Cover::TYPE_EPUB, $path);
-		$cover->epubCoverInternal = $filename;
-		$cover->ext = pathinfo($filename, PATHINFO_EXTENSION);
-		$cover->data = base64_encode($zip->getFile($filename));
 
 		return $cover;
 	}
 
-	public function save(string $dir) : bool {
-		if ($this->type == $this::TYPE_EPUB && $this->epubCoverInternal != '') {
-			$zip = new ZIP($this->path);
-			return ($zip->extractFile($this->epubCoverInternal, $dir.'/'.$this->filename()) === NULL);
-		}
-		return false;
-	}
-
-	public function filename() : string {
-		return $this->hash.'.'.$this->ext;
-	}
-
 	public function exists() : bool {
 		if ($this->type == $this::TYPE_EPUB) {
-			return $this->epubCoverInternal != '';
+			return $this->data != NULL;
 		}
 		return false;
 	}
