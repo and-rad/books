@@ -38,7 +38,7 @@ class LibraryService {
 
 		if ($this->node->nodeExists($this::DBNAME)) {
 			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
-			$stmt = $db->prepare('select cover from book where id=?');
+			$stmt = $db->prepare('select cover from cover where book_id=?');
 			$stmt->bindValue(1, $id);
 			if ($set = $stmt->execute()->fetchArray()) {
 				$data = $set['cover'];
@@ -64,7 +64,7 @@ class LibraryService {
 		}
 
 		foreach ($metadata as $meta) {
-			if ($this->writeMetadata($meta) && $this->writeCoverData($meta->filename)) {
+			if ($this->addBook($meta)) {
 				$this->log->info(sprintf('added to library: "%s"', $meta->filename));
 			}
 		}
@@ -89,12 +89,17 @@ class LibraryService {
 	private function readAll(array &$metadata) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 
-		$res = $db->query('select book.id,title.title,length(book.cover) as has_cover from book left join title on book.id=title.book_id order by title.id asc');
+		$res = $db->query('select book_id,title from title order by id asc');
 		while ($set = $res->fetchArray()) {
-			$id = $set['id'];
+			$id = $set['book_id'];
 			$metadata[$id]->id = $id;
 			$metadata[$id]->titles[] = $set['title'];
-			$metadata[$id]->hasCover = ($set['has_cover'] != 0);
+			$metadata[$id]->hasCover = false;
+		}
+
+		$res = $db->query('select distinct book_id from cover');
+		while ($set = $res->fetchArray()) {
+			$metadata[$set['book_id']]->hasCover = true;
 		}
 
 		$res = $db->query('select language_book.book_id,language.language from language_book left join language on language.id=language_book.language_id order by language_book.id asc');
@@ -122,12 +127,17 @@ class LibraryService {
 		$ok = $db->exec("create table if not exists book(
 			id integer primary key autoincrement,
 			identifier text not null unique,
-			filename text not null,
-			cover text default '')"
+			filename text not null)"
 		)
 		&& $db->exec("create table if not exists title(
 			id integer primary key autoincrement,
 			title text not null,
+			book_id integer not null,
+			foreign key(book_id) references book(id) on delete cascade)"
+		)
+		&& $db->exec("create table if not exists cover(
+			id integer primary key autoincrement,
+			cover text not null,
 			book_id integer not null,
 			foreign key(book_id) references book(id) on delete cascade)"
 		)
@@ -244,7 +254,7 @@ class LibraryService {
 		return $meta;
 	}
 
-	private function writeMetadata(Metadata $meta) : bool {
+	private function addBook(Metadata $meta) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 		$db->exec("pragma foreign_keys=ON");
 
@@ -300,36 +310,15 @@ class LibraryService {
 		}
 		$stmt->execute();
 
-		return true;
-	}
-
-	private function writeCoverData(string $filename) : bool {
-		$path = $this->abs($this->node).$filename;
-		$cover = NULL;
-
-		try {
-			switch(pathinfo($filename, PATHINFO_EXTENSION)) {
-				case 'epub':
-					$cover = Cover::fromEPUB($path);
-					break;
-			}
-		} catch (Exception $e) {
-			$this->log->error(sprintf('"%s": %s', basename($filename), $e->getMessage()));
-			return false;
+		if ($meta->cover) {
+			$stmt = $db->prepare("insert into cover(cover,book_id) values (?,?)");
+			$stmt->bindValue(1, $meta->cover);
+			$stmt->bindValue(2, $bookId);
+			$stmt->execute();
 		}
 
-		if (!$cover->exists()) {
-			return true;
-		}
-
-		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
-		$stmt = $db->prepare("update book set cover=? where filename=?");
-		$stmt->bindValue(1, $cover->data);
-		$stmt->bindValue(2, $filename);
-		$ok = ($stmt->execute() !== false);
 		$db->close();
-
-		return $ok;
+		return true;
 	}
 
 	private function abs(Node $node) : string {

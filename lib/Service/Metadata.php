@@ -14,9 +14,7 @@ class Metadata {
 		'#795548','#9e9e9e','#607d8b','#424242',
 	];
 
-	public $id;
-	public $hasCover;
-
+	public $cover;
 	public $identifier;
 	public $filename;
 	public $titles = [];
@@ -48,6 +46,11 @@ class Metadata {
 			throw new Exception('metadata missing');
 		}
 
+		$manifest = $package->manifest;
+		if (!$manifest) {
+			throw new Exception('manifest missing');
+		}
+
 		$meta = $meta->children('dc', true);
 		if (!$meta->identifier) {
 			throw new Exception('identifier missing');
@@ -64,11 +67,51 @@ class Metadata {
 		$m->titles = $meta->title;
 		$m->languages = $meta->language;
 
+		// optional: authors
 		if ($meta->creator) {
 			for ($i = 0; $i < count($meta->creator); $i++) {
 				$m->authors[$i]->name = $meta->creator[$i];
 				$m->authors[$i]->fileAs = $meta->creator[$i];
 				$m->authors[$i]->color = Metadata::COLORS[rand(0,count(Metadata::COLORS)-1)];
+			}
+		}
+
+		// optional: cover file
+		$filename = '';
+		foreach ($manifest->item as $item) {
+			$p = $item['properties'];
+			if ($p && strpos($p, 'cover-image') !== false) {
+				$filename = $item['href'];
+				break;
+			}
+
+			$id = $item['id'];
+			if ($id == 'cover') {
+				$filename = $item['href'];
+				break;
+			}
+		}
+
+		if ($filename != '') {
+			$filename = dirname($rootFile).'/'.$filename;
+			$parts = explode('/', $filename);
+
+			$cutoff = 0;
+			for ($i = 0; $i < count($parts); $i++) {
+				if ($parts[$i] == '.') {
+					continue;
+				}
+				if ($parts[$i] == '..') {
+					$cutoff--;
+					continue;
+				}
+				$parts[$cutoff] = $parts[$i];
+				$cutoff++;
+			}
+
+			$filename = implode('/', array_slice($parts, 0, $cutoff));
+			if ($zip->fileExists($filename)) {
+				$m->cover = base64_encode($zip->getFile($filename));
 			}
 		}
 
