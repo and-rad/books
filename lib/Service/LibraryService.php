@@ -102,9 +102,10 @@ class LibraryService {
 			$metadata[$set['book_id']]->languages[] = $set['language'];
 		}
 
-		$res = $db->query('select author_book.book_id,author.author,author.color from author_book left join author on author.id=author_book.author_id order by author_book.id asc');
+		$res = $db->query('select author_book.book_id,author.author,author.file_as,author.color from author_book left join author on author.id=author_book.author_id order by author_book.id asc');
 		while ($set = $res->fetchArray()) {
-			$metadata[$set['book_id']]->authors[] = (object) ['name' => $set['author'], 'color' => $set['color']];
+			$a = ['name' => $set['author'], 'fileAs' => $set['file_as'], 'color' => $set['color']];
+			$metadata[$set['book_id']]->authors[] = (object) $a;
 		}
 
 		$db->close();
@@ -286,7 +287,7 @@ class LibraryService {
 		$stmt = $db->prepare($query);
 		for ($i = 0; $i < count($meta->authors); $i+=2) {
 			$stmt->bindValue($i+1, $meta->authors[$i]->name);
-			$stmt->bindValue($i+2, $meta->authors[$i]->name);
+			$stmt->bindValue($i+2, $meta->authors[$i]->fileAs);
 			$stmt->bindValue($i+3, $meta->authors[$i]->color);
 		}
 		$stmt->execute();

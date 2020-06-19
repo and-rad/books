@@ -67,6 +67,7 @@ class Metadata {
 		if ($meta->creator) {
 			for ($i = 0; $i < count($meta->creator); $i++) {
 				$m->authors[$i]->name = $meta->creator[$i];
+				$m->authors[$i]->fileAs = $meta->creator[$i];
 				$m->authors[$i]->color = Metadata::COLORS[rand(0,count(Metadata::COLORS)-1)];
 			}
 		}
