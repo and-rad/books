@@ -20,6 +20,7 @@ class Metadata {
 	public $titles = [];
 	public $languages = [];
 	public $authors = [];
+	public $series = [];
 
 	public function __construct() {}
 
@@ -37,12 +38,12 @@ class Metadata {
 			throw new Exception('no rootfile declared');
 		}
 
-		$package = new SimpleXMLElement($zip->getFile($rootFile));
-		$meta = $package->metadata;
-		if (!$meta) {
-			$meta = $package->children('opf', true)->metadata;
+		$package = new SimpleXMLElement($zip->getFile($rootFile), LIBXML_PARSEHUGE);
+		$metadata = $package->metadata;
+		if (!$metadata) {
+			$metadata = $package->children('opf', true)->metadata;
 		}
-		if (!$meta) {
+		if (!$metadata) {
 			throw new Exception('metadata missing');
 		}
 
@@ -51,28 +52,29 @@ class Metadata {
 			throw new Exception('manifest missing');
 		}
 
-		$meta = $meta->children('dc', true);
-		if (!$meta->identifier) {
+		// mandatory metadata
+		$dc = $metadata->children('dc', true);
+		if (!$dc->identifier) {
 			throw new Exception('identifier missing');
 		}
-		if (!$meta->title) {
+		if (!$dc->title) {
 			throw new Exception('title missing');
 		}
-		if (!$meta->language) {
+		if (!$dc->language) {
 			throw new Exception('language missing');
 		}
 
-		$m = new Metadata();
-		$m->identifier = $meta->identifier[0];
-		$m->titles = $meta->title;
-		$m->languages = $meta->language;
+		$meta = new Metadata();
+		$meta->identifier = $dc->identifier[0];
+		$meta->titles = $dc->title;
+		$meta->languages = $dc->language;
 
 		// optional: authors
-		if ($meta->creator) {
-			for ($i = 0; $i < count($meta->creator); $i++) {
-				$m->authors[$i]->name = $meta->creator[$i];
-				$m->authors[$i]->fileAs = $meta->creator[$i];
-				$m->authors[$i]->color = Metadata::COLORS[rand(0,count(Metadata::COLORS)-1)];
+		if ($dc->creator) {
+			for ($i = 0; $i < count($dc->creator); $i++) {
+				$meta->authors[$i]->name = $dc->creator[$i];
+				$meta->authors[$i]->fileAs = $dc->creator[$i];
+				$meta->authors[$i]->color = self::COLORS[rand(0,count(self::COLORS)-1)];
 			}
 		}
 
@@ -131,13 +133,30 @@ class Metadata {
 					imagejpeg($dst);
 					$img = ob_get_contents();
 					ob_end_clean();
-					$m->cover = base64_encode($img);
+					$meta->cover = base64_encode($img);
 				}
 				imagedestroy($dst);
 				imagedestroy($src);
 			}
 		}
 
-		return $m;
+
+		// optional: series
+		$series = [];
+		foreach($metadata->meta as $m) {
+			if ($m['property'] == 'belongs-to-collection') {
+				if ($id = (string)$m['id']) {
+					$series[$id]->identifier = $id;
+					$series[$id]->name = (string) $m;
+					$series[$id]->fileAs = (string) $m;
+				}
+			} else if ($m['property'] == 'group-position') {
+				$id = str_replace('#', '', $m['refines']);
+				$series[$id]->pos = (int) $m;
+			}
+		}
+		$meta->series = array_values($series);
+
+		return $meta;
 	}
 }
