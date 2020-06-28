@@ -1,6 +1,5 @@
 <div id='select-category'>
 	<select>
-		<option value=''>All Books</option>
 		<option value=''>Authors</option>
 		<option value=''>Series</option>
 		<option value=''>Genres</option>
