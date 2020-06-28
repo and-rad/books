@@ -49,7 +49,6 @@ OCA.Books.UI = (function() {
 				let fields = item.querySelectorAll(".field");
 				fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
 				fields[1].querySelector(".title-1").textContent = book.titles[0];
-				fields[1].querySelector(".title-2").textContent = (book.titles.length > 1) ? book.titles[1] : "";
 				fields[2].querySelector(".author-1").textContent = book.authors[0].name;
 				fields[3].textContent = "TODO";
 				fields[4].textContent = t("books", book.languages[0]);
@@ -59,6 +58,11 @@ OCA.Books.UI = (function() {
 					fields[0].firstElementChild.style.backgroundImage = url;
 				} else {
 					fields[0].querySelector(".placeholder").textContent = book.titles[0].substring(0,2);
+				}
+
+				if (book.series) {
+					let series = book.series[0];
+					fields[1].querySelector(".title-2").textContent = `${series.name} ${series.pos}`;
 				}
 
 				frag.appendChild(item);

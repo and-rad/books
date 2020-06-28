@@ -113,6 +113,12 @@ class LibraryService {
 			$metadata[$set['book_id']]->authors[] = (object) $a;
 		}
 
+		$res = $db->query('select series_book.book_id,series_book.position,series.series,series.file_as from series_book left join series on series.id=series_book.series_id');
+		while ($set = $res->fetchArray()) {
+			$s = ['name' => $set['series'], 'fileAs' => $set['file_as'], 'pos' => $set['position']];
+			$metadata[$set['book_id']]->series[] = (object) $s;
+		}
+
 		$db->close();
 		return true;
 	}
@@ -163,6 +169,20 @@ class LibraryService {
 			author_id integer not null,
 			book_id integeer not null,
 			foreign key(author_id) references author(id) on delete cascade,
+			foreign key(book_id) references book(id) on delete cascade)"
+		)
+		&& $db->exec("create table if not exists series(
+			id integer primary key autoincrement,
+			identifier text not null unique,
+			series text not null,
+			file_as text not null)"
+		)
+		&& $db->exec("create table if not exists series_book(
+			id integer primary key autoincrement,
+			series_id integer not null,
+			book_id integer not null,
+			position real default 1,
+			foreign key(series_id) references series(id) on delete cascade,
 			foreign key(book_id) references book(id) on delete cascade)"
 		);
 
@@ -314,6 +334,27 @@ class LibraryService {
 			$stmt = $db->prepare("insert into cover(cover,book_id) values (?,?)");
 			$stmt->bindValue(1, $meta->cover);
 			$stmt->bindValue(2, $bookId);
+			$stmt->execute();
+		}
+
+		if ($meta->series) {
+			$vals = array_fill(0, count($meta->series), sprintf('(?,?,?)'));
+			$query = sprintf('insert or ignore into series (identifier,series,file_as) values %s', implode(',', $vals));
+			$stmt = $db->prepare($query);
+			for ($i = 0; $i < count($meta->series); $i+=2) {
+				$stmt->bindValue($i+1, $meta->series[$i]->identifier);
+				$stmt->bindValue($i+2, $meta->series[$i]->name);
+				$stmt->bindValue($i+3, $meta->series[$i]->fileAs);
+			}
+			$stmt->execute();
+
+			$vals = array_fill(0, count($meta->series), sprintf('((select id from series where identifier=?),%d,?)',$bookId));
+			$query = sprintf('insert into series_book (series_id,book_id,position) values %s', implode(',', $vals));
+			$stmt = $db->prepare($query);
+			for ($i = 0; $i < count($meta->series); $i++) {
+				$stmt->bindValue($i+1, $meta->series[$i]->identifier);
+				$stmt->bindValue($i+2, $meta->series[$i]->pos);
+			}
 			$stmt->execute();
 		}
 

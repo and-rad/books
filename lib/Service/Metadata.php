@@ -152,7 +152,7 @@ class Metadata {
 				}
 			} else if ($m['property'] == 'group-position') {
 				$id = str_replace('#', '', $m['refines']);
-				$series[$id]->pos = (int) $m;
+				$series[$id]->pos = (float) $m;
 			}
 		}
 		$meta->series = array_values($series);
