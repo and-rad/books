@@ -50,7 +50,6 @@ OCA.Books.UI = (function() {
 				fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
 				fields[1].querySelector(".title-1").textContent = book.titles[0];
 				fields[2].querySelector(".author-1").textContent = book.authors[0].name;
-				fields[3].textContent = "TODO";
 				fields[4].textContent = t("books", book.languages[0]);
 
 				if (book.hasCover) {
@@ -63,6 +62,10 @@ OCA.Books.UI = (function() {
 				if (book.series) {
 					let series = book.series[0];
 					fields[1].querySelector(".title-2").textContent = `${series.name} ${series.pos}`;
+				}
+
+				if (book.genres) {
+					fields[3].textContent = book.genres[0];
 				}
 
 				frag.appendChild(item);

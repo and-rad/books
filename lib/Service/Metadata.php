@@ -20,6 +20,7 @@ class Metadata {
 	public $titles = [];
 	public $languages = [];
 	public $authors = [];
+	public $genres = [];
 	public $series = [];
 
 	public function __construct() {}
@@ -140,6 +141,11 @@ class Metadata {
 			}
 		}
 
+		// optional: genre
+		$meta->genres = $dc->subject;
+		foreach ($meta->genres as $g) {
+			error_log($g);
+		}
 
 		// optional: series
 		$series = [];

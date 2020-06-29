@@ -113,6 +113,11 @@ class LibraryService {
 			$metadata[$set['book_id']]->authors[] = (object) $a;
 		}
 
+		$res = $db->query('select genre_book.book_id,genre.genre from genre_book left join genre on genre.id=genre_book.genre_id order by genre_book.id asc');
+		while ($set = $res->fetchArray()) {
+			$metadata[$set['book_id']]->genres[] = $set['genre'];
+		}
+
 		$res = $db->query('select series_book.book_id,series_book.position,series.series,series.file_as from series_book left join series on series.id=series_book.series_id');
 		while ($set = $res->fetchArray()) {
 			$s = ['name' => $set['series'], 'fileAs' => $set['file_as'], 'pos' => $set['position']];
@@ -167,8 +172,19 @@ class LibraryService {
 		&& $db->exec("create table if not exists author_book(
 			id integer primary key autoincrement,
 			author_id integer not null,
-			book_id integeer not null,
+			book_id integer not null,
 			foreign key(author_id) references author(id) on delete cascade,
+			foreign key(book_id) references book(id) on delete cascade)"
+		)
+		&& $db->exec("create table if not exists genre(
+			id integer primary key autoincrement,
+			genre text not null unique)"
+		)
+		&& $db->exec("create table if not exists genre_book(
+			id integer primary key autoincrement,
+			genre_id integer not null,
+			book_id integer not null,
+			foreign key(genre_id) references genre(id) on delete cascade,
 			foreign key(book_id) references book(id) on delete cascade)"
 		)
 		&& $db->exec("create table if not exists series(
@@ -200,7 +216,9 @@ class LibraryService {
 
 		$ok = $db->exec("delete from book")
 		&& $db->exec("delete from language")
-		&& $db->exec("delete from author");
+		&& $db->exec("delete from author")
+		&& $db->exec("delete from genre")
+		&& $db->exec("delete from series");
 
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
@@ -312,23 +330,25 @@ class LibraryService {
 		}
 		$stmt->execute();
 
-		$vals = array_fill(0, count($meta->authors), sprintf('(?,?,?)'));
-		$query = sprintf('insert or ignore into author (author,file_as,color) values %s', implode(',', $vals));
-		$stmt = $db->prepare($query);
-		for ($i = 0; $i < count($meta->authors); $i+=2) {
-			$stmt->bindValue($i+1, $meta->authors[$i]->name);
-			$stmt->bindValue($i+2, $meta->authors[$i]->fileAs);
-			$stmt->bindValue($i+3, $meta->authors[$i]->color);
-		}
-		$stmt->execute();
+		if ($meta->authors) {
+			$vals = array_fill(0, count($meta->authors), sprintf('(?,?,?)'));
+			$query = sprintf('insert or ignore into author (author,file_as,color) values %s', implode(',', $vals));
+			$stmt = $db->prepare($query);
+			for ($i = 0; $i < count($meta->authors); $i++) {
+				$stmt->bindValue($i*3+1, $meta->authors[$i]->name);
+				$stmt->bindValue($i*3+2, $meta->authors[$i]->fileAs);
+				$stmt->bindValue($i*3+3, $meta->authors[$i]->color);
+			}
+			$stmt->execute();
 
-		$vals = array_fill(0, count($meta->authors), sprintf('((select id from author where author=?),%d)',$bookId));
-		$query = sprintf('insert into author_book (author_id,book_id) values %s', implode(',', $vals));
-		$stmt = $db->prepare($query);
-		for ($i = 0; $i < count($meta->authors); $i++) {
-			$stmt->bindValue($i+1, $meta->authors[$i]->name);
+			$vals = array_fill(0, count($meta->authors), sprintf('((select id from author where author=?),%d)',$bookId));
+			$query = sprintf('insert into author_book (author_id,book_id) values %s', implode(',', $vals));
+			$stmt = $db->prepare($query);
+			for ($i = 0; $i < count($meta->authors); $i++) {
+				$stmt->bindValue($i+1, $meta->authors[$i]->name);
+			}
+			$stmt->execute();
 		}
-		$stmt->execute();
 
 		if ($meta->cover) {
 			$stmt = $db->prepare("insert into cover(cover,book_id) values (?,?)");
@@ -337,14 +357,32 @@ class LibraryService {
 			$stmt->execute();
 		}
 
+		if ($meta->genres) {
+			$vals = array_fill(0, count($meta->genres), sprintf('(?)'));
+			$query = sprintf('insert or ignore into genre (genre) values %s', implode(',', $vals));
+			$stmt = $db->prepare($query);
+			for ($i = 0; $i < count($meta->genres); $i++) {
+				$stmt->bindValue($i+1, $meta->genres[$i]);
+			}
+			$stmt->execute();
+
+			$vals = array_fill(0, count($meta->genres), sprintf('((select id from genre where genre=?),%d)',$bookId));
+			$query = sprintf('insert into genre_book (genre_id,book_id) values %s', implode(',', $vals));
+			$stmt = $db->prepare($query);
+			for ($i = 0; $i < count($meta->genres); $i++) {
+				$stmt->bindValue($i+1, $meta->genres[$i]);
+			}
+			$stmt->execute();
+		}
+
 		if ($meta->series) {
 			$vals = array_fill(0, count($meta->series), sprintf('(?,?,?)'));
 			$query = sprintf('insert or ignore into series (identifier,series,file_as) values %s', implode(',', $vals));
 			$stmt = $db->prepare($query);
-			for ($i = 0; $i < count($meta->series); $i+=2) {
-				$stmt->bindValue($i+1, $meta->series[$i]->identifier);
-				$stmt->bindValue($i+2, $meta->series[$i]->name);
-				$stmt->bindValue($i+3, $meta->series[$i]->fileAs);
+			for ($i = 0; $i < count($meta->series); $i++) {
+				$stmt->bindValue($i*3+1, $meta->series[$i]->identifier);
+				$stmt->bindValue($i*3+2, $meta->series[$i]->name);
+				$stmt->bindValue($i*3+3, $meta->series[$i]->fileAs);
 			}
 			$stmt->execute();
 
@@ -352,8 +390,8 @@ class LibraryService {
 			$query = sprintf('insert into series_book (series_id,book_id,position) values %s', implode(',', $vals));
 			$stmt = $db->prepare($query);
 			for ($i = 0; $i < count($meta->series); $i++) {
-				$stmt->bindValue($i+1, $meta->series[$i]->identifier);
-				$stmt->bindValue($i+2, $meta->series[$i]->pos);
+				$stmt->bindValue($i*2+1, $meta->series[$i]->identifier);
+				$stmt->bindValue($i*2+2, $meta->series[$i]->pos);
 			}
 			$stmt->execute();
 		}
