@@ -47,9 +47,7 @@ OCA.Books.UI = (function() {
 				item.className = "app-shelf-item";
 
 				let fields = item.querySelectorAll(".field");
-				fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
 				fields[1].querySelector(".title-1").textContent = book.titles[0];
-				fields[2].querySelector(".author-1").textContent = book.authors[0].name;
 				fields[4].textContent = t("books", book.languages[0]);
 
 				if (book.hasCover) {
@@ -57,6 +55,11 @@ OCA.Books.UI = (function() {
 					fields[0].firstElementChild.style.backgroundImage = url;
 				} else {
 					fields[0].querySelector(".placeholder").textContent = book.titles[0].substring(0,2);
+				}
+
+				if (book.authors) {
+					fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
+					fields[2].querySelector(".author-1").textContent = book.authors[0].name;
 				}
 
 				if (book.series) {
