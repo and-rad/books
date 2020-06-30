@@ -123,6 +123,29 @@
 	font-size: 2em;
 }
 
+.app-shelf-item .cover div .icon {
+	width: 35%;
+	height: auto;
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	box-shadow: 0 0 4px #222;
+	fill: #fff;
+	display: none;
+}
+
+.app-shelf-item .cover div .icon.done {
+	background: rgb(53, 192, 53);
+}
+
+.app-shelf-item .cover div .icon.pending {
+	background: #ff9300;
+}
+
+.app-shelf-item .cover div .icon.canceled {
+	background: rgb(192, 53, 53);
+}
+
 .app-shelf-item .title > div,
 .app-shelf-item .author > div {
 	display: flex;
