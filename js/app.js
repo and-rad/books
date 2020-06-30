@@ -35,6 +35,16 @@ OCA.Books.Core = (function() {
 })();
 
 OCA.Books.UI = (function() {
+	var _refreshMore = function(objs, field) {
+		let more = field.querySelector(".more");
+		if (objs.length > 1) {
+			more.style.display = "inline-block";
+			more.textContent = `+${objs.length-1}`;
+		} else {
+			more.style.display = "none";
+		}
+	};
+
 	return {
 		buildShelf: function(books) {
 			let frag = document.createDocumentFragment();
@@ -49,6 +59,7 @@ OCA.Books.UI = (function() {
 				let fields = item.querySelectorAll(".field");
 				fields[1].querySelector(".title-1").textContent = book.titles[0];
 				fields[4].querySelector(".lang-1").textContent = t("books", book.languages[0]);
+				_refreshMore(book.languages, fields[4]);
 
 				if (book.hasCover) {
 					let url = `url("${OC.generateUrl("apps/books/api/0.1/cover")}/${book.id}")`;
@@ -60,6 +71,7 @@ OCA.Books.UI = (function() {
 				if (book.authors) {
 					fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
 					fields[2].querySelector(".author-1").textContent = book.authors[0].name;
+					_refreshMore(book.authors,fields[2]);
 				}
 
 				if (book.series) {
@@ -69,6 +81,7 @@ OCA.Books.UI = (function() {
 
 				if (book.genres) {
 					fields[3].querySelector(".genre-1").textContent = book.genres[0];
+					_refreshMore(book.genres,fields[3]);
 				}
 
 				frag.appendChild(item);
