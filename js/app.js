@@ -48,7 +48,7 @@ OCA.Books.UI = (function() {
 
 				let fields = item.querySelectorAll(".field");
 				fields[1].querySelector(".title-1").textContent = book.titles[0];
-				fields[4].textContent = t("books", book.languages[0]);
+				fields[4].querySelector(".lang-1").textContent = t("books", book.languages[0]);
 
 				if (book.hasCover) {
 					let url = `url("${OC.generateUrl("apps/books/api/0.1/cover")}/${book.id}")`;
@@ -68,7 +68,7 @@ OCA.Books.UI = (function() {
 				}
 
 				if (book.genres) {
-					fields[3].textContent = book.genres[0];
+					fields[3].querySelector(".genre-1").textContent = book.genres[0];
 				}
 
 				frag.appendChild(item);
