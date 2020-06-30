@@ -73,9 +73,20 @@ class Metadata {
 		// optional: authors
 		if ($dc->creator) {
 			for ($i = 0; $i < count($dc->creator); $i++) {
-				$meta->authors[$i]->name = $dc->creator[$i];
-				$meta->authors[$i]->fileAs = $dc->creator[$i];
+				$meta->authors[$i]->name = (string)$dc->creator[$i];
 				$meta->authors[$i]->color = self::COLORS[rand(0,count(self::COLORS)-1)];
+
+				if ($id = (string)$dc->creator[$i]->attributes()['id']) {
+					foreach($metadata->meta as $m) {
+						if ($m['refines'] == '#'.$id && $m['property'] == 'file-as') {
+							$meta->authors[$i]->fileAs = (string)$m;
+						}
+					}
+				}
+
+				if (!$meta->authors[$i]->fileAs) {
+					$meta->authors[$i]->fileAs = $meta->authors[$i]->name;
+				}
 			}
 		}
 
@@ -143,9 +154,6 @@ class Metadata {
 
 		// optional: genre
 		$meta->genres = $dc->subject;
-		foreach ($meta->genres as $g) {
-			error_log($g);
-		}
 
 		// optional: series
 		$series = [];
