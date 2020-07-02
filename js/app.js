@@ -20,6 +20,13 @@ OCA.Books.Core = (function() {
 					console.log(obj);
 				});
 			});
+
+			let cols = document.querySelectorAll("th.sort");
+			for (let i = 0, col; col = cols[i]; i++) {
+				col.addEventListener("click", function(evt) {
+					console.log(evt.target.dataset.sort);
+				});
+			}
 		},
 
 		initLibrary: function() {

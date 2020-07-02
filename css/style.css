@@ -63,6 +63,31 @@
 	text-align: left;
 }
 
+th.sort {
+	cursor: pointer;
+}
+
+th.sort * {
+	pointer-events: none;
+}
+
+th .sort-indicator {
+	width: 10px;
+	height: 8px;
+	margin-left: 5px;
+	display: inline-block;
+	vertical-align: text-bottom;
+	opacity: 0.3;
+}
+
+th .sort-indicator.hidden {
+	visibility: hidden;
+}
+
+th:hover .sort-indicator.hidden {
+	visibility: visible;
+}
+
 #app-shelf {
 	width: 100%;
 }
