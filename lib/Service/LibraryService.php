@@ -89,12 +89,13 @@ class LibraryService {
 	private function readAll(array &$metadata) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 
-		$res = $db->query('select book_id,title from title order by id asc');
+		$res = $db->query('select book_id,title,file_as from title order by id asc');
 		while ($set = $res->fetchArray()) {
 			$id = $set['book_id'];
+			$t = ['name' => $set['title'], 'fileAs' => $set['file_as']];
 			$metadata[$id]->id = $id;
-			$metadata[$id]->titles[] = $set['title'];
 			$metadata[$id]->hasCover = false;
+			$metadata[$id]->titles[] = (object) $t;
 		}
 
 		$res = $db->query('select distinct book_id from cover');
@@ -142,8 +143,9 @@ class LibraryService {
 		)
 		&& $db->exec("create table if not exists title(
 			id integer primary key autoincrement,
-			title text not null,
 			book_id integer not null,
+			title text not null,
+			file_as text not null,
 			foreign key(book_id) references book(id) on delete cascade)"
 		)
 		&& $db->exec("create table if not exists cover(
@@ -306,11 +308,12 @@ class LibraryService {
 
 		$bookId = $db->lastInsertRowID();
 
-		$vals = array_fill(0, count($meta->titles), sprintf('(?,%d)',$bookId));
-		$query = sprintf('insert into title (title,book_id) values %s', implode(',', $vals));
+		$vals = array_fill(0, count($meta->titles), sprintf('(?,?,%d)',$bookId));
+		$query = sprintf('insert into title (title,file_as,book_id) values %s', implode(',', $vals));
 		$stmt = $db->prepare($query);
 		for ($i = 0; $i < count($meta->titles); $i++) {
-			$stmt->bindValue($i+1, $meta->titles[$i]);
+			$stmt->bindValue($i*2+1, $meta->titles[$i]->name);
+			$stmt->bindValue($i*2+2, $meta->titles[$i]->fileAs);
 		}
 		$stmt->execute();
 

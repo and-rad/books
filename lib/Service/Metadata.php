@@ -67,13 +67,27 @@ class Metadata {
 
 		$meta = new Metadata();
 		$meta->identifier = $dc->identifier[0];
-		$meta->titles = $dc->title;
 		$meta->languages = $dc->language;
+
+		// mandatory: titles
+		for ($i = 0; $i < count($dc->title); $i++) {
+			$meta->titles[$i]->name = (string)$dc->title[$i];
+			$meta->titles[$i]->fileAs = $meta->titles[$i]->name;
+
+			if ($id = (string)$dc->title[$i]->attributes()['id']) {
+				foreach($metadata->meta as $m) {
+					if ($m['refines'] == '#'.$id && $m['property'] == 'file-as') {
+						$meta->titles[$i]->fileAs = (string)$m;
+					}
+				}
+			}
+		}
 
 		// optional: authors
 		if ($dc->creator) {
 			for ($i = 0; $i < count($dc->creator); $i++) {
 				$meta->authors[$i]->name = (string)$dc->creator[$i];
+				$meta->authors[$i]->fileAs = $meta->authors[$i]->name;
 				$meta->authors[$i]->color = self::COLORS[rand(0,count(self::COLORS)-1)];
 
 				if ($id = (string)$dc->creator[$i]->attributes()['id']) {
@@ -82,10 +96,6 @@ class Metadata {
 							$meta->authors[$i]->fileAs = (string)$m;
 						}
 					}
-				}
-
-				if (!$meta->authors[$i]->fileAs) {
-					$meta->authors[$i]->fileAs = $meta->authors[$i]->name;
 				}
 			}
 		}
