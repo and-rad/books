@@ -84,17 +84,17 @@ OCA.Books.UI = (function() {
 		let locale = document.documentElement.dataset.locale || "en";
 		let body = document.querySelector("#app-content tbody");
 		let tr = Array.from(body.querySelectorAll('tr'));
-		tr.sort(function(a,b){
-			let text1 = a.querySelector(`.${_sortBy} > div > span`).textContent;
-			let text2 = b.querySelector(`.${_sortBy} > div > span`).textContent;
-			let out = text1.localeCompare(text2, locale, {numeric: true});
-			if (!_sortAsc) out *= -1;
-			return out;
-		});
-
+		tr.sort(function(a, b){ return _sort(a, b, locale); });
 		tr.forEach(t => {body.appendChild(t)});
-
 	};
+
+	var _sort = function(tr1, tr2, loc) {
+		let text1 = tr1.querySelector(`.${_sortBy}`).dataset.fileAs;
+		let text2 = tr2.querySelector(`.${_sortBy}`).dataset.fileAs;
+		let out = text1.localeCompare(text2, loc, {numeric: true});
+		if (!_sortAsc) out *= -1;
+		return out;
+	}
 
 	return {
 		buildShelf: function(books) {
@@ -104,13 +104,9 @@ OCA.Books.UI = (function() {
 
 			for (let i = 0, book; book = books[i]; i++) {
 				let item = tpl.cloneNode(true);
+				let fields = item.querySelectorAll(".field");
 				item.dataset.id = book.id;
 				item.className = "app-shelf-item";
-
-				let fields = item.querySelectorAll(".field");
-				fields[1].querySelector(".title-1").textContent = book.titles[0].name;
-				fields[4].querySelector(".lang-1").textContent = t("books", book.languages[0]);
-				_refreshMore(book.languages, fields[4]);
 
 				if (book.hasCover) {
 					let url = `url("${OC.generateUrl("apps/books/api/0.1/cover")}/${book.id}")`;
@@ -119,21 +115,31 @@ OCA.Books.UI = (function() {
 					fields[0].querySelector(".placeholder").textContent = book.titles[0].fileAs.substring(0,2);
 				}
 
+				fields[1].querySelector(".title-1").textContent = book.titles[0].name;
+				fields[1].dataset.fileAs = book.titles[0].fileAs;
+				if (book.series) {
+					let series = book.series[0];
+					fields[1].dataset.fileAs = `${series.fileAs}${series.pos}`;
+					fields[1].querySelector(".title-2").textContent = `${series.name} ${series.pos}`;
+				}
+
 				if (book.authors) {
 					fields[0].firstElementChild.style.backgroundColor = book.authors[0].color;
+					fields[2].dataset.fileAs = book.authors[0].fileAs;
 					fields[2].querySelector(".author-1").textContent = book.authors[0].name;
 					_refreshMore(book.authors,fields[2]);
 				}
 
-				if (book.series) {
-					let series = book.series[0];
-					fields[1].querySelector(".title-2").textContent = `${series.name} ${series.pos}`;
-				}
-
 				if (book.genres) {
+					fields[3].dataset.fileAs = book.genres[0];
 					fields[3].querySelector(".genre-1").textContent = book.genres[0];
 					_refreshMore(book.genres,fields[3]);
 				}
+
+				let lang = t("books", book.languages[0]);
+				fields[4].dataset.fileAs = lang;
+				fields[4].querySelector(".lang-1").textContent = lang;
+				_refreshMore(book.languages, fields[4]);
 
 				frag.appendChild(item);
 			}
