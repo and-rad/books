@@ -24,7 +24,7 @@ OCA.Books.Core = (function() {
 			let cols = document.querySelectorAll("th.sort");
 			for (let i = 0, col; col = cols[i]; i++) {
 				col.addEventListener("click", function(evt) {
-					console.log(evt.target.dataset.sort);
+					OCA.Books.UI.sortShelf(evt.target.dataset.sort);
 				});
 			}
 		},
@@ -42,6 +42,9 @@ OCA.Books.Core = (function() {
 })();
 
 OCA.Books.UI = (function() {
+	var _sortBy = "title";
+	var _sortAsc = true;
+
 	var _refreshMore = function(objs, field) {
 		let more = field.querySelector(".more");
 		if (objs.length > 1) {
@@ -50,6 +53,47 @@ OCA.Books.UI = (function() {
 		} else {
 			more.style.display = "none";
 		}
+	};
+
+	var _sortShelf = function(cat, toggle) {
+		_sortBy = cat;
+
+		if (toggle) {
+			if (document.querySelector(`#app-content th.${_sortBy} > span:not(.hidden)`)) {
+				_sortAsc = !_sortAsc;
+			}
+		}
+
+		let heads = document.querySelectorAll("#app-content th.sort");
+		for (let i = 0, head; head = heads[i]; i++) {
+			if (head.classList.contains(_sortBy)) {
+				head.firstElementChild.classList.remove("hidden");
+			} else {
+				head.firstElementChild.classList.add("hidden");
+			}
+
+			if (_sortAsc) {
+				head.firstElementChild.classList.remove("icon-triangle-s");
+				head.firstElementChild.classList.add("icon-triangle-n");
+			} else {
+				head.firstElementChild.classList.remove("icon-triangle-n");
+				head.firstElementChild.classList.add("icon-triangle-s");
+			}
+		}
+
+		let locale = document.documentElement.dataset.locale || "en";
+		let body = document.querySelector("#app-content tbody");
+		let tr = Array.from(body.querySelectorAll('tr'));
+		tr.sort(function(a,b){
+			let text1 = a.querySelector(`.${_sortBy} > div > span`).textContent;
+			let text2 = b.querySelector(`.${_sortBy} > div > span`).textContent;
+			let out = text1.localeCompare(text2, locale, {numeric: true});
+			if (!_sortAsc) out *= -1;
+			return out;
+		});
+
+		tr.forEach(t => {body.appendChild(t)});
+
 	};
 
 	return {
@@ -97,6 +141,11 @@ OCA.Books.UI = (function() {
 			let shelf = document.querySelector("#app-shelf-body");
 			shelf.textContent = "";
 			shelf.appendChild(frag);
+			_sortShelf(_sortBy);
+		},
+
+		sortShelf: function(category) {
+			_sortShelf(category, true);
 		}
 	};
 })();
