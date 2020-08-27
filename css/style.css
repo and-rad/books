@@ -193,6 +193,11 @@ th:hover .sort-indicator.hidden {
 	flex-grow: 1;
 }
 
+.app-shelf-item .field.title,
+.app-shelf-item .field.title * {
+	cursor: pointer;
+}
+
 .app-shelf-item .field .more {
 	display: none;
 	width: 1.6em;
@@ -245,4 +250,121 @@ th:hover .sort-indicator.hidden {
 	#section-title {
 		display: none;
 	}
+}
+
+/* EPUB reader */
+
+#reader-wrapper {
+	position: absolute;
+	z-index: 1000;
+	top: 0;
+	width: 100%;
+	height: calc(100vh - 50px);
+	background-color: #ffffff;
+	display: none;
+}
+
+#reader-controls {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	bottom: 0;
+}
+
+#reader-controls > button {
+	margin: 0.5em;
+}
+
+#reader-controls > div {
+	flex-grow: 1;
+}
+
+#reader-progress {
+	position: relative;
+	background-color: #d0d0d0;
+	height: 2px;
+}
+
+#reader-progress-overlay {
+	position: absolute;
+	z-index: 10;
+	height: 100%;
+	left: 0;
+	width: 320px;
+	background-color: var(--color-primary-element);
+}
+
+#reader-progress-handle {
+	position: absolute;
+	z-index: 20;
+	min-height: 14px;
+	min-width: 14px;
+	border-radius: 7px;
+	top: -6px;
+	left: 320px;
+	margin: 0;
+	padding: 0;
+	border: 2px solid var(--color-primary-element);
+	background-color: #ffffff;
+	transition: box-shadow 0.25s;
+}
+
+#reader-progress-handle > div {
+	position: absolute;
+	width: 300%;
+	height: 300%;
+	border-radius: 15px;
+	left: -10px;
+	top: -10px;
+}
+
+#reader-progress-handle:hover {
+	box-shadow: 0 0 3px #444;
+	border: 2px solid var(--color-primary-element-light);
+}
+
+#reader-progress-handle:hover ~ #reader-progress-overlay {
+	background-color: var(--color-primary-element-light);
+}
+
+#reader {
+	height: 100%;
+}
+
+#app.reader {
+	overflow: hidden;
+	height: calc(100vh - 50px);
+}
+
+#app.reader #app-navigation {
+	transform: translateX(0px);
+}
+
+#app.reader #app-navigation-toggle {
+	position: fixed;
+	display: inline-block !important;
+	left: 0;
+	width: 44px;
+	height: 44px;
+	z-index: 1050;
+	cursor: pointer;
+	opacity: 0.6;
+}
+
+#app.reader #app-navigation-toggle:hover,
+#app.reader #app-navigation-toggle:focus {
+	opacity: 1;
+}
+
+#app.reader #app-content #controls {
+	padding-left: 44px;
+}
+
+#app.reader #app-content {
+	margin-left: 0;
+}
+
+#app.reader #reader-wrapper {
+	display: block;
 }

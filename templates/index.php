@@ -1,5 +1,7 @@
 <?php
 script('books', 'app');
+script('books', 'jszip.min');
+script('books', 'epub.min');
 style('books', 'style');
 ?>
 
@@ -15,6 +17,9 @@ style('books', 'style');
 		</div>
 		<div id='app-content-wrapper'>
 			<?php print_unescaped($this->inc('content/index')); ?>
+		</div>
+		<div id='reader-wrapper'>
+			<?php print_unescaped($this->inc('content/reader')); ?>
 		</div>
 	</div>
 </div>

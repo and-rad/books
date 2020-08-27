@@ -94,7 +94,23 @@ OCA.Books.UI = (function() {
 		let out = text1.localeCompare(text2, loc, {numeric: true});
 		if (!_sortAsc) out *= -1;
 		return out;
-	}
+	};
+
+	var _onItemClicked = function(evt) {
+		let id = evt.target.closest("tr").dataset.id;
+		// todo: open epub file
+		var book = ePub("/remote.php/webdav/Books/epub30-spec.epub", {replacements: "blobUrl", openAs: "epub"});
+		var rendition = book.renderTo("reader", {width: "100%", height: "100%"});
+		var displayed = rendition.display();
+
+		document.querySelector("#app").classList.add("reader");
+		document.querySelector("#reader-prev").addEventListener("click", function(){
+			rendition.prev();
+		});
+		document.querySelector("#reader-next").addEventListener("click", function(){
+			rendition.next();
+		});
+	};
 
 	return {
 		buildShelf: function(books) {
@@ -117,6 +133,7 @@ OCA.Books.UI = (function() {
 
 				fields[1].querySelector(".title-1").textContent = book.titles[0].name;
 				fields[1].dataset.fileAs = book.titles[0].fileAs;
+				fields[1].addEventListener("click", _onItemClicked);
 				if (book.series) {
 					let series = book.series[0];
 					fields[1].dataset.fileAs = `${series.fileAs}${series.pos}`;
