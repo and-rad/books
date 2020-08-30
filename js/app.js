@@ -3,6 +3,39 @@ if (!OCA.Books) {
 }
 
 OCA.Books.Core = (function() {
+	var _rendition = undefined;
+	var _updateHandle = undefined;
+
+	var _close = function() {
+		if (_rendition) {
+			_rendition.destroy();
+		}
+		OCA.Books.UI.closeReader();
+		OCA.Books.UI.refreshProgress(0);
+	};
+
+	var _nextPage = function() {
+		if (_rendition) {
+			_rendition.next().then(function(){ _updateProgress(); });
+		}
+	};
+
+	var _previousPage = function() {
+		if (_rendition) {
+			_rendition.prev().then(function(){ _updateProgress(); });
+		}
+	};
+
+	var _updateProgress = function() {
+		clearTimeout(_updateHandle);
+
+		_updateHandle = setTimeout(function() {
+			let cfi = _rendition.location.start.cfi;
+			let progress = _rendition.book.locations.percentageFromCfi(cfi);
+			OCA.Books.UI.refreshProgress(progress);
+		}, 500);
+	};
+
 	return {
 		init: function() {
 			this.initLibrary();
@@ -21,6 +54,18 @@ OCA.Books.Core = (function() {
 				});
 			});
 
+			document.querySelector("#reader-prev").addEventListener("click", function(){
+				_previousPage();
+			});
+
+			document.querySelector("#reader-next").addEventListener("click", function(){
+				_nextPage();
+			});
+
+			document.querySelector("#reader-close").addEventListener("click", function(){
+				_close();
+			});
+
 			let cols = document.querySelectorAll("th.sort");
 			for (let i = 0, col; col = cols[i]; i++) {
 				col.addEventListener("click", function(evt) {
@@ -36,6 +81,21 @@ OCA.Books.Core = (function() {
 			OCA.Books.Backend.getBooks(function(obj) {
 				if (obj.success) {
 					OCA.Books.UI.buildShelf(obj.data);
+				}
+			});
+		},
+
+		open: function(id, elem) {
+			_close();
+			OCA.Books.Backend.getLocation(id, function(obj) {
+				if (obj.success) {
+					_book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
+					_book.ready.then(function(){
+						_book.locations.generate(1000);
+						_rendition = _book.renderTo(elem, { width: "100%", height: "100%" });
+						_rendition.display();
+						OCA.Books.UI.openReader();
+					});
 				}
 			});
 		}
@@ -99,18 +159,7 @@ OCA.Books.UI = (function() {
 
 	var _onItemClicked = function(evt) {
 		let id = evt.target.closest("tr").dataset.id;
-		// todo: open epub file
-		var book = ePub("/remote.php/webdav/Books/epub30-spec.epub", {replacements: "blobUrl", openAs: "epub"});
-		var rendition = book.renderTo("reader", {width: "100%", height: "100%"});
-		var displayed = rendition.display();
-
-		document.querySelector("#app").classList.add("reader");
-		document.querySelector("#reader-prev").addEventListener("click", function(){
-			rendition.prev();
-		});
-		document.querySelector("#reader-next").addEventListener("click", function(){
-			rendition.next();
-		});
+		OCA.Books.Core.open(id, "reader");
 	};
 
 	return {
@@ -170,6 +219,22 @@ OCA.Books.UI = (function() {
 
 		sortShelf: function(category) {
 			_sortShelf(category, true);
+		},
+
+		openReader: function() {
+			document.querySelector("#app").classList.add("reader");
+		},
+
+		closeReader: function() {
+			document.querySelector("#app").classList.remove("reader");
+		},
+
+		refreshProgress: function(val) {
+			val *= 100;
+			let handle = document.querySelector("#reader-progress-handle");
+			let overlay = document.querySelector("#reader-progress-overlay");
+			handle.style.left = `calc(${val}% - 6px)`;
+			overlay.style.width = `${val}%`;
 		}
 	};
 })();
@@ -206,6 +271,12 @@ OCA.Books.Backend = (function() {
 
 		getBooks: function(callback) {
 			this.get(OC.generateUrl("apps/books/api/0.1/books"), function() {
+				callback(JSON.parse(this.response));
+			});
+		},
+
+		getLocation: function(id, callback) {
+			this.get(OC.generateUrl("apps/books/api/0.1/loc/"+id), function() {
 				callback(JSON.parse(this.response));
 			});
 		},

@@ -264,24 +264,11 @@ th:hover .sort-indicator.hidden {
 	display: none;
 }
 
-#reader-controls {
+#reader-progress-bar {
 	position: absolute;
-	display: flex;
-	align-items: center;
-	width: 100%;
-	bottom: 0;
-}
-
-#reader-controls > button {
-	margin: 0.5em;
-}
-
-#reader-controls > div {
-	flex-grow: 1;
-}
-
-#reader-progress {
-	position: relative;
+	left: 44px;
+	right: 44px;
+	bottom: 14px;
 	background-color: #d0d0d0;
 	height: 2px;
 }
@@ -291,8 +278,9 @@ th:hover .sort-indicator.hidden {
 	z-index: 10;
 	height: 100%;
 	left: 0;
-	width: 320px;
+	width: 0;
 	background-color: var(--color-primary-element);
+	transition: width 0.5s;
 }
 
 #reader-progress-handle {
@@ -302,12 +290,12 @@ th:hover .sort-indicator.hidden {
 	min-width: 14px;
 	border-radius: 7px;
 	top: -6px;
-	left: 320px;
+	left: -6px;
 	margin: 0;
 	padding: 0;
 	border: 2px solid var(--color-primary-element);
 	background-color: #ffffff;
-	transition: box-shadow 0.25s;
+	transition: box-shadow 0.25s, left 0.5s;
 }
 
 #reader-progress-handle > div {
@@ -328,8 +316,63 @@ th:hover .sort-indicator.hidden {
 	background-color: var(--color-primary-element-light);
 }
 
+#reader-wrapper > button {
+	position: absolute;
+	border-radius: 0;
+	border: none;
+	background: none;
+	margin: 0;
+	padding: 0;
+	transition: opacity 0.5s;
+}
+
+#reader-wrapper > button svg {
+	fill: var(--color-text-lighter);
+	width: 1.5em;
+	height: 1.5em;
+}
+
+#reader-close {
+	top: 0;
+	right: 0;
+	height: 44px;
+	width: 44px;
+	opacity: 0.7;
+}
+
+#reader-close:hover {
+	opacity: 1;
+}
+
+#reader-prev,
+#reader-next {
+	top: 64px;
+	bottom: 64px;
+	width: 44px;
+	opacity: 0;
+}
+
+#reader-prev:hover,
+#reader-next:hover {
+	opacity: 1;
+}
+
+#reader-prev {
+	left: 0;
+}
+
+#reader-next {
+	right: 0;
+}
+
+#reader-prev svg,
+#reader-next svg {
+	height: 2em !important;
+	width: 2em !important;
+}
+
 #reader {
-	height: 100%;
+	height: calc(100% - 7px);
 }
 
 #app.reader {
