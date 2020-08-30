@@ -8,8 +8,9 @@ return [
 	'routes' => [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 		['name' => 'page#config', 'url' => '/api/0.1/config', 'verb' => 'GET'],
-		['name' => 'book#cover', 'url' => '/api/0.1/cover/{id}', 'verb' => 'GET'],
 		['name' => 'book#index', 'url' => '/api/0.1/books', 'verb' => 'GET'],
+		['name' => 'book#cover', 'url' => '/api/0.1/cover/{id}', 'verb' => 'GET'],
+		['name' => 'book#location', 'url' => '/api/0.1/loc/{id}', 'verb' => 'GET'],
 		['name' => 'library#scan', 'url' => '/api/0.1/scan', 'verb' => 'POST'],
 		['name' => 'library#reset', 'url' => '/api/0.1/reset', 'verb' => 'POST'],
 	]

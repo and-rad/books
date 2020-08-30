@@ -49,6 +49,22 @@ class LibraryService {
 		return $data;
 	}
 
+	public function location($id) : string {
+		$data = '';
+
+		if ($this->node->nodeExists($this::DBNAME)) {
+			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+			$stmt = $db->prepare('select filename from book where id=?');
+			$stmt->bindValue(1, $id);
+			if ($set = $stmt->execute()->fetchArray()) {
+				$data = $set['filename'];
+			}
+			$db->close();
+		}
+
+		return $data;
+	}
+
 	public function scan() : bool {
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
