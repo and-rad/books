@@ -46,6 +46,13 @@ class LibraryController extends Controller {
 			return new JSONResponse(['success' => false, 'message' => "read-only directory"]);
 		}
 
+		if (substr($dir, 0, 1) != '/') {
+			$dir = '/'.$dir;
+		}
+		if (substr($dir, -1, 1) != '/') {
+			$dir = $dir.'/';
+		}
+
 		$this->config->setUserValue($this->userId, $this->appName, 'library', $dir);
 
 		if (!(new LibraryService($node, new EventLog(), $this->config))->scan()) {
