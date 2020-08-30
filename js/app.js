@@ -33,7 +33,7 @@ OCA.Books.Core = (function() {
 			let cfi = _rendition.location.start.cfi;
 			let progress = _rendition.book.locations.percentageFromCfi(cfi);
 			OCA.Books.UI.refreshProgress(progress);
-		}, 500);
+		}, 250);
 	};
 
 	return {

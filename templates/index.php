@@ -25,6 +25,6 @@ style('books', 'style');
 </div>
 
 <?php
-print_unescaped($this->inc('template/shelf'));
+print_unescaped($this->inc('template/index'));
 ?>
 

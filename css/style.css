@@ -6,40 +6,41 @@
 	color: #222;
 }
 
-#select-category {
-	padding: 0.5em;
+#app-navigation > div:first-child {
+	overflow-y: auto;
 }
 
-#select-category > select {
-	width: 100%;
+#list-category,
+.app-navigation-new {
+	border-bottom: 1px solid var(--color-border);
 }
 
 #list-category > li {
-	padding: 0.5em 1em;
-	cursor: pointer;
-	flex-wrap: nowrap !important;
 	opacity: 0.57;
-}
-
-#list-category > li.app-navigation-new {
-	opacity: inherit;
-	border-top: 1px solid var(--color-border);
-}
-
-#list-category > li > .name {
-	flex-grow: 1;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
-#list-category > li > .count {
-	min-width: 2em;
-	text-align: right;
+#list-category > li > a {
+	display: block;
+	padding: 0.8em 1em 0.8em 2.4em;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+}
+
+#list-category > li > a > svg {
+	width: 1.2em;
+	height: 1.2em;
+	position: absolute;
+	top: 50%;
+	left: 0.8em;
+	transform: translateY(-50%);
 }
 
 #list-category > li:hover,
 #list-category > .active {
+	box-shadow: inset 4px 0 var(--color-primary-element);
 	opacity: 1;
 }
 
@@ -280,7 +281,7 @@ th:hover .sort-indicator.hidden {
 	left: 0;
 	width: 0;
 	background-color: var(--color-primary-element);
-	transition: width 0.5s;
+	transition: width 0.25s;
 }
 
 #reader-progress-handle {
@@ -295,7 +296,7 @@ th:hover .sort-indicator.hidden {
 	padding: 0;
 	border: 2px solid var(--color-primary-element);
 	background-color: #ffffff;
-	transition: box-shadow 0.25s, left 0.5s;
+	transition: box-shadow 0.25s, left 0.25s;
 }
 
 #reader-progress-handle > div {

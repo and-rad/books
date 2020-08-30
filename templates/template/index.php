@@ -30,3 +30,7 @@
 		</div>
 	</td>
 </template>
+
+<template id='template-list-item'>
+	<a href='#' class='name'></a><span class='count'></span>
+</template>
