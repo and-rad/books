@@ -34,8 +34,9 @@ OCA.Books.Core = (function() {
 				document.querySelector("#path-settings").value = obj.library;
 			});
 			OCA.Books.Backend.getBooks(function(obj) {
-				console.log(obj);
-				OCA.Books.UI.buildShelf(obj.data);
+				if (obj.success) {
+					OCA.Books.UI.buildShelf(obj.data);
+				}
 			});
 		}
 	};
