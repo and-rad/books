@@ -3,8 +3,17 @@ if (!OCA.Books) {
 }
 
 OCA.Books.Core = (function() {
+	var _books = [];
 	var _rendition = undefined;
 	var _updateHandle = undefined;
+
+	var _progress = function(id) {
+		let book = _books.find(elem => elem.id == id);
+		if (book && book.progress) {
+			return book.progress;
+		}
+		return undefined;
+	}
 
 	var _close = function() {
 		if (_rendition) {
@@ -80,7 +89,8 @@ OCA.Books.Core = (function() {
 			});
 			OCA.Books.Backend.getBooks(function(obj) {
 				if (obj.success) {
-					OCA.Books.UI.buildShelf(obj.data);
+					_books = obj.data;
+					OCA.Books.UI.buildShelf(_books);
 				}
 			});
 		},
@@ -89,12 +99,14 @@ OCA.Books.Core = (function() {
 			_close();
 			OCA.Books.Backend.getLocation(id, function(obj) {
 				if (obj.success) {
-					_book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
-					_book.ready.then(function(){
-						_book.locations.generate(1000);
-						_rendition = _book.renderTo(elem, { width: "100%", height: "100%" });
-						_rendition.display();
-						OCA.Books.UI.openReader();
+					OCA.Books.UI.openReader();
+					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
+					book.ready.then(function(){
+						book.locations.generate(1000).then(function(){
+							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
+							_rendition.id = id;
+							_rendition.display(_progress(id)).then(_updateProgress);
+						});
 					});
 				}
 			});
