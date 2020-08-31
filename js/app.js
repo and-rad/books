@@ -174,6 +174,9 @@ OCA.Books.UI = (function() {
 				item.dataset.id = book.id;
 				item.className = "app-shelf-item";
 
+				if (book.status != 0) {
+					fields[0].querySelector(`svg.status-${book.status}`).style.display = "block";
+				}
 				if (book.hasCover) {
 					let url = `url("${OC.generateUrl("apps/books/api/0.1/cover")}/${book.id}")`;
 					fields[0].firstElementChild.style.backgroundImage = url;

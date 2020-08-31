@@ -170,15 +170,15 @@ th:hover .sort-indicator.hidden {
 	display: none;
 }
 
-.app-shelf-item .cover div .icon.done {
+.app-shelf-item .cover svg.status-1 {
 	background: rgb(53, 192, 53);
 }
 
-.app-shelf-item .cover div .icon.pending {
+.app-shelf-item .cover svg.status-2 {
 	background: #ff9300;
 }
 
-.app-shelf-item .cover div .icon.canceled {
+.app-shelf-item .cover svg.status-3 {
 	background: rgb(192, 53, 53);
 }
 

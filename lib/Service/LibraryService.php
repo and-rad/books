@@ -112,6 +112,8 @@ class LibraryService {
 			$metadata[$id]->id = $id;
 			$metadata[$id]->hasCover = false;
 			$metadata[$id]->titles[] = (object) $t;
+			$metadata[$id]->progress = '';
+			$metadata[$id]->status = 0;
 		}
 
 		$res = $db->query('select distinct book_id from cover');
@@ -139,6 +141,13 @@ class LibraryService {
 		while ($set = $res->fetchArray()) {
 			$s = ['name' => $set['series'], 'fileAs' => $set['file_as'], 'pos' => $set['position']];
 			$metadata[$set['book_id']]->series[] = (object) $s;
+		}
+
+		$res = $db->query('select book.id,progress.progress,progress.status from progress left join book on book.identifier=progress.identifier');
+		while ($set = $res->fetchArray()) {
+			$id = $set['id'];
+			$metadata[$id]->progress = $set['progress'];
+			$metadata[$id]->status = $set['status'];
 		}
 
 		$db->close();
@@ -218,6 +227,11 @@ class LibraryService {
 			position real default 1,
 			foreign key(series_id) references series(id) on delete cascade,
 			foreign key(book_id) references book(id) on delete cascade)"
+		)
+		&& $db->exec("create table if not exists progress(
+			identifier integer not null,
+			progress text default '',
+			status integer default 0)"
 		);
 
 		$db->exec($ok ? "commit" : "rollback");
