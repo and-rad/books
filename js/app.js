@@ -128,6 +128,7 @@ OCA.Books.Core = (function() {
 						book.locations.generate(1000).then(function(){
 							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
 							_rendition.id = id;
+							_rendition.themes.default({p: {"max-width": "32em"}});
 							_rendition.display(_progress(id)).then(_updateProgressUI);
 						});
 					});
