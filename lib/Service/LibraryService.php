@@ -174,8 +174,10 @@ class LibraryService {
 		$res = $db->query('select book.id,progress.progress,progress.status from progress left join book on book.identifier=progress.identifier');
 		while ($set = $res->fetchArray()) {
 			$id = $set['id'];
-			$metadata[$id]->progress = $set['progress'];
-			$metadata[$id]->status = $set['status'];
+			if ($metadata[$id]) {
+				$metadata[$id]->progress = $set['progress'];
+				$metadata[$id]->status = $set['status'];
+			}
 		}
 
 		$db->close();
@@ -278,7 +280,8 @@ class LibraryService {
 		&& $db->exec("delete from language")
 		&& $db->exec("delete from author")
 		&& $db->exec("delete from genre")
-		&& $db->exec("delete from series");
+		&& $db->exec("delete from series")
+		&& $db->exec("delete from progress");
 
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
