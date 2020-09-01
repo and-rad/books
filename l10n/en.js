@@ -3,6 +3,7 @@ OC.L10N.register(
 	{
 		"de": "German",
 		"en": "English",
+		"en-US": "English",
 		"fr": "French"
 	},
 	''
