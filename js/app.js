@@ -57,8 +57,14 @@ OCA.Books.Core = (function() {
 
 		_saveHandle = setTimeout(function() {
 			let cfi = _rendition.location.start.cfi;
-			_books.find(elem => elem.id == _rendition.id).progress = cfi;
-			OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(){});
+			let book = _books.find(elem => elem.id == _rendition.id);
+			OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(obj){
+				if (obj.success) {
+					book.progress = cfi;
+					book.status = book.status || 2;
+					OCA.Books.UI.refreshStatus(_rendition.id, book.status);
+				}
+			});
 		}, 1000);
 	}
 
@@ -267,6 +273,13 @@ OCA.Books.UI = (function() {
 			let overlay = document.querySelector("#reader-progress-overlay");
 			handle.style.left = `calc(${val}% - 6px)`;
 			overlay.style.width = `${val}%`;
+		},
+
+		refreshStatus: function(id, status) {
+			let icons = document.querySelectorAll(`#app-content tr[data-id='${id}'] .cover svg`);
+			for (let i = 0, icon; icon = icons[i]; i++) {
+				icon.style.display = (icon.classList.contains(`status-${status}`)) ? "block" : "none";
+			}
 		}
 	};
 })();

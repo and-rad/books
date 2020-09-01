@@ -110,7 +110,7 @@ class LibraryService {
 			$set = $stmt->execute()->fetchArray();
 
 			if ($set === false) {
-				$stmt = $db->prepare('insert into progress (identifier,progress) values ((select identifier from book where id=?),?)');
+				$stmt = $db->prepare('insert into progress (identifier,progress,status) values ((select identifier from book where id=?),?,2)');
 				$stmt->bindValue(1, $id);
 				$stmt->bindValue(2, $value);
 			} else {
