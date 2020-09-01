@@ -3,6 +3,7 @@ namespace OCA\Books\Controller;
 
 use OCP\IConfig;
 use OCP\IRequest;
+use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
@@ -22,7 +23,12 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() : TemplateResponse {
-		return new TemplateResponse('books', 'index');
+		return (new TemplateResponse('books', 'index'))
+		->setContentSecurityPolicy((new ContentSecurityPolicy())
+			->addAllowedStyleDomain('blob:')
+			->addAllowedFontDomain('blob:')
+			->addAllowedScriptDomain('blob:')
+		);
 	}
 
 	/**
