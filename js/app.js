@@ -6,6 +6,7 @@ OCA.Books.Core = (function() {
 	var _books = [];
 	var _rendition = undefined;
 	var _updateHandle = undefined;
+	var _saveHandle = undefined;
 
 	var _progress = function(id) {
 		let book = _books.find(elem => elem.id == id);
@@ -13,7 +14,7 @@ OCA.Books.Core = (function() {
 			return book.progress;
 		}
 		return undefined;
-	}
+	};
 
 	var _close = function() {
 		if (_rendition) {
@@ -25,17 +26,23 @@ OCA.Books.Core = (function() {
 
 	var _nextPage = function() {
 		if (_rendition) {
-			_rendition.next().then(function(){ _updateProgress(); });
+			_rendition.next().then(function(){
+				_updateProgressUI();
+				_saveProgress();
+			});
 		}
 	};
 
 	var _previousPage = function() {
 		if (_rendition) {
-			_rendition.prev().then(function(){ _updateProgress(); });
+			_rendition.prev().then(function(){
+				_updateProgressUI();
+				_saveProgress();
+			});
 		}
 	};
 
-	var _updateProgress = function() {
+	var _updateProgressUI = function() {
 		clearTimeout(_updateHandle);
 
 		_updateHandle = setTimeout(function() {
@@ -44,6 +51,16 @@ OCA.Books.Core = (function() {
 			OCA.Books.UI.refreshProgress(progress);
 		}, 250);
 	};
+
+	var _saveProgress = function() {
+		clearTimeout(_saveHandle);
+
+		_saveHandle = setTimeout(function() {
+			let cfi = _rendition.location.start.cfi;
+			_books.find(elem => elem.id == _rendition.id).progress = cfi;
+			OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(){});
+		}, 1000);
+	}
 
 	return {
 		init: function() {
@@ -105,7 +122,7 @@ OCA.Books.Core = (function() {
 						book.locations.generate(1000).then(function(){
 							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
 							_rendition.id = id;
-							_rendition.display(_progress(id)).then(_updateProgress);
+							_rendition.display(_progress(id)).then(_updateProgressUI);
 						});
 					});
 				}
@@ -292,6 +309,13 @@ OCA.Books.Backend = (function() {
 
 		getLocation: function(id, callback) {
 			this.get(OC.generateUrl("apps/books/api/0.1/loc/"+id), function() {
+				callback(JSON.parse(this.response));
+			});
+		},
+
+		saveProgress: function(id, value, callback) {
+			let data = `id=${id}&progress=${value}`;
+			this.post(OC.generateUrl("apps/books/api/0.1/progress"), data, function() {
 				callback(JSON.parse(this.response));
 			});
 		},
