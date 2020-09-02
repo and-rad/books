@@ -26,19 +26,13 @@ OCA.Books.Core = (function() {
 
 	var _nextPage = function() {
 		if (_rendition) {
-			_rendition.next().then(function(){
-				_updateProgressUI();
-				_saveProgress();
-			});
+			_rendition.next();
 		}
 	};
 
 	var _previousPage = function() {
 		if (_rendition) {
-			_rendition.prev().then(function(){
-				_updateProgressUI();
-				_saveProgress();
-			});
+			_rendition.prev();
 		}
 	};
 
@@ -57,14 +51,16 @@ OCA.Books.Core = (function() {
 
 		_saveHandle = setTimeout(function() {
 			let cfi = _rendition.location.start.cfi;
-			let book = _books.find(elem => elem.id == _rendition.id);
-			OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(obj){
-				if (obj.success) {
-					book.progress = cfi;
-					book.status = book.status || 2;
-					OCA.Books.UI.refreshStatus(_rendition.id, book.status);
-				}
-			});
+			if (_rendition.book.locations.percentageFromCfi(cfi) > 0) {
+				let book = _books.find(elem => elem.id == _rendition.id);
+				OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(obj){
+					if (obj.success) {
+						book.progress = cfi;
+						book.status = book.status || 2;
+						OCA.Books.UI.refreshStatus(_rendition.id, book.status);
+					}
+				});
+			}
 		}, 1000);
 	}
 
@@ -126,10 +122,17 @@ OCA.Books.Core = (function() {
 					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
 					book.ready.then(function(){
 						book.locations.generate(1000).then(function(){
-							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
+							_rendition = book.renderTo(elem, {
+								width: "100%",
+								height: "100%",
+								stylesheet: OCA.Books.UI.stylesheet
+							});
 							_rendition.id = id;
-							_rendition.themes.default({p: {"max-width": "32em"}});
-							_rendition.display(_progress(id)).then(_updateProgressUI);
+							_rendition.display(_progress(id));
+							_rendition.on("relocated", function() {
+								_updateProgressUI();
+								_saveProgress();
+							});
 						});
 					});
 				}
@@ -199,6 +202,8 @@ OCA.Books.UI = (function() {
 	};
 
 	return {
+		stylesheet: "/apps/books/css/book.css",
+
 		buildShelf: function(books) {
 			let frag = document.createDocumentFragment();
 			let tpl = document.createElement("tr");
