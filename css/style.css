@@ -4,6 +4,7 @@
 
 #app-navigation {
 	color: #222;
+	white-space: nowrap;
 }
 
 #app-navigation > div:not(#app-settings) {
@@ -15,15 +16,10 @@
 	border-bottom: 1px solid var(--color-border);
 }
 
-#app-navigation-toc > ul > li,
 #list-category > li {
 	opacity: 0.57;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
 }
 
-#app-navigation-toc > ul > li > a,
 #list-category > li > a {
 	display: block;
 	padding: 0.8em 1em 0.8em 2.4em;
@@ -40,8 +36,6 @@
 	transform: translateY(-50%);
 }
 
-#app-navigation-toc > ul > li:hover,
-#app-navigation-toc > ul > li.active,
 #list-category > li:hover,
 #list-category > li.active {
 	box-shadow: inset 4px 0 var(--color-primary-element);
@@ -52,8 +46,28 @@
 	display: none;
 }
 
-#app-navigation-toc > ul > li > a {
+#app-navigation-toc li > a {
+	display: block;
+	color: #767676;
 	padding: 0.5em 1em;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+}
+
+#app-navigation-toc li > a:hover,
+#app-navigation-toc li.active > a {
+	box-shadow: inset 4px 0 var(--color-primary-element);
+	color: var(--color-main-text);
+}
+
+#app-navigation-toc ul ul li > a {
+	padding-left: 2em;
+	color: #aaaaaa;
+}
+
+#app-navigation-toc ul ul ul li > a {
+	padding-left: 3em;
+	color: #cccccc;
 }
 
 #app-settings-header .settings-button {

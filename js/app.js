@@ -231,6 +231,30 @@ OCA.Books.UI = (function() {
 		return out;
 	};
 
+	var _buildTOC = function(toc) {
+		let frag = document.createDocumentFragment();
+		let tpl = document.createElement("li");
+		tpl.innerHTML = document.querySelector("#template-toc-item").innerHTML;
+
+		toc.forEach(function(chapter) {
+			let item = tpl.cloneNode(true);
+			item.lastElementChild.textContent = chapter.label;
+			item.lastElementChild.href = chapter.href;
+			item.addEventListener("click", _onTOCItemClicked);
+
+			if (chapter.subitems.length > 0) {
+				item.appendChild(_buildTOC(chapter.subitems));
+			}
+
+			frag.appendChild(item);
+		});
+
+		let list = document.createElement("ul");
+		list.appendChild(frag);
+
+		return list;
+	};
+
 	var _onItemClicked = function(evt) {
 		let id = evt.target.closest("tr").dataset.id;
 		OCA.Books.Core.open(id, "reader");
@@ -320,21 +344,9 @@ OCA.Books.UI = (function() {
 		},
 
 		buildTOC: function(toc) {
-			let frag = document.createDocumentFragment();
-			let tpl = document.createElement("li");
-			tpl.innerHTML = document.querySelector("#template-toc-item").innerHTML;
-
-			toc.forEach(function(chapter) {
-				let item = tpl.cloneNode(true);
-				item.lastElementChild.textContent = chapter.label;
-				item.lastElementChild.href = chapter.href;
-				item.addEventListener("click", _onTOCItemClicked);
-				frag.appendChild(item);
-			});
-
-			let shelf = document.querySelector("#app-navigation-toc > ul");
-			shelf.textContent = "";
-			shelf.appendChild(frag);
+			let elem = document.querySelector("#app-navigation-toc");
+			elem.textContent = "";
+			elem.appendChild(_buildTOC(toc));
 		},
 
 		openReader: function() {
