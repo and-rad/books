@@ -1,4 +1,4 @@
-<div>
+<div id='app-navigation-main'>
 	<ul id='list-category'>
 		<li class='active'>
 			<a href='#'>
@@ -30,4 +30,8 @@
 		<button class='icon-add'>New Shelf</button>
 	</div>
 	<ul id='category'></ul>
+</div>
+
+<div id='app-navigation-toc'>
+	<ul></ul>
 </div>

@@ -6,7 +6,7 @@
 	color: #222;
 }
 
-#app-navigation > div:first-child {
+#app-navigation > div:not(#app-settings) {
 	overflow-y: auto;
 }
 
@@ -15,6 +15,7 @@
 	border-bottom: 1px solid var(--color-border);
 }
 
+#app-navigation-toc > ul > li,
 #list-category > li {
 	opacity: 0.57;
 	white-space: nowrap;
@@ -22,6 +23,7 @@
 	overflow: hidden;
 }
 
+#app-navigation-toc > ul > li > a,
 #list-category > li > a {
 	display: block;
 	padding: 0.8em 1em 0.8em 2.4em;
@@ -38,10 +40,24 @@
 	transform: translateY(-50%);
 }
 
+#app-navigation-toc > ul > li:hover,
+#app-navigation-toc > ul > li.active,
 #list-category > li:hover,
-#list-category > .active {
+#list-category > li.active {
 	box-shadow: inset 4px 0 var(--color-primary-element);
 	opacity: 1;
+}
+
+#app-navigation-toc {
+	display: none;
+}
+
+#app-navigation-toc > ul > li > a {
+	padding: 0.5em 1em;
+}
+
+#app-settings-header .settings-button {
+	border-top: solid 1px var(--color-border);
 }
 
 #app-settings-content > label {
@@ -438,6 +454,14 @@ th:hover .sort-indicator.hidden {
 
 #app.reader #app-navigation {
 	transform: translateX(0px);
+}
+
+#app.reader #app-navigation-main {
+	display: none;
+}
+
+#app.reader #app-navigation-toc {
+	display: block;
 }
 
 #app.reader #app-navigation-toggle {

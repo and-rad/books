@@ -4,8 +4,8 @@ if (!OCA.Books) {
 
 OCA.Books.Core = (function() {
 	var _books = [];
+	var _section = {};
 	var _rendition = undefined;
-	var _section = undefined;
 	var _updateHandle = undefined;
 	var _saveHandle = undefined;
 
@@ -23,7 +23,7 @@ OCA.Books.Core = (function() {
 		_updateHandle = setTimeout(function() {
 			let cfi = _rendition.location.start.cfi;
 			let progress = _rendition.book.locations.percentageFromCfi(cfi);
-			OCA.Books.UI.refreshProgress(progress);
+			OCA.Books.UI.refreshProgress(progress, _section.href);
 		}, 250);
 	};
 
@@ -111,6 +111,7 @@ OCA.Books.Core = (function() {
 					OCA.Books.UI.openReader();
 					OCA.Books.UI.showLoadingScreen();
 					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
+					book.loaded.navigation.then(OCA.Books.UI.buildTOC);
 					book.ready.then(function(){
 						book.locations.generate(1000).then(function(){
 							OCA.Books.UI.hideLoadingScreen();
@@ -135,6 +136,7 @@ OCA.Books.Core = (function() {
 			if (_rendition) {
 				_rendition.destroy();
 				_rendition = undefined;
+				_section = {};
 			}
 			clearTimeout(_saveHandle);
 			clearTimeout(_updateHandle);
@@ -163,6 +165,12 @@ OCA.Books.Core = (function() {
 		prevSection: function() {
 			if (_rendition && _section) {
 				_rendition.display((_section.prev() || {}).href);
+			}
+		},
+
+		toSection: function(href) {
+			if (_rendition) {
+				_rendition.display(href);
 			}
 		}
 	};
@@ -226,6 +234,11 @@ OCA.Books.UI = (function() {
 	var _onItemClicked = function(evt) {
 		let id = evt.target.closest("tr").dataset.id;
 		OCA.Books.Core.open(id, "reader");
+	};
+
+	var _onTOCItemClicked = function(evt) {
+		evt.preventDefault();
+		OCA.Books.Core.toSection(evt.target.getAttribute("href"));
 	};
 
 	var _onKeyUp = function(evt) {
@@ -306,6 +319,24 @@ OCA.Books.UI = (function() {
 			_sortShelf(category, true);
 		},
 
+		buildTOC: function(toc) {
+			let frag = document.createDocumentFragment();
+			let tpl = document.createElement("li");
+			tpl.innerHTML = document.querySelector("#template-toc-item").innerHTML;
+
+			toc.forEach(function(chapter) {
+				let item = tpl.cloneNode(true);
+				item.lastElementChild.textContent = chapter.label;
+				item.lastElementChild.href = chapter.href;
+				item.addEventListener("click", _onTOCItemClicked);
+				frag.appendChild(item);
+			});
+
+			let shelf = document.querySelector("#app-navigation-toc > ul");
+			shelf.textContent = "";
+			shelf.appendChild(frag);
+		},
+
 		openReader: function() {
 			document.querySelector("#app").classList.add("reader");
 			window.addEventListener("keyup", _onKeyUp);
@@ -325,12 +356,21 @@ OCA.Books.UI = (function() {
 			document.querySelector("#spinner").style.display = "none";
 		},
 
-		refreshProgress: function(val) {
-			val *= 100;
+		refreshProgress: function(percent, section) {
+			percent *= 100;
 			let handle = document.querySelector("#reader-progress-handle");
 			let overlay = document.querySelector("#reader-progress-overlay");
-			handle.style.left = `calc(${val}% - 6px)`;
-			overlay.style.width = `${val}%`;
+			handle.style.left = `calc(${percent}% - 6px)`;
+			overlay.style.width = `${percent}%`;
+
+			let toc = document.querySelectorAll("#app-navigation-toc li");
+			for (let i = 0, item; item = toc[i]; i++) {
+				if (item.firstElementChild.getAttribute("href") == section) {
+					item.classList.add("active");
+				} else {
+					item.classList.remove("active");
+				}
+			}
 		},
 
 		refreshStatus: function(id, status) {

@@ -34,3 +34,7 @@
 <template id='template-list-item'>
 	<a href='#' class='name'></a><span class='count'></span>
 </template>
+
+<template id='template-toc-item'>
+	<a href='#'></a>
+</template>
