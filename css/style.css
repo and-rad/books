@@ -22,7 +22,9 @@
 
 #list-category > li > a {
 	display: block;
-	padding: 0.8em 1em 0.8em 2.4em;
+	padding: 0 12px 0 44px;
+	min-height: 44px;
+	line-height: 44px;
 	overflow-x: hidden;
 	text-overflow: ellipsis;
 }
@@ -32,7 +34,7 @@
 	height: 1.2em;
 	position: absolute;
 	top: 50%;
-	left: 0.8em;
+	left: 14px;
 	transform: translateY(-50%);
 }
 
