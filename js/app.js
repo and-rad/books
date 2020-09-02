@@ -16,27 +16,6 @@ OCA.Books.Core = (function() {
 		return undefined;
 	};
 
-	var _close = function() {
-		if (_rendition) {
-			_rendition.destroy();
-			_rendition = undefined;
-		}
-		OCA.Books.UI.closeReader();
-		OCA.Books.UI.refreshProgress(0);
-	};
-
-	var _nextPage = function() {
-		if (_rendition) {
-			_rendition.next();
-		}
-	};
-
-	var _previousPage = function() {
-		if (_rendition) {
-			_rendition.prev();
-		}
-	};
-
 	var _updateProgressUI = function() {
 		clearTimeout(_updateHandle);
 
@@ -86,15 +65,15 @@ OCA.Books.Core = (function() {
 			});
 
 			document.querySelector("#reader-prev").addEventListener("click", function(){
-				_previousPage();
+				OCA.Books.Core.prevPage();
 			});
 
 			document.querySelector("#reader-next").addEventListener("click", function(){
-				_nextPage();
+				OCA.Books.Core.nextPage();
 			});
 
 			document.querySelector("#reader-close").addEventListener("click", function(){
-				_close();
+				OCA.Books.Core.close();
 			});
 
 			document.querySelector("#font-settings").addEventListener("change", function(evt){
@@ -125,7 +104,7 @@ OCA.Books.Core = (function() {
 		},
 
 		open: function(id, elem) {
-			_close();
+			this.close();
 			OCA.Books.Backend.getLocation(id, function(obj) {
 				if (obj.success) {
 					OCA.Books.UI.openReader();
@@ -138,7 +117,7 @@ OCA.Books.Core = (function() {
 							_rendition.id = id;
 							_rendition.themes.default(OCA.Books.UI.Style.get());
 							_rendition.display(_progress(id));
-							_rendition.on("relocated", function() {
+							_rendition.on("relocated", function(){
 								_updateProgressUI();
 								_saveProgress();
 							});
@@ -146,6 +125,27 @@ OCA.Books.Core = (function() {
 					});
 				}
 			});
+		},
+
+		close: function() {
+			if (_rendition) {
+				_rendition.destroy();
+				_rendition = undefined;
+			}
+			OCA.Books.UI.closeReader();
+			OCA.Books.UI.refreshProgress(0);
+		},
+
+		nextPage: function() {
+			if (_rendition) {
+				_rendition.next();
+			}
+		},
+
+		prevPage: function() {
+			if (_rendition) {
+				_rendition.prev();
+			}
 		}
 	};
 })();
@@ -208,6 +208,16 @@ OCA.Books.UI = (function() {
 	var _onItemClicked = function(evt) {
 		let id = evt.target.closest("tr").dataset.id;
 		OCA.Books.Core.open(id, "reader");
+	};
+
+	var _onKeyUp = function(evt) {
+		if (evt.code == "ArrowLeft" || evt.keyCode == 37) {
+			OCA.Books.Core.prevPage();
+		} else if (evt.code == "ArrowRight" || evt.keyCode == 39) {
+			OCA.Books.Core.nextPage();
+		} else if (evt.code == "Escape" || evt.keyCode == 27) {
+			OCA.Books.Core.close();
+		}
 	};
 
 	return {
@@ -276,10 +286,12 @@ OCA.Books.UI = (function() {
 
 		openReader: function() {
 			document.querySelector("#app").classList.add("reader");
+			window.addEventListener("keyup", _onKeyUp);
 		},
 
 		closeReader: function() {
 			document.querySelector("#app").classList.remove("reader");
+			window.removeEventListener("keyup", _onKeyUp);
 			this.hideLoadingScreen();
 		},
 
