@@ -5,6 +5,7 @@ if (!OCA.Books) {
 OCA.Books.Core = (function() {
 	var _books = [];
 	var _rendition = undefined;
+	var _section = undefined;
 	var _updateHandle = undefined;
 	var _saveHandle = undefined;
 
@@ -121,6 +122,9 @@ OCA.Books.Core = (function() {
 								_updateProgressUI();
 								_saveProgress();
 							});
+							_rendition.on("rendered", function(section){
+								_section = section;
+							});
 						});
 					});
 				}
@@ -145,6 +149,18 @@ OCA.Books.Core = (function() {
 		prevPage: function() {
 			if (_rendition) {
 				_rendition.prev();
+			}
+		},
+
+		nextSection: function() {
+			if (_rendition && _section) {
+				_rendition.display((_section.next() || {}).href);
+			}
+		},
+
+		prevSection: function() {
+			if (_rendition && _section) {
+				_rendition.display((_section.prev() || {}).href);
 			}
 		}
 	};
@@ -215,6 +231,10 @@ OCA.Books.UI = (function() {
 			OCA.Books.Core.prevPage();
 		} else if (evt.code == "ArrowRight" || evt.keyCode == 39) {
 			OCA.Books.Core.nextPage();
+		} else if (evt.code == "ArrowUp" || evt.keyCode == 38) {
+			OCA.Books.Core.prevSection();
+		} else if (evt.code == "ArrowDown" || evt.keyCode == 40) {
+			OCA.Books.Core.nextSection();
 		} else if (evt.code == "Escape" || evt.keyCode == 27) {
 			OCA.Books.Core.close();
 		}
