@@ -119,9 +119,11 @@ OCA.Books.Core = (function() {
 			OCA.Books.Backend.getLocation(id, function(obj) {
 				if (obj.success) {
 					OCA.Books.UI.openReader();
+					OCA.Books.UI.showLoadingScreen();
 					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
 					book.ready.then(function(){
 						book.locations.generate(1000).then(function(){
+							OCA.Books.UI.hideLoadingScreen();
 							_rendition = book.renderTo(elem, {
 								width: "100%",
 								height: "100%",
@@ -271,6 +273,14 @@ OCA.Books.UI = (function() {
 
 		closeReader: function() {
 			document.querySelector("#app").classList.remove("reader");
+		},
+
+		showLoadingScreen: function() {
+			document.querySelector("#spinner").style.display = "block";
+		},
+
+		hideLoadingScreen: function() {
+			document.querySelector("#spinner").style.display = "none";
 		},
 
 		refreshProgress: function(val) {

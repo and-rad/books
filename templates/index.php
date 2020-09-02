@@ -21,6 +21,9 @@ style('books', 'style');
 		<div id='reader-wrapper'>
 			<?php print_unescaped($this->inc('content/reader')); ?>
 		</div>
+		<div id="spinner">
+			<div></div><div></div><div></div><div></div>
+		</div>
 	</div>
 </div>
 
