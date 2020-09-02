@@ -382,9 +382,16 @@ OCA.Books.UI = (function() {
 
 		Style: (function(){
 			var _style = {
-				html: {"font-size": "initial"},
-				body: {"font-size": "inherit"},
-				p: {"max-width": "32em"}
+				html: {
+					"font-size": "initial"
+				},
+				body: {
+					"font-size": "inherit",
+					"text-align": "justify"
+				},
+				p: {
+					"max-width": "32em"
+				}
 			};
 
 			return {
