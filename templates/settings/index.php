@@ -6,6 +6,8 @@
 		<label>
 			Font Size
 			<select id="font-settings">
+				<option value="inherit">Automatic</option>
+				<option disabled></option>
 				<option value="8px">8 px</option>
 				<option value="10px">10 px</option>
 				<option value="12px">12 px</option>

@@ -19,6 +19,7 @@ OCA.Books.Core = (function() {
 	var _close = function() {
 		if (_rendition) {
 			_rendition.destroy();
+			_rendition = undefined;
 		}
 		OCA.Books.UI.closeReader();
 		OCA.Books.UI.refreshProgress(0);
@@ -62,7 +63,7 @@ OCA.Books.Core = (function() {
 				});
 			}
 		}, 1000);
-	}
+	};
 
 	return {
 		init: function() {
@@ -71,6 +72,8 @@ OCA.Books.Core = (function() {
 		},
 
 		initControls: function() {
+			OCA.Books.UI.Style.init();
+
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
 				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, function(obj) {
 					console.log(obj);
@@ -92,6 +95,13 @@ OCA.Books.Core = (function() {
 
 			document.querySelector("#reader-close").addEventListener("click", function(){
 				_close();
+			});
+
+			document.querySelector("#font-settings").addEventListener("change", function(evt){
+				OCA.Books.UI.Style.setFontSize(evt.target.value);
+				if (_rendition) {
+					_rendition.themes.default(OCA.Books.UI.Style.get());
+				}
 			});
 
 			let cols = document.querySelectorAll("th.sort");
@@ -124,12 +134,9 @@ OCA.Books.Core = (function() {
 					book.ready.then(function(){
 						book.locations.generate(1000).then(function(){
 							OCA.Books.UI.hideLoadingScreen();
-							_rendition = book.renderTo(elem, {
-								width: "100%",
-								height: "100%",
-								stylesheet: OCA.Books.UI.stylesheet
-							});
+							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
 							_rendition.id = id;
+							_rendition.themes.default(OCA.Books.UI.Style.get());
 							_rendition.display(_progress(id));
 							_rendition.on("relocated", function() {
 								_updateProgressUI();
@@ -273,6 +280,7 @@ OCA.Books.UI = (function() {
 
 		closeReader: function() {
 			document.querySelector("#app").classList.remove("reader");
+			this.hideLoadingScreen();
 		},
 
 		showLoadingScreen: function() {
@@ -296,7 +304,31 @@ OCA.Books.UI = (function() {
 			for (let i = 0, icon; icon = icons[i]; i++) {
 				icon.style.display = (icon.classList.contains(`status-${status}`)) ? "block" : "none";
 			}
-		}
+		},
+
+		Style: (function(){
+			var _style = {
+				html: {"font-size": "initial"},
+				body: {"font-size": "inherit"},
+				p: {"max-width": "32em"}
+			};
+
+			return {
+				setFontSize: function(val) {
+					_style.html["font-size"] = val;
+					window.localStorage.setItem("font-size", val);
+				},
+
+				get: function() {
+					return _style;
+				},
+
+				init: function() {
+					_style.html["font-size"] = window.localStorage.getItem("font-size");
+					document.querySelector("#font-settings").value = _style.html["font-size"];
+				}
+			};
+		})()
 	};
 })();
 
