@@ -44,6 +44,21 @@
 	opacity: 1;
 }
 
+#app-settings-content > label {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+#app-settings-content > label input[type="text"],
+#app-settings-content > label select {
+	flex-basis: 70%;
+}
+
+#app-settings-content > ul {
+	margin-top: 1em;
+}
+
 .app-settings-item {
 	background-position: 0 center;
 	opacity: 0.57;
