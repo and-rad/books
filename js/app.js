@@ -136,6 +136,8 @@ OCA.Books.Core = (function() {
 				_rendition.destroy();
 				_rendition = undefined;
 			}
+			clearTimeout(_saveHandle);
+			clearTimeout(_updateHandle);
 			OCA.Books.UI.closeReader();
 			OCA.Books.UI.refreshProgress(0);
 		},
