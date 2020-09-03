@@ -12,7 +12,7 @@
 - Easy access to the library for third-party and desktop apps
 - Edit books' contents & metadata
 - Eventual support for PDF & CBR/CBZ]]></description>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
     <licence>agpl</licence>
     <author mail="and.rad@posteo.de" >Andreas Raddau</author>
     <namespace>Books</namespace>
