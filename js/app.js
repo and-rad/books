@@ -502,7 +502,7 @@ OCA.Books.Backend = (function() {
 			let xhr = new XMLHttpRequest();
 			xhr.addEventListener("load", callback);
 			xhr.open("GET", uri);
-			xhr.setRequestHeader("requesttoken", OC.requestToken);
+			xhr.setRequestHeader("requesttoken", oc_requesttoken);
 			xhr.send();
 		},
 
@@ -510,7 +510,7 @@ OCA.Books.Backend = (function() {
 			let xhr = new XMLHttpRequest();
 			xhr.addEventListener("load", callback);
 			xhr.open("POST", uri);
-			xhr.setRequestHeader("requesttoken", OC.requestToken);
+			xhr.setRequestHeader("requesttoken", oc_requesttoken);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			xhr.send(data);
 		},
