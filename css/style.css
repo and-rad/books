@@ -348,11 +348,20 @@ th:hover .sort-indicator.hidden {
 
 #reader-progress-handle > div {
 	position: absolute;
-	width: 300%;
-	height: 300%;
-	border-radius: 15px;
-	left: -10px;
-	top: -10px;
+	width: 42px;
+	height: 42px;
+	border-radius: 21px;
+	left: -16px;
+	top: -16px;
+}
+
+#reader-progress-bar.active #reader-progress-overlay,
+#reader-progress-bar.active #reader-progress-handle {
+	transition: none;
+}
+
+#reader-progress-bar.active #reader-progress-handle > div {
+	transform: scale(10);
 }
 
 #reader-progress-handle:hover {

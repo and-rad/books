@@ -84,6 +84,10 @@ OCA.Books.Core = (function() {
 				}
 			});
 
+			document.querySelector("#reader-progress-handle").addEventListener("mousedown", function(){
+				OCA.Books.UI.activateSlider();
+			});
+
 			let cols = document.querySelectorAll("th.sort");
 			for (let i = 0, col; col = cols[i]; i++) {
 				col.addEventListener("click", function(evt) {
@@ -172,6 +176,13 @@ OCA.Books.Core = (function() {
 			if (_rendition) {
 				_rendition.display(href);
 			}
+		},
+
+		toPercent: function(val) {
+			if (_rendition) {
+				let cfi = _rendition.book.locations.cfiFromPercentage(val);
+				_rendition.display(cfi);
+			}
 		}
 	};
 })();
@@ -179,6 +190,7 @@ OCA.Books.Core = (function() {
 OCA.Books.UI = (function() {
 	var _sortBy = "title";
 	var _sortAsc = true;
+	var _sliderTimeout = undefined;
 
 	var _refreshMore = function(objs, field) {
 		let more = field.querySelector(".more");
@@ -264,6 +276,27 @@ OCA.Books.UI = (function() {
 		evt.preventDefault();
 		OCA.Books.Core.toSection(evt.target.getAttribute("href"));
 	};
+
+	var _onProgressHandleMoved = function(evt) {
+		clearTimeout(_sliderTimeout);
+
+		let width = document.querySelector("#reader-progress-bar").getBoundingClientRect().width;
+		let pos = Math.min(Math.max(evt.pageX - 44, 0), width);
+		document.querySelector("#reader-progress-handle").style.left = (pos - 7) + "px";
+		document.querySelector("#reader-progress-overlay").style.width = pos + "px" ;
+
+		_sliderTimeout = setTimeout(function(){
+			OCA.Books.Core.toPercent(pos / width);
+		}, 250);
+	};
+
+	var _onProgressHandleReleased = function() {
+		let handle = document.querySelector("#reader-progress-handle");
+		handle.removeEventListener("mousemove", _onProgressHandleMoved);
+		handle.removeEventListener("mouseup", _onProgressHandleReleased);
+		handle.removeEventListener("mouseleave", _onProgressHandleReleased);
+		document.querySelector("#reader-progress-bar").classList.remove("active");
+	}
 
 	var _onKeyUp = function(evt) {
 		if (evt.code == "ArrowLeft" || evt.keyCode == 37) {
@@ -368,12 +401,22 @@ OCA.Books.UI = (function() {
 			document.querySelector("#spinner").style.display = "none";
 		},
 
-		refreshProgress: function(percent, section) {
-			percent *= 100;
+		activateSlider: function() {
 			let handle = document.querySelector("#reader-progress-handle");
-			let overlay = document.querySelector("#reader-progress-overlay");
-			handle.style.left = `calc(${percent}% - 6px)`;
-			overlay.style.width = `${percent}%`;
+			handle.addEventListener("mousemove", _onProgressHandleMoved);
+			handle.addEventListener("mouseup", _onProgressHandleReleased);
+			handle.addEventListener("mouseleave", _onProgressHandleReleased);
+			document.querySelector("#reader-progress-bar").classList.add("active");
+		},
+
+		refreshProgress: function(percent, section) {
+			if (!document.querySelector("#reader-progress-bar").classList.contains("active")) {
+				percent *= 100;
+				let handle = document.querySelector("#reader-progress-handle");
+				let overlay = document.querySelector("#reader-progress-overlay");
+				handle.style.left = `calc(${percent}% - 6px)`;
+				overlay.style.width = `${percent}%`;
+			}
 
 			let toc = document.querySelectorAll("#app-navigation-toc li");
 			for (let i = 0, item; item = toc[i]; i++) {
