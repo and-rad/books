@@ -62,6 +62,7 @@ OCA.Books.Core = (function() {
 				if (obj.success) {
 					_books = obj.data;
 					OCA.Books.UI.buildShelf(_books);
+					OCA.Books.UI.buildNavigation(_books);
 				}
 			});
 			OCA.Books.UI.init();
@@ -155,6 +156,7 @@ OCA.Books.Core = (function() {
 })();
 
 OCA.Books.UI = (function() {
+	var _groupBy = "author";
 	var _sortBy = "title";
 	var _sortAsc = true;
 	var _sliderTimeout = undefined;
@@ -208,6 +210,22 @@ OCA.Books.UI = (function() {
 		let out = text1.localeCompare(text2, loc, {numeric: true});
 		if (!_sortAsc) out *= -1;
 		return out;
+	};
+
+	var _showCategory = function(cat) {
+		let items = document.querySelectorAll("#list-category > li");
+		for (let i = 0, item; item = items[i]; i++) {
+			if (item.dataset.group == cat) {
+				item.classList.add("active");
+			} else {
+				item.classList.remove("active");
+			}
+		}
+
+		items = document.querySelectorAll("#category > div");
+		for (let i = 0, item; item = items[i]; i++) {
+			item.style.display = (item.dataset.group == cat) ? "block" : "none";
+		}
 	};
 
 	var _buildTOC = function(toc) {
@@ -310,12 +328,24 @@ OCA.Books.UI = (function() {
 				OCA.Books.UI.Style.setFontSize(evt.target.value);
 			});
 
+			let cats = document.querySelectorAll("#list-category > li > a");
+			for (let i = 0, cat; cat = cats[i]; i++) {
+				cat.addEventListener("click", function(evt){
+					_showCategory(evt.target.parentNode.dataset.group);
+					evt.preventDefault();
+				});
+			}
+
 			let cols = document.querySelectorAll("th.sort");
 			for (let i = 0, col; col = cols[i]; i++) {
 				col.addEventListener("click", function(evt) {
 					OCA.Books.UI.sortShelf(evt.target.dataset.sort);
 				});
 			}
+		},
+
+		buildNavigation: function(books) {
+			_showCategory(_groupBy);
 		},
 
 		buildShelf: function(books) {
