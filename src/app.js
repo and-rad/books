@@ -49,56 +49,12 @@ OCA.Books.Core = (function() {
 
 	return {
 		init: function() {
-			this.initLibrary();
-			this.initControls();
-		},
-
-		initControls: function() {
-			OCA.Books.UI.Style.init();
-
-			document.querySelector("#settings-item-scan").addEventListener("click", function() {
-				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, function(obj) {
-					console.log(obj);
-				});
-			});
-			document.querySelector("#settings-item-reset").addEventListener("click", function() {
-				OCA.Books.Backend.reset(function(obj) {
-					console.log(obj);
-				});
-			});
-
-			document.querySelector("#reader-prev").addEventListener("click", function(){
-				OCA.Books.Core.prevPage();
-			});
-
-			document.querySelector("#reader-next").addEventListener("click", function(){
-				OCA.Books.Core.nextPage();
-			});
-
-			document.querySelector("#reader-close").addEventListener("click", function(){
-				OCA.Books.Core.close();
-			});
-
-			document.querySelector("#font-settings").addEventListener("change", function(evt){
-				OCA.Books.UI.Style.setFontSize(evt.target.value);
+			window.addEventListener("bookstylechange", function(){
 				if (_rendition) {
 					_rendition.themes.default(OCA.Books.UI.Style.get());
 				}
 			});
 
-			document.querySelector("#reader-progress-handle").addEventListener("mousedown", function(){
-				OCA.Books.UI.activateSlider();
-			});
-
-			let cols = document.querySelectorAll("th.sort");
-			for (let i = 0, col; col = cols[i]; i++) {
-				col.addEventListener("click", function(evt) {
-					OCA.Books.UI.sortShelf(evt.target.dataset.sort);
-				});
-			}
-		},
-
-		initLibrary: function() {
 			OCA.Books.Backend.getConfig(function(obj) {
 				document.querySelector("#path-settings").value = obj.library;
 			});
@@ -108,6 +64,7 @@ OCA.Books.Core = (function() {
 					OCA.Books.UI.buildShelf(_books);
 				}
 			});
+			OCA.Books.UI.init();
 		},
 
 		open: function(id, elem) {
@@ -325,6 +282,42 @@ OCA.Books.UI = (function() {
 	return {
 		stylesheet: "/apps/books/css/book.css",
 
+		init: function() {
+			this.Style.init();
+			document.querySelector("#settings-item-scan").addEventListener("click", function() {
+				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, function(obj) {
+					console.log(obj);
+				});
+			});
+			document.querySelector("#settings-item-reset").addEventListener("click", function() {
+				OCA.Books.Backend.reset(function(obj) {
+					console.log(obj);
+				});
+			});
+			document.querySelector("#reader-prev").addEventListener("click", function(){
+				OCA.Books.Core.prevPage();
+			});
+			document.querySelector("#reader-next").addEventListener("click", function(){
+				OCA.Books.Core.nextPage();
+			});
+			document.querySelector("#reader-close").addEventListener("click", function(){
+				OCA.Books.Core.close();
+			});
+			document.querySelector("#reader-progress-handle").addEventListener("mousedown", function(){
+				OCA.Books.UI.activateSlider();
+			});
+			document.querySelector("#font-settings").addEventListener("change", function(evt){
+				OCA.Books.UI.Style.setFontSize(evt.target.value);
+			});
+
+			let cols = document.querySelectorAll("th.sort");
+			for (let i = 0, col; col = cols[i]; i++) {
+				col.addEventListener("click", function(evt) {
+					OCA.Books.UI.sortShelf(evt.target.dataset.sort);
+				});
+			}
+		},
+
 		buildShelf: function(books) {
 			let frag = document.createDocumentFragment();
 			let tpl = document.createElement("tr");
@@ -478,6 +471,7 @@ OCA.Books.UI = (function() {
 				setFontSize: function(val) {
 					_style.html["font-size"] = val;
 					window.localStorage.setItem("font-size", val);
+					window.dispatchEvent(new Event("bookstylechange"));
 				},
 
 				get: function() {
