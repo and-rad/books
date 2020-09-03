@@ -6,8 +6,8 @@ OC.L10N.register(
 		"en-US": "English",
 		"fr": "French",
 		"status-0": "Unread",
-		"status-1": "Finished",
-		"status-2": "In Progress",
+		"status-1": "In Progress",
+		"status-2": "Finished",
 		"status-3": "Aborted"
 	},
 	''

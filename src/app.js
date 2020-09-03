@@ -39,7 +39,7 @@ OCA.Books.Core = (function() {
 				OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(obj){
 					if (obj.success) {
 						book.progress = cfi;
-						book.status = book.status || 2;
+						book.status = book.status || 1;
 						OCA.Books.UI.refreshStatus(_rendition.id, book.status);
 					}
 				});

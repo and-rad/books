@@ -244,11 +244,11 @@ th:hover .sort-indicator.hidden {
 }
 
 .app-shelf-item .cover svg.status-1 {
-	background: rgb(53, 192, 53);
+	background: #ff9300;
 }
 
 .app-shelf-item .cover svg.status-2 {
-	background: #ff9300;
+	background: rgb(53, 192, 53);
 }
 
 .app-shelf-item .cover svg.status-3 {
