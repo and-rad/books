@@ -1,0 +1,28 @@
+{
+	"name": "books",
+	"description": "An app for managing and reading ebooks in the browser",
+	"version": "0.1.0",
+	"author": "Andreas Raddau <and.rad@posteo.de>",
+	"bugs": {
+		"url": "https://github.com/and-rad/books/issues"
+	},
+	"repository": {
+		"url": "https://github.com/and-rad/books",
+		"type": "git"
+	},
+	"homepage": "https://github.com/and-rad/books",
+	"license": "agpl",
+	"private": true,
+	"scripts": {
+		"build": "NODE_ENV=production webpack --progress --hide-modules --config webpack.prod.js",
+		"dev": "NODE_ENV=development webpack --progress --config webpack.dev.js",
+		"watch": "NODE_ENV=development webpack --progress --watch --config webpack.dev.js"
+	},
+	"dependencies": {
+		"@nextcloud/router": "^1.2.0"
+	},
+	"devDependencies": {
+		"webpack": "^4.44.1",
+		"webpack-cli": "^3.3.12"
+	}
+}
