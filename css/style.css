@@ -39,9 +39,35 @@
 }
 
 #list-category > li:hover,
-#list-category > li.active {
+#list-category > li.active,
+#category ul > li:hover,
+#category ul > li.active {
 	box-shadow: inset 4px 0 var(--color-primary-element);
 	opacity: 1;
+}
+
+#category > div {
+	display: none;
+}
+
+#category ul > li {
+	display: flex;
+	align-items: center;
+	opacity: 0.57;
+}
+
+#category ul > li > a {
+	display: block;
+	min-height: 44px;
+	line-height: 44px;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	flex-grow: 1;
+	padding: 0 1em;
+}
+
+#category ul > li > span {
+	padding: 0 1em 0 0;
 }
 
 #app-navigation-toc {

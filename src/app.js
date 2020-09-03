@@ -212,19 +212,32 @@ OCA.Books.UI = (function() {
 		return out;
 	};
 
-	var _showCategory = function(cat) {
-		let items = document.querySelectorAll("#list-category > li");
-		for (let i = 0, item; item = items[i]; i++) {
-			if (item.dataset.group == cat) {
-				item.classList.add("active");
-			} else {
-				item.classList.remove("active");
-			}
-		}
+	var _sortCategoryFragment = function(frag) {
+		let loc = document.documentElement.dataset.locale || "en";
+		let all = Array.from(frag.children);
+		all.sort((a, b) => a.dataset.id.localeCompare(b.dataset.id, loc, {numeric: true}));
+		all.forEach(c => frag.appendChild(c));
+	};
 
-		items = document.querySelectorAll("#category > div");
-		for (let i = 0, item; item = items[i]; i++) {
-			item.style.display = (item.dataset.group == cat) ? "block" : "none";
+	var _showCategory = function(cat) {
+		document.querySelector(`#list-category > li[data-group='${_groupBy}']`).classList.remove("active");
+		document.querySelector(`#category > div[data-group='${_groupBy}']`).style.display = "none";
+		document.querySelector(`#list-category > li[data-group='${cat}']`).classList.add("active");
+		document.querySelector(`#category > div[data-group='${cat}']`).style.display = "block";
+		_groupBy = cat;
+	};
+
+	var _buildNavigationItem = function(tpl, frag, id, name) {
+		let item = frag.querySelector(`li[data-id='${id}']`);
+		if (item) {
+			let num = parseInt(item.lastElementChild.textContent);
+			item.lastElementChild.textContent = num + 1;
+		} else {
+			item = tpl.cloneNode(true);
+			item.dataset.id = id;
+			item.firstElementChild.textContent = name;
+			item.firstElementChild.addEventListener("click", function(evt){ _showGroup(evt.target.dataset.id); });
+			frag.appendChild(item);
 		}
 	};
 
@@ -345,6 +358,48 @@ OCA.Books.UI = (function() {
 		},
 
 		buildNavigation: function(books) {
+			let all = document.querySelectorAll("#category li:first-child > span");
+			for (let i = 0, a; a = all[i]; i++) {
+				a.textContent = books.length;
+			}
+
+			let fragAuthor = document.createDocumentFragment();
+			let fragSeries = document.createDocumentFragment();
+			let fragGenre = document.createDocumentFragment();
+			let fragStatus = document.createDocumentFragment();
+			let fragShelf = document.createDocumentFragment();
+
+			let tpl = document.createElement("li");
+			tpl.innerHTML = document.querySelector("#template-list-item").innerHTML;
+			for (let i = 0, book; book = books[i]; i++) {
+				_buildNavigationItem(tpl, fragStatus, book.status, t("books", `status-${book.status}`));
+
+				if (book.authors) {
+					book.authors.forEach(a => _buildNavigationItem(tpl, fragAuthor, a.fileAs, a.name));
+				}
+				if (book.series) {
+					book.series.forEach(s => _buildNavigationItem(tpl, fragSeries, s.fileAs, s.name));
+				}
+				if (book.genres) {
+					book.genres.forEach(g => _buildNavigationItem(tpl, fragGenre, g, g));
+				}
+				if (book.shelves) {
+					book.shelves.forEach(s => _buildNavigationItem(tpl, fragShelf, s, s));
+				}
+			}
+
+			_sortCategoryFragment(fragAuthor);
+			_sortCategoryFragment(fragSeries);
+			_sortCategoryFragment(fragGenre);
+			_sortCategoryFragment(fragStatus);
+			_sortCategoryFragment(fragShelf);
+
+			document.querySelector("#category > div[data-group='author'] > ul").appendChild(fragAuthor);
+			document.querySelector("#category > div[data-group='series'] > ul").appendChild(fragSeries);
+			document.querySelector("#category > div[data-group='genre'] > ul").appendChild(fragGenre);
+			document.querySelector("#category > div[data-group='status'] > ul").appendChild(fragStatus);
+			document.querySelector("#category > div[data-group='shelf'] > ul").appendChild(fragShelf);
+
 			_showCategory(_groupBy);
 		},
 

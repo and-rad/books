@@ -32,7 +32,7 @@
 </template>
 
 <template id='template-list-item'>
-	<a href='#' class='name'></a><span class='count'></span>
+	<a href='#'></a><span>1</span>
 </template>
 
 <template id='template-toc-item'>

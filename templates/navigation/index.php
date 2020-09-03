@@ -28,22 +28,32 @@
 	</ul>
 	<div id='category'>
 		<div data-group='author'>
-			<ul></ul>
+			<ul>
+				<li class='active'><a href='#'>All</a><span></span></li>
+			</ul>
 		</div>
 		<div data-group='series'>
-			<ul></ul>
+			<ul>
+				<li class='active'><a href='#'>All</a><span></span></li>
+			</ul>
 		</div>
 		<div data-group='genre'>
-			<ul></ul>
+			<ul>
+				<li class='active'><a href='#'>All</a><span></span></li>
+			</ul>
 		</div>
 		<div data-group='status'>
-			<ul></ul>
+			<ul>
+				<li class='active'><a href='#'>All</a><span></span></li>
+			</ul>
 		</div>
 		<div data-group='shelf'>
 			<div class='app-navigation-new'>
 				<button class='icon-add'>New Shelf</button>
 			</div>
-			<ul></ul>
+			<ul>
+				<li class='active'><a href='#'>All</a><span></span></li>
+			</ul>
 		</div>
 	</div>
 </div>
