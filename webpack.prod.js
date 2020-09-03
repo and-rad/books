@@ -9,5 +9,11 @@ module.exports = {
 		path: path.resolve(__dirname, './js'),
 		publicPath: '/js/',
 		filename: '[name].js',
+		chunkFilename: 'vendor.js',
+	},
+	optimization: {
+		splitChunks: {
+			chunks: 'all',
+		},
 	},
 }

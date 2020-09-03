@@ -1,4 +1,5 @@
 <?php
+script('books', 'vendor');
 script('books', 'app');
 script('books', 'jszip.min');
 script('books', 'epub.min');
