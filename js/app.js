@@ -119,6 +119,14 @@ OCA.Books.Core = (function() {
 					book.ready.then(function(){
 						book.locations.generate(1000).then(function(){
 							OCA.Books.UI.hideLoadingScreen();
+
+							let markers = [];
+							book.spine.each(function(elem){
+								let cfi = elem.cfiFromElement(elem.document);
+								markers.push(book.locations.percentageFromCfi(cfi));
+							});
+							OCA.Books.UI.buildMarkers(markers);
+
 							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
 							_rendition.id = id;
 							_rendition.themes.default(OCA.Books.UI.Style.get());
@@ -380,6 +388,21 @@ OCA.Books.UI = (function() {
 			let elem = document.querySelector("#app-navigation-toc");
 			elem.textContent = "";
 			elem.appendChild(_buildTOC(toc));
+		},
+
+		buildMarkers: function(positions) {
+			let frag = document.createDocumentFragment();
+
+			positions.forEach(function(pos){
+				let marker = document.createElement("div");
+				marker.className = "marker";
+				marker.style.left = `${pos * 100}%`;
+				frag.appendChild(marker);
+			});
+
+			let panel = document.querySelector("#reader-progress-markers");
+			panel.textContent = "";
+			panel.appendChild(frag);
 		},
 
 		openReader: function() {

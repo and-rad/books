@@ -331,6 +331,26 @@ th:hover .sort-indicator.hidden {
 	transition: width 0.25s;
 }
 
+#reader-progress-markers {
+	display: none;
+	opacity: 0;
+	position: absolute;
+	z-index: 15;
+	height: 100%;
+	left: 0;
+	right: 0;
+	transition: opacity 0.5s;
+}
+
+#reader-progress-markers .marker {
+	position: absolute;
+	background-color: #686868;
+	width: 6px;
+	height: 6px;
+	top: -2px;
+	border-radius: 3px;
+}
+
 #reader-progress-handle {
 	position: absolute;
 	z-index: 20;
@@ -355,15 +375,6 @@ th:hover .sort-indicator.hidden {
 	top: -16px;
 }
 
-#reader-progress-bar.active #reader-progress-overlay,
-#reader-progress-bar.active #reader-progress-handle {
-	transition: none;
-}
-
-#reader-progress-bar.active #reader-progress-handle > div {
-	transform: scale(10);
-}
-
 #reader-progress-handle:hover {
 	box-shadow: 0 0 3px #444;
 	border: 2px solid var(--color-primary-element-light);
@@ -371,6 +382,23 @@ th:hover .sort-indicator.hidden {
 
 #reader-progress-handle:hover ~ #reader-progress-overlay {
 	background-color: var(--color-primary-element-light);
+}
+
+#reader-progress-handle:hover ~ #reader-progress-markers {
+	display: block;
+}
+
+#reader-progress-bar.active #reader-progress-overlay,
+#reader-progress-bar.active #reader-progress-handle {
+	transition: none;
+}
+
+#reader-progress-bar.active #reader-progress-markers {
+	opacity: 1;
+}
+
+#reader-progress-bar.active #reader-progress-handle > div {
+	transform: scale(10);
 }
 
 #reader-wrapper > button {
