@@ -151,6 +151,24 @@ OCA.Books.Core = (function() {
 				let cfi = _rendition.book.locations.cfiFromPercentage(val);
 				_rendition.display(cfi);
 			}
+		},
+
+		getIds: function(key, value) {
+			let match = [];
+
+			if (key == "author") {
+				match = _books.filter(b => b.authors !== undefined && b.authors.some(a => a.fileAs == value));
+			} else if (key == "series") {
+				match = _books.filter(b => b.series !== undefined && b.series.some(s => s.fileAs == value));
+			} else if (key == "genre") {
+				match = _books.filter(b => b.genres !== undefined && b.genres.includes(value));
+			} else if (key == "status") {
+				match = _books.filter(b => b.status == value);
+			} else if (key == "shelf") {
+				match = _books.filter(b => b.shelves !== undefined && b.shelves.includes(value));
+			}
+
+			return match.map(m => m.id);
 		}
 	};
 })();
@@ -225,6 +243,28 @@ OCA.Books.UI = (function() {
 		document.querySelector(`#list-category > li[data-group='${cat}']`).classList.add("active");
 		document.querySelector(`#category > div[data-group='${cat}']`).style.display = "block";
 		_groupBy = cat;
+		_showGroup("all");
+	};
+
+	var _showGroup = function(id) {
+		let rows = document.querySelectorAll("#app-content tbody tr");
+		if (id == "all") {
+			rows.forEach(r => r.style.display = "table-row");
+		} else {
+			let ids = OCA.Books.Core.getIds(_groupBy, id);
+			for (let i = 0, row; row = rows[i]; i++) {
+				row.style.display = ids.includes(parseInt(row.dataset.id)) ? "table-row" : "none";
+			}
+		}
+
+		let items = document.querySelectorAll(`#category > div[data-group='${_groupBy}'] li`);
+		for (let i = 0, item; item = items[i]; i++) {
+			if (item.dataset.id == id) {
+				item.classList.add("active");
+			} else {
+				item.classList.remove("active");
+			}
+		}
 	};
 
 	var _buildNavigationItem = function(tpl, frag, id, name) {
@@ -236,7 +276,9 @@ OCA.Books.UI = (function() {
 			item = tpl.cloneNode(true);
 			item.dataset.id = id;
 			item.firstElementChild.textContent = name;
-			item.firstElementChild.addEventListener("click", function(evt){ _showGroup(evt.target.dataset.id); });
+			item.firstElementChild.addEventListener("click", function(evt){
+				_showGroup(evt.target.parentNode.dataset.id);
+			});
 			frag.appendChild(item);
 		}
 	};
@@ -358,9 +400,12 @@ OCA.Books.UI = (function() {
 		},
 
 		buildNavigation: function(books) {
-			let all = document.querySelectorAll("#category li:first-child > span");
+			let all = document.querySelectorAll("#category li:first-child");
 			for (let i = 0, a; a = all[i]; i++) {
-				a.textContent = books.length;
+				a.lastElementChild.textContent = books.length;
+				a.firstElementChild.addEventListener("click", function(evt){
+					_showGroup(evt.target.parentNode.dataset.id);
+				});
 			}
 
 			let fragAuthor = document.createDocumentFragment();

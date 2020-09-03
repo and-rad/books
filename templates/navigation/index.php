@@ -29,22 +29,30 @@
 	<div id='category'>
 		<div data-group='author'>
 			<ul>
-				<li class='active'><a href='#'>All</a><span></span></li>
+				<li data-id='all'>
+					<a href='#'>All</a><span></span>
+				</li>
 			</ul>
 		</div>
 		<div data-group='series'>
 			<ul>
-				<li class='active'><a href='#'>All</a><span></span></li>
+				<li data-id='all'>
+					<a href='#'>All</a><span></span>
+				</li>
 			</ul>
 		</div>
 		<div data-group='genre'>
 			<ul>
-				<li class='active'><a href='#'>All</a><span></span></li>
+				<li data-id='all'>
+					<a href='#'>All</a><span></span>
+				</li>
 			</ul>
 		</div>
 		<div data-group='status'>
 			<ul>
-				<li class='active'><a href='#'>All</a><span></span></li>
+				<li data-id='all'>
+					<a href='#'>All</a><span></span>
+				</li>
 			</ul>
 		</div>
 		<div data-group='shelf'>
@@ -52,7 +60,9 @@
 				<button class='icon-add'>New Shelf</button>
 			</div>
 			<ul>
-				<li class='active'><a href='#'>All</a><span></span></li>
+				<li data-id='all'>
+					<a href='#'>All</a><span></span>
+				</li>
 			</ul>
 		</div>
 	</div>
