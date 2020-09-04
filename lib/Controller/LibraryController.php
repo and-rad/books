@@ -59,7 +59,7 @@ class LibraryController extends Controller {
 			return new JSONResponse(['success' => false, 'message' => "scan failed"]);
 		}
 
-		return new JSONResponse(['success' => true]);
+		return new JSONResponse(['success' => true, 'message' => 'Scan completed']);
 	}
 
 	/**
@@ -77,6 +77,6 @@ class LibraryController extends Controller {
 			return new JSONResponse(['success' => false, 'message' => "reset failed"]);
 		}
 
-		return new JSONResponse(['success' => true]);
+		return new JSONResponse(['success' => true, 'message' => 'Library reset done']);
 	}
 }

@@ -19,9 +19,15 @@
 		"watch": "NODE_ENV=development webpack --progress --watch --config webpack.dev.js"
 	},
 	"dependencies": {
+		"@nextcloud/dialogs": "^2.0.1",
 		"@nextcloud/router": "^1.2.0"
 	},
 	"devDependencies": {
+		"css-loader": "^4.2.2",
+		"node-sass": "^4.14.1",
+		"sass-loader": "^10.0.2",
+		"style-loader": "^1.2.1",
+		"url-loader": "^4.1.0",
 		"webpack": "^4.44.1",
 		"webpack-cli": "^3.3.12"
 	}

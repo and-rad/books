@@ -1,3 +1,6 @@
+import { showMessage, showSuccess, showError } from "@nextcloud/dialogs";
+import "@nextcloud/dialogs/styles/toast.scss";
+
 OCA.Books.UI = (function() {
 	var _groupBy = "author";
 	var _sortBy = "title";
@@ -193,18 +196,16 @@ OCA.Books.UI = (function() {
 	};
 
 	return {
-		stylesheet: "/apps/books/css/book.css",
-
 		init: function() {
 			this.Style.init();
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
 				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, function(obj) {
-					console.log(obj);
+					OCA.Books.UI.toast(obj.message, obj.success);
 				});
 			});
 			document.querySelector("#settings-item-reset").addEventListener("click", function() {
 				OCA.Books.Backend.reset(function(obj) {
-					console.log(obj);
+					OCA.Books.UI.toast(obj.message, obj.success);
 				});
 			});
 			document.querySelector("#reader-prev").addEventListener("click", function(){
@@ -391,6 +392,16 @@ OCA.Books.UI = (function() {
 
 			if (statusOld !== undefined && statusNew != statusOld) {
 				_refreshCategory("status");
+			}
+		},
+
+		toast: function(msg, ok) {
+			if (ok === undefined) {
+				showMessage(msg);
+			} else if (ok) {
+				showSuccess(msg);
+			} else {
+				showError(msg);
 			}
 		},
 

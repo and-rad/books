@@ -15,6 +15,26 @@ module.exports = {
 		filename: '[name].js',
 		chunkFilename: 'vendor.js',
 	},
+	module: {
+		rules: [
+			{
+				test: /\.css$/,
+				use: ['style-loader', 'css-loader'],
+			},
+			{
+				test: /\.scss$/,
+				use: ['style-loader', 'css-loader', 'sass-loader'],
+			},
+			{
+				test: /\.(png|jpg|gif|svg)$/,
+				loader: 'url-loader',
+				options: {
+					name: '[name].[ext]?[hash]',
+					limit: 8192,
+				},
+			},
+		],
+	},
 	optimization: {
 		splitChunks: {
 			chunks: 'all',
