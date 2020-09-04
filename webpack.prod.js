@@ -3,7 +3,11 @@ const path = require('path')
 module.exports = {
 	mode: 'production',
 	entry: {
-		'app': path.join(__dirname, 'src', 'app.js'),
+		'app': [
+			path.join(__dirname, 'src', 'core.js'),
+			path.join(__dirname, 'src', 'ui.js'),
+			path.join(__dirname, 'src', 'backend.js'),
+		],
 	},
 	output: {
 		path: path.resolve(__dirname, './js'),
