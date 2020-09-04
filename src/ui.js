@@ -2,7 +2,7 @@ OCA.Books.UI = (function() {
 	var _groupBy = "author";
 	var _sortBy = "title";
 	var _sortAsc = true;
-	var _sliderTimeout = undefined;
+	var _timeoutHandleSlider = undefined;
 
 	var _refreshMore = function(objs, field) {
 		let more = field.querySelector(".more");
@@ -158,14 +158,14 @@ OCA.Books.UI = (function() {
 	};
 
 	var _onProgressHandleMoved = function(evt) {
-		clearTimeout(_sliderTimeout);
+		clearTimeout(_timeoutHandleSlider);
 
 		let width = document.querySelector("#reader-progress-bar").getBoundingClientRect().width;
 		let pos = Math.min(Math.max(evt.pageX - 44, 0), width);
 		document.querySelector("#reader-progress-handle").style.left = (pos - 7) + "px";
 		document.querySelector("#reader-progress-overlay").style.width = pos + "px" ;
 
-		_sliderTimeout = setTimeout(function(){
+		_timeoutHandleSlider = setTimeout(function(){
 			OCA.Books.Core.toPercent(pos / width);
 		}, 250);
 	};
