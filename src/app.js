@@ -38,9 +38,10 @@ OCA.Books.Core = (function() {
 				let book = _books.find(elem => elem.id == _rendition.id);
 				OCA.Books.Backend.saveProgress(_rendition.id, cfi, function(obj){
 					if (obj.success) {
+						let status = book.status;
 						book.progress = cfi;
 						book.status = book.status || 1;
-						OCA.Books.UI.refreshStatus(_rendition.id, book.status);
+						OCA.Books.UI.refreshStatus(_rendition.id, book.status, status);
 					}
 				});
 			}
@@ -169,6 +170,24 @@ OCA.Books.Core = (function() {
 			}
 
 			return match.map(m => m.id);
+		},
+
+		getMeta: function(key) {
+			let meta = [];
+
+			if (key == "author") {
+				meta = _books.filter(b => b.authors !== undefined).map(b => b.authors.map(a => [a.fileAs, a.name])).flat();
+			} else if (key == "series") {
+				meta = _books.filter(b => b.series !== undefined).map(b => b.series.map(s => [s.fileAs, s.name])).flat();
+			} else if (key == "genre") {
+				meta = _books.filter(b => b.genres !== undefined).map(b => b.genres.map(g => [g, g])).flat();
+			} else if (key == "status") {
+				meta = _books.map(b => [[b.status], t("books", `status-${b.status}`)]);
+			} else if (key == "shelf") {
+				meta = _books.filter(b => b.shelves !== undefined).map(b => b.shelves.map(s => [s, s])).flat();
+			}
+
+			return meta;
 		}
 	};
 })();
@@ -188,6 +207,21 @@ OCA.Books.UI = (function() {
 			more.style.display = "none";
 		}
 	};
+
+	var _refreshCategory = function(cat) {
+		let vals = OCA.Books.Core.getMeta(cat);
+
+		let frag = document.createDocumentFragment();
+		let tpl = document.createElement("li");
+		tpl.innerHTML = document.querySelector("#template-list-item").innerHTML;
+		vals.forEach(v => _buildNavigationItem(tpl, frag, v[0], v[1]));
+		_sortCategoryFragment(frag);
+
+		let list = document.querySelector(`#category div[data-group='${cat}'] > ul`);
+		frag.prepend(list.firstElementChild);
+		list.innerHTML = "";
+		list.appendChild(frag);
+	}
 
 	var _sortShelf = function(cat, toggle) {
 		_sortBy = cat;
@@ -403,48 +437,16 @@ OCA.Books.UI = (function() {
 			let all = document.querySelectorAll("#category li:first-child");
 			for (let i = 0, a; a = all[i]; i++) {
 				a.lastElementChild.textContent = books.length;
-				a.firstElementChild.addEventListener("click", function(evt){
+				a.firstElementChild.onclick = function(evt) {
 					_showGroup(evt.target.parentNode.dataset.id);
-				});
+				};
 			}
 
-			let fragAuthor = document.createDocumentFragment();
-			let fragSeries = document.createDocumentFragment();
-			let fragGenre = document.createDocumentFragment();
-			let fragStatus = document.createDocumentFragment();
-			let fragShelf = document.createDocumentFragment();
-
-			let tpl = document.createElement("li");
-			tpl.innerHTML = document.querySelector("#template-list-item").innerHTML;
-			for (let i = 0, book; book = books[i]; i++) {
-				_buildNavigationItem(tpl, fragStatus, book.status, t("books", `status-${book.status}`));
-
-				if (book.authors) {
-					book.authors.forEach(a => _buildNavigationItem(tpl, fragAuthor, a.fileAs, a.name));
-				}
-				if (book.series) {
-					book.series.forEach(s => _buildNavigationItem(tpl, fragSeries, s.fileAs, s.name));
-				}
-				if (book.genres) {
-					book.genres.forEach(g => _buildNavigationItem(tpl, fragGenre, g, g));
-				}
-				if (book.shelves) {
-					book.shelves.forEach(s => _buildNavigationItem(tpl, fragShelf, s, s));
-				}
-			}
-
-			_sortCategoryFragment(fragAuthor);
-			_sortCategoryFragment(fragSeries);
-			_sortCategoryFragment(fragGenre);
-			_sortCategoryFragment(fragStatus);
-			_sortCategoryFragment(fragShelf);
-
-			document.querySelector("#category > div[data-group='author'] > ul").appendChild(fragAuthor);
-			document.querySelector("#category > div[data-group='series'] > ul").appendChild(fragSeries);
-			document.querySelector("#category > div[data-group='genre'] > ul").appendChild(fragGenre);
-			document.querySelector("#category > div[data-group='status'] > ul").appendChild(fragStatus);
-			document.querySelector("#category > div[data-group='shelf'] > ul").appendChild(fragShelf);
-
+			_refreshCategory("author");
+			_refreshCategory("series");
+			_refreshCategory("genre");
+			_refreshCategory("status");
+			_refreshCategory("shelf");
 			_showCategory(_groupBy);
 		},
 
@@ -576,10 +578,14 @@ OCA.Books.UI = (function() {
 			}
 		},
 
-		refreshStatus: function(id, status) {
+		refreshStatus: function(id, statusNew, statusOld) {
 			let icons = document.querySelectorAll(`#app-content tr[data-id='${id}'] .cover svg`);
 			for (let i = 0, icon; icon = icons[i]; i++) {
-				icon.style.display = (icon.classList.contains(`status-${status}`)) ? "block" : "none";
+				icon.style.display = (icon.classList.contains(`status-${statusNew}`)) ? "block" : "none";
+			}
+
+			if (statusOld !== undefined && statusNew != statusOld) {
+				_refreshCategory("status");
 			}
 		},
 
