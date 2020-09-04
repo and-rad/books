@@ -46,6 +46,14 @@ OCA.Books.Core = (function() {
 		}, 1000);
 	};
 
+	var _resolveTOCPath = function(toc, prefix) {
+		prefix = prefix.substring(0,prefix.lastIndexOf("/")+1);
+		toc.forEach(function(entry){
+			entry.href = prefix + entry.href;
+			_resolveTOCPath(entry.subitems, prefix);
+		});
+	};
+
 	return {
 		init: function() {
 			window.addEventListener("bookstylechange", function(){
@@ -74,7 +82,10 @@ OCA.Books.Core = (function() {
 					OCA.Books.UI.openReader();
 					OCA.Books.UI.showLoadingScreen();
 					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
-					book.loaded.navigation.then(OCA.Books.UI.buildTOC);
+					book.loaded.navigation.then(function(toc){
+						_resolveTOCPath(toc.toc, book.packaging.navPath || book.packaging.ncxPath);
+						OCA.Books.UI.buildTOC(toc);
+					});
 					book.ready.then(function(){
 						book.locations.generate(1000).then(function(){
 							OCA.Books.UI.hideLoadingScreen();
