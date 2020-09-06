@@ -26,7 +26,7 @@ OCA.Books.UI = (function() {
 		vals.forEach(v => _buildNavigationItem(tpl, frag, v[0], v[1]));
 		_sortCategoryFragment(frag);
 
-		let list = document.querySelector(`#category div[data-group='${cat}'] > ul`);
+		let list = document.querySelector(`#category div[data-group="${cat}"] > ul`);
 		frag.prepend(list.firstElementChild);
 		list.innerHTML = "";
 		list.appendChild(frag);
@@ -81,10 +81,10 @@ OCA.Books.UI = (function() {
 	};
 
 	var _showCategory = function(cat) {
-		document.querySelector(`#list-category > li[data-group='${_groupBy}']`).classList.remove("active");
-		document.querySelector(`#category > div[data-group='${_groupBy}']`).style.display = "none";
-		document.querySelector(`#list-category > li[data-group='${cat}']`).classList.add("active");
-		document.querySelector(`#category > div[data-group='${cat}']`).style.display = "block";
+		document.querySelector(`#list-category > li[data-group="${_groupBy}"]`).classList.remove("active");
+		document.querySelector(`#category > div[data-group="${_groupBy}"]`).style.display = "none";
+		document.querySelector(`#list-category > li[data-group="${cat}"]`).classList.add("active");
+		document.querySelector(`#category > div[data-group="${cat}"]`).style.display = "block";
 		_groupBy = cat;
 		_showGroup("all");
 	};
@@ -100,7 +100,7 @@ OCA.Books.UI = (function() {
 			}
 		}
 
-		let items = document.querySelectorAll(`#category > div[data-group='${_groupBy}'] li`);
+		let items = document.querySelectorAll(`#category > div[data-group="${_groupBy}"] li`);
 		for (let i = 0, item; item = items[i]; i++) {
 			if (item.dataset.id == id) {
 				item.classList.add("active");
@@ -111,7 +111,7 @@ OCA.Books.UI = (function() {
 	};
 
 	var _buildNavigationItem = function(tpl, frag, id, name) {
-		let item = frag.querySelector(`li[data-id='${id}']`);
+		let item = frag.querySelector(`li[data-id="${id}"]`);
 		if (item) {
 			let num = parseInt(item.lastElementChild.textContent);
 			item.lastElementChild.textContent = num + 1;
@@ -402,7 +402,7 @@ OCA.Books.UI = (function() {
 		},
 
 		refreshStatus: function(id, statusNew, statusOld) {
-			let icons = document.querySelectorAll(`#app-content tr[data-id='${id}'] .cover svg`);
+			let icons = document.querySelectorAll(`#app-content tr[data-id="${id}"] .cover svg`);
 			for (let i = 0, icon; icon = icons[i]; i++) {
 				icon.style.display = (icon.classList.contains(`status-${statusNew}`)) ? "block" : "none";
 			}
