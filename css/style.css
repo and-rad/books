@@ -260,7 +260,8 @@ th:hover .sort-indicator.hidden {
 	align-items: center;
 }
 
-.app-shelf-item .field > div > span {
+.app-shelf-item .field > div > span,
+.app-shelf-item .field > div > div {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	width: 0;
@@ -270,6 +271,24 @@ th:hover .sort-indicator.hidden {
 .app-shelf-item .field.title,
 .app-shelf-item .field.title * {
 	cursor: pointer;
+}
+
+
+.app-shelf-item .field.title span {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.app-shelf-item .field a.action {
+	display: block;
+	opacity: 0.3;
+	height: 3em;
+	width: 3em;
+}
+
+.app-shelf-item .field a.action:hover {
+	opacity: 1;
 }
 
 .app-shelf-item .field .more {
@@ -324,6 +343,71 @@ th:hover .sort-indicator.hidden {
 	#section-title {
 		display: none;
 	}
+}
+
+/* sidebar */
+
+#app-sidebar {
+	position: fixed;
+	width: calc(100vw - 44px);
+	transition: right 0.25s;
+}
+
+#app-sidebar.hidden {
+	right: -500px;
+}
+
+#app-sidebar > header {
+	border-bottom: 1px solid var(--color-border);
+}
+
+#app-sidebar > header > a {
+	position: absolute;
+	width: 44px;
+	height: 44px;
+	right: 0;
+	top: 0;
+	opacity: 0.6;
+}
+
+#app-sidebar > header a:hover {
+	opacity: 1;
+}
+
+#app-sidebar > header h1 {
+	overflow-x: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	margin-right: 44px;
+	line-height: 44px;
+	font-size: 22px;
+	padding: 0 0.5em;
+	color: var(--color-text-light);
+}
+
+#app-sidebar .tabbar {
+	margin-bottom: -1px;
+	display: flex;
+}
+
+#app-sidebar .tabbar > a {
+	display: block;
+	flex-grow: 1;
+	text-align: center;
+	padding: 0.5em;
+	height: 36px;
+	opacity: 0.57;
+	border-bottom: 2px solid transparent;
+}
+
+#app-sidebar .tabbar > a.active,
+#app-sidebar .tabbar > a:hover {
+	opacity: 1;
+	border-color: var(--color-main-text);
+}
+
+#app-sidebar > div {
+	padding: 0.5em;
 }
 
 /* EPUB reader */

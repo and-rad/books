@@ -18,6 +18,7 @@ style('books', 'style');
 		</div>
 		<div id='app-content-wrapper'>
 			<?php print_unescaped($this->inc('content/index')); ?>
+			<?php print_unescaped($this->inc('content/sidebar')); ?>
 		</div>
 		<div id='reader-wrapper'>
 			<?php print_unescaped($this->inc('content/reader')); ?>

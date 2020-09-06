@@ -8,8 +8,13 @@
 		</div>
 	</td>
 	<td class='field title' data-file-as=''>
-		<div><span class='title-1'></span></div>
-		<div><span class='title-2'></span></div>
+		<div>
+			<div>
+				<span class='title-1'></span>
+				<span class='title-2'></span>
+			</div>
+			<a class="action icon icon-more" href="#"></a>
+		</div>
 	</td>
 	<td class='field author' data-file-as=''>
 		<div>

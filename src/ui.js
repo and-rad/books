@@ -155,6 +155,17 @@ OCA.Books.UI = (function() {
 		OCA.Books.Core.open(id, "reader");
 	};
 
+	var _onItemActionClicked = function(evt) {
+		evt.preventDefault();
+		evt.stopPropagation();
+		document.querySelector("#app-sidebar").classList.remove("hidden");
+	};
+
+	var _onSidebarClosed = function(evt) {
+		evt.preventDefault();
+		document.querySelector("#app-sidebar").classList.add("hidden");
+	};
+
 	var _onTOCItemClicked = function(evt) {
 		evt.preventDefault();
 		OCA.Books.Core.toSection(evt.target.getAttribute("href"));
@@ -239,6 +250,7 @@ OCA.Books.UI = (function() {
 			document.querySelector("#font-settings").addEventListener("change", function(evt){
 				OCA.Books.UI.Style.setFontSize(evt.target.value);
 			});
+			document.querySelector("#app-sidebar > header > a").addEventListener("click", _onSidebarClosed);
 
 			let cats = document.querySelectorAll("#list-category > li > a");
 			for (let i = 0, cat; cat = cats[i]; i++) {
@@ -296,6 +308,7 @@ OCA.Books.UI = (function() {
 				fields[1].querySelector(".title-1").textContent = book.titles[0].name;
 				fields[1].dataset.fileAs = book.titles[0].fileAs;
 				fields[1].addEventListener("click", _onItemClicked);
+				fields[1].querySelector("a.action").addEventListener("click", _onItemActionClicked);
 				if (book.series) {
 					let series = book.series[0];
 					fields[1].dataset.fileAs = `${series.fileAs}${series.pos}`;
