@@ -50,10 +50,10 @@ OCA.Books.Backend = (function() {
 		},
 
 		scan: function(dir, callback) {
-			let data = `dir=${dir}`;
-			_post(generateUrl("apps/books/api/0.1/scan"), data, function() {
-				callback(JSON.parse(this.response));
-			});
+			let source = new OC.EventSource(generateUrl("apps/books/api/0.1/scan?dir="+dir));
+			source.listen('progress', callback.updateFunc);
+			source.listen('done', callback.doneFunc);
+			source.listen('error', callback.errorFunc);
 		},
 
 		reset: function(callback) {

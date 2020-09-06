@@ -23,7 +23,10 @@ style('books', 'style');
 			<?php print_unescaped($this->inc('content/reader')); ?>
 		</div>
 		<div id="spinner">
-			<div></div><div></div><div></div><div></div>
+			<div></div><div></div><div></div><div></div><div></div>
+			<svg viewBox='0 0 256 256'>
+				<circle r='112' cx='128' cy='128' stroke-dasharray='0 710' transform='rotate(-90 128 128)'/>
+			</svg>
 		</div>
 	</div>
 </div>

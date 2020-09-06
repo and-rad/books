@@ -1,6 +1,7 @@
 <?php
 namespace OCA\Books\Controller;
 
+use OC;
 use OCP\IRequest;
 use OCP\IConfig;
 use OCP\AppFramework\Controller;
@@ -14,6 +15,7 @@ class LibraryController extends Controller {
 	private $userId;
 	private $config;
 	private $rootFolder;
+	private $eventSource;
 
 	public function __construct(
 		string $AppName,
@@ -26,6 +28,7 @@ class LibraryController extends Controller {
 		$this->userId = $userId;
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
+		$this->eventSource = OC::$server->createEventSource();
 	}
 
 	/**
@@ -55,11 +58,14 @@ class LibraryController extends Controller {
 
 		$this->config->setUserValue($this->userId, $this->appName, 'library', $dir);
 
-		if (!(new LibraryService($node, new EventLog(), $this->config))->scan()) {
-			return new JSONResponse(['success' => false, 'message' => "scan failed"]);
+		if (!(new LibraryService($node, new EventLog(), $this->config))->scan($this->eventSource)) {
+			$this->eventSource->send('done',['success' => false, 'message' => 'Scan failed']);
+		} else {
+			$this->eventSource->send('done',['success' => true, 'message' => 'Scan completed']);
 		}
 
-		return new JSONResponse(['success' => true, 'message' => 'Scan completed']);
+		$this->eventSource->close();
+		return new JSONResponse();
 	}
 
 	/**

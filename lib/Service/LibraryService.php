@@ -65,7 +65,7 @@ class LibraryService {
 		return $data;
 	}
 
-	public function scan() : bool {
+	public function scan($eventSource) : bool {
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
 				return false;
@@ -74,14 +74,20 @@ class LibraryService {
 
 		$metadata = [];
 		$this->scanDir($this->node, $metadata);
+		$eventSource->send('progress',['message' => sprintf('found %d books', count($metadata))]);
+
 		if (!$this->syncRemoved(array_column($metadata, 'filename'))) {
 			$this->log->error('filename sync failed');
 			return false;
 		}
 
-		foreach ($metadata as $meta) {
+		foreach ($metadata as $i => $meta) {
 			if ($this->addBook($meta)) {
-				$this->log->info(sprintf('added to library: "%s"', $meta->filename));
+				$eventSource->send('progress', [
+					'done' => $i + 1,
+					'total' => count($metadata),
+					'message' => $meta->filename],
+				);
 			}
 		}
 

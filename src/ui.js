@@ -199,9 +199,25 @@ OCA.Books.UI = (function() {
 		init: function() {
 			this.Style.init();
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
-				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, function(obj) {
-					OCA.Books.UI.toast(obj.message, obj.success);
-				});
+				OCA.Books.UI.showLoadingScreen();
+				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, (function(){
+					var bar = document.querySelector("#spinner > svg circle");
+					return {
+						updateFunc: function(obj){
+							let progress = (obj.done / obj.total) * 700;
+							bar.style.strokeDasharray = `${progress} 710`;
+						},
+						doneFunc: function(obj){
+							OCA.Books.UI.toast(obj.message, true);
+							bar.style.strokeDasharray = `705 710`;
+							setTimeout(OCA.Books.UI.hideLoadingScreen, 1000);
+						},
+						errorFunc: function(obj){
+							OCA.Books.UI.toast(obj.message, false);
+							setTimeout(OCA.Books.UI.hideLoadingScreen, 1000);
+						}
+					};
+				})());
 			});
 			document.querySelector("#settings-item-reset").addEventListener("click", function() {
 				OCA.Books.Backend.reset(function(obj) {
@@ -355,6 +371,7 @@ OCA.Books.UI = (function() {
 
 		hideLoadingScreen: function() {
 			document.querySelector("#spinner").style.display = "none";
+			document.querySelector("#spinner svg circle").style.strokeDasharray = "0 710";
 		},
 
 		activateSlider: function() {

@@ -491,7 +491,7 @@ th:hover .sort-indicator.hidden {
 	display: none;
 	width: 76px;
 	height: 76px;
-	top: 50%;
+	top: 50vh;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
 }
@@ -509,16 +509,42 @@ th:hover .sort-indicator.hidden {
 	border-color: var(--color-main-text) transparent transparent transparent;
 }
 
-#spinner div:nth-child(1) {
-	animation-delay: -0.45s;
+#spinner div:first-child {
+	width: 200%;
+	height: 200%;
+	top: -50%;
+	left: -50%;
+	margin: 0;
+	animation: none;
+	border: none;
+	background-image: radial-gradient(rgba(255,255,255,0.9) 40%,transparent 70%);
 }
 
 #spinner div:nth-child(2) {
-	animation-delay: -0.3s;
+	animation-delay: -0.45s;
 }
 
 #spinner div:nth-child(3) {
+	animation-delay: -0.3s;
+}
+
+#spinner div:nth-child(4) {
 	animation-delay: -0.15s;
+}
+
+#spinner svg {
+	position: absolute;
+	width: 82px;
+	height: 82px;
+	top: -3px;
+	left: -3px;
+}
+
+#spinner svg circle {
+	stroke: var(--color-primary-element-light);
+	stroke-width: 10;
+	transition: stroke-dasharray 0.2s;
+	fill: none !important;
 }
 
 @keyframes spinner {
