@@ -23,7 +23,19 @@ OCA.Books.Core = (function() {
 		_updateHandle = setTimeout(function() {
 			let cfi = _rendition.location.start.cfi;
 			let progress = _rendition.book.locations.percentageFromCfi(cfi);
-			OCA.Books.UI.refreshProgress(progress, _section.href);
+
+			let all = [];
+			_rendition.book.navigation.toc.filter(t => t.href.startsWith(_section.href))
+			.map(t => [t].concat(t.subitems)).flat()
+			.forEach(a => {
+				let id= a.href.split("#")[1];
+				let el = id ? _section.document.getElementById(id) : _section.document.body;
+				let num = _rendition.book.locations.percentageFromCfi(_section.cfiFromElement(el));
+				all.push({href: a.href, percent: num});
+			});
+
+			let item = all.filter(a => a.percent <= progress).pop() || all[0] || {href: _section.href};
+			OCA.Books.UI.refreshProgress(progress, item.href);
 		}, 250);
 	};
 
