@@ -95,7 +95,12 @@ OCA.Books.Core = (function() {
 					OCA.Books.UI.showLoadingScreen();
 					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
 					book.loaded.navigation.then(function(toc){
-						_resolveTOCPath(toc.toc, book.packaging.navPath || book.packaging.ncxPath);
+						let tocPath = book.packaging.navPath || book.packaging.ncxPath;
+						if (tocPath) {
+							_resolveTOCPath(toc.toc, tocPath);
+						} else {
+							toc = book.spine.items.map(i => ({label: i.idref, href: i.href, subitems:[]}));
+						}
 						OCA.Books.UI.buildTOC(toc);
 					});
 					book.ready.then(function(){
