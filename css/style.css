@@ -110,7 +110,8 @@
 
 #app-settings-content > label input[type="text"],
 #app-settings-content > label select {
-	flex-basis: 70%;
+	flex-basis: 66%;
+	min-width: 150px;
 }
 
 #app-settings-content > ul {
