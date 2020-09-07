@@ -102,15 +102,19 @@ class Metadata {
 
 		// optional: cover file
 		$filename = '';
+		$coverid = '';
+		foreach($metadata->meta as $m) {
+			if ($m['name'] == 'cover') {
+				$coverid = (string)$m['content'];
+			}
+		}
 		foreach ($manifest->item as $item) {
-			$p = $item['properties'];
-			if ($p && strpos($p, 'cover-image') !== false) {
+			if ((string)$item['properties'] == 'cover-image') {
 				$filename = $item['href'];
 				break;
 			}
 
-			$id = $item['id'];
-			if ($id == 'cover') {
+			if ($coverid != '' && (string)$item['id'] == $coverid) {
 				$filename = $item['href'];
 				break;
 			}
