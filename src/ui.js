@@ -120,6 +120,7 @@ OCA.Books.UI = (function() {
 			item.dataset.id = id;
 			item.firstElementChild.textContent = name;
 			item.firstElementChild.addEventListener("click", function(evt){
+				evt.preventDefault();
 				_showGroup(evt.target.parentNode.dataset.id);
 			});
 			frag.appendChild(item);
@@ -324,7 +325,7 @@ OCA.Books.UI = (function() {
 
 				if (book.genres) {
 					fields[3].dataset.fileAs = book.genres[0];
-					fields[3].querySelector(".genre-1").textContent = book.genres[0];
+					fields[3].querySelector(".genre-1").textContent = t("books", book.genres[0]);
 					_refreshMore(book.genres,fields[3]);
 				}
 
