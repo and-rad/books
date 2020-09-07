@@ -1,3 +1,7 @@
+* {
+	-webkit-tap-highlight-color: transparent;
+}
+
 #app {
 	width: 100%;
 }
@@ -569,6 +573,13 @@ th:hover .sort-indicator.hidden {
 
 #reader {
 	height: calc(100% - 7px);
+	padding: 16px 16px 0 16px;
+}
+
+@media only screen and (min-width: 600px) {
+	#reader {
+		padding: 0;
+	}
 }
 
 #spinner {

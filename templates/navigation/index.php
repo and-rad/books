@@ -1,27 +1,27 @@
 <div id='app-navigation-main'>
 	<ul id='list-category'>
 		<li data-group='author'>
-			<a href='#'>
+			<a href='#' class='app-navigation-noclose'>
 				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#person'/></svg> Authors
 			</a>
 		</li>
 		<li data-group='series'>
-			<a href='#'>
+			<a href='#' class='app-navigation-noclose'>
 				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#series'/></svg> Series
 			</a>
 		</li>
 		<li data-group='genre'>
-			<a href='#'>
+			<a href='#' class='app-navigation-noclose'>
 				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#genres'/></svg> Genres
 			</a>
 		</li>
 		<li data-group='status'>
-			<a href='#'>
+			<a href='#' class='app-navigation-noclose'>
 				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#done'/></svg> Read Status
 			</a>
 		</li>
 		<li data-group='shelf'>
-			<a href='#'>
+			<a href='#' class='app-navigation-noclose'>
 				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#star'/></svg> Shelves
 			</a>
 		</li>
@@ -57,7 +57,7 @@
 		</div>
 		<div data-group='shelf'>
 			<div class='app-navigation-new'>
-				<button class='icon-add'>New Shelf</button>
+				<button class='icon-add app-navigation-noclose'>New Shelf</button>
 			</div>
 			<ul>
 				<li data-id='all'>
