@@ -86,7 +86,7 @@ class LibraryService {
 				$eventSource->send('progress', [
 					'done' => $i + 1,
 					'total' => count($metadata),
-					'message' => $meta->filename],
+					'message' => $meta->filename]
 				);
 			}
 		}
