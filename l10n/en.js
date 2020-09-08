@@ -12,6 +12,7 @@ OC.L10N.register(
 		"COM000000": "Computers",
 		"COM085000": "Documentation and Technical Writing",
 		"FIC000000": "Fiction",
+		"FIC004000": "Classics",
 		"FIC009000": "Fantasy",
 		"FIC009070": "Dark Fantasy",
 		"FIC022000": "Mystery and Detective",

@@ -25,8 +25,8 @@ OCA.Books.Core = (function() {
 			let progress = _rendition.book.locations.percentageFromCfi(cfi);
 
 			let all = [];
-			_rendition.book.navigation.toc.filter(t => t.href.startsWith(_section.href))
-			.map(t => [t].concat(t.subitems)).flat()
+			_rendition.book.navigation.toc.map(t => [t].concat(t.subitems)).flat()
+			.filter(t => t.href.startsWith(_section.href))
 			.forEach(a => {
 				let id= a.href.split("#")[1];
 				let el = id ? _section.document.getElementById(id) : _section.document.body;
