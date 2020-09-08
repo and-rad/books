@@ -178,9 +178,19 @@ class Metadata {
 					$series[$id]->name = (string) $m;
 					$series[$id]->fileAs = (string) $m;
 				}
-			} else if ($m['property'] == 'group-position') {
+			}
+		}
+		foreach($metadata->meta as $m) {
+			if ($m['property'] == 'group-position') {
 				$id = str_replace('#', '', $m['refines']);
-				$series[$id]->pos = (float) $m;
+				if (isset($series[$id])) {
+					$series[$id]->pos = (float) $m;
+				}
+			} else if ($m['property'] == 'file-as') {
+				$id = str_replace('#', '', $m['refines']);
+				if (isset($series[$id])) {
+					$series[$id]->fileAs = (string) $m;
+				}
 			}
 		}
 		$meta->series = array_values($series);
