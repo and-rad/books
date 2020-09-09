@@ -150,6 +150,11 @@ class LibraryService {
 			$metadata[$id]->status = 0;
 		}
 
+		$res = $db->query('select id,desc from book');
+		while ($set = $res->fetchArray()) {
+			$metadata[$set['id']]->description = $set['desc'];
+		}
+
 		$res = $db->query('select distinct book_id from cover');
 		while ($set = $res->fetchArray()) {
 			$metadata[$set['book_id']]->hasCover = true;
@@ -200,7 +205,8 @@ class LibraryService {
 		$ok = $db->exec("create table if not exists book(
 			id integer primary key autoincrement,
 			identifier text not null unique,
-			filename text not null)"
+			filename text not null,
+			desc text not null)"
 		)
 		&& $db->exec("create table if not exists title(
 			id integer primary key autoincrement,
@@ -365,9 +371,10 @@ class LibraryService {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 		$db->exec("pragma foreign_keys=ON");
 
-		$stmt = $db->prepare("insert into book(identifier,filename)values(:id,:fn)");
+		$stmt = $db->prepare("insert into book(identifier,filename, desc)values(:id,:fn,:ds)");
 		$stmt->bindValue(':id', $meta->identifier);
 		$stmt->bindValue(':fn', $meta->filename);
+		$stmt->bindValue(':ds', $meta->description ?? '');
 		if ($stmt->execute() === false) {
 			$db->close();
 			return false;

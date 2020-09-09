@@ -17,6 +17,7 @@ class Metadata {
 	public $cover;
 	public $identifier;
 	public $filename;
+	public $description;
 	public $titles = [];
 	public $languages = [];
 	public $authors = [];
@@ -168,6 +169,11 @@ class Metadata {
 
 		// optional: genre
 		$meta->genres = $dc->subject;
+
+		// optional: description
+		if ($dc->description) {
+			$meta->description = (string)$dc->description[0];
+		}
 
 		// optional: series
 		$series = [];

@@ -182,9 +182,8 @@ OCA.Books.Core = (function() {
 
 		getBook: function(id) {
 			let meta = _books.filter(b => b.id == id)[0];
-			let desc = "";
 			let raw = undefined;
-			return { meta: meta, desc: desc, raw: raw};
+			return { meta: meta, raw: raw};
 		},
 
 		getIds: function(key, value) {

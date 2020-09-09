@@ -160,7 +160,7 @@ OCA.Books.UI = (function() {
 		let data = OCA.Books.Core.getBook(id);
 		let details = sidebar.querySelector("#app-sidebar-details");
 		details.querySelector("figure > img").src = OCA.Books.Backend.coverPath(id);
-		details.querySelector(".description").textContent = data.desc;
+		details.querySelector(".description").innerHTML = data.meta.description;
 
 		if (data.meta.titles) {
 			details.querySelector(".title").textContent = data.meta.titles[0].name;
