@@ -218,6 +218,18 @@ OCA.Books.Core = (function() {
 			}
 
 			return meta;
+		},
+
+		getOPF: function(id, callback) {
+			OCA.Books.Backend.getLocation(id, function(obj) {
+				if (obj.success) {
+					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
+					book.ready.then(function(){
+						let file = Object.keys(book.archive.zip.files).filter(f => f.endsWith(".opf"))[0];
+						book.archive.getText(`/${file}`).then(callback);
+					});
+				}
+			});
 		}
 	};
 })();

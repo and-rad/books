@@ -347,12 +347,18 @@ th:hover .sort-indicator.hidden {
 
 #app-sidebar {
 	position: fixed;
-	width: calc(100vw - 44px);
-	transition: right 0.25s;
+	max-width: calc(100vw - 44px);
+	width: 500px;
+	transition: right 0.25s, width 0.25s;
 }
 
 #app-sidebar.hidden {
 	right: -500px;
+	width: 500px !important;
+}
+
+#app-sidebar.wide {
+	width: calc(100vw - 44px);
 }
 
 #app-sidebar > header {
@@ -439,6 +445,36 @@ th:hover .sort-indicator.hidden {
 #app-sidebar-details .author {
 	color: var(--color-text-lighter);
 	margin-bottom: 0.5em;
+}
+
+#app-sidebar-raw {
+	height: 100%;
+}
+
+#app-sidebar-raw textarea {
+	margin: 0;
+	width: 100%;
+	height: calc(100% - 42px);
+	font-family: monospace;
+	font-size: 11px;
+}
+
+#app-sidebar-raw textarea + div {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#app-sidebar-raw textarea + div > a {
+	opacity: 0.6;
+}
+
+#app-sidebar-raw textarea + div > a:hover {
+	opacity: 1;
+}
+
+#app-sidebar-raw textarea + div > button {
+	margin: 0;
 }
 
 /* EPUB reader */

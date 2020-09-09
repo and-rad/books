@@ -20,6 +20,11 @@
 		</div>
 
 		<div id='app-sidebar-raw'>
+			<textarea></textarea>
+			<div>
+				<a href='#' class='icon-fullscreen'></a>
+				<button>Save</button>
+			</div>
 		</div>
 	</div>
 </div>

@@ -152,9 +152,15 @@ OCA.Books.UI = (function() {
 	};
 
 	var _openSidebar = function(id) {
-		let sidebar = document.querySelector("#app-sidebar")
+		let sidebar = document.querySelector("#app-sidebar");
+		sidebar.dataset.id = id;
+
 		if (sidebar.classList.contains("hidden")) {
 			_showSidebarSection(0);
+		} else {
+			let tabs = sidebar.querySelector(".tabbar");
+			let tab = sidebar.querySelector(".tabbar > .active");
+			_showSidebarSection(Array.from(tabs.children).indexOf(tab));
 		}
 
 		let data = OCA.Books.Core.getBook(id);
@@ -167,8 +173,13 @@ OCA.Books.UI = (function() {
 		cover.src = OCA.Books.Backend.coverPath(id);
 		cover.style.display = data.hasCover ? "block" : "none";
 
-		sidebar.dataset.id = id;
 		sidebar.classList.remove("hidden");
+	};
+
+	var _closeSidebar = function() {
+		let sidebar = document.querySelector("#app-sidebar");
+		sidebar.classList.add("hidden");
+		sidebar.classList.remove("wide");
 	};
 
 	var _showSidebarSection = function(idx) {
@@ -180,12 +191,21 @@ OCA.Books.UI = (function() {
 		for (let i = 0, sec; sec = secs[i]; i++) {
 			i == idx ? sec.style.display = "block" : sec.style.display = "none";
 		}
+
+		let sidebar = document.querySelector("#app-sidebar");
+		let raw = sidebar.querySelector("#app-sidebar-raw");
+		if (idx == 2 && raw.dataset.id != sidebar.dataset.id) {
+			OCA.Books.Core.getOPF(sidebar.dataset.id, function(data){
+				raw.dataset.id = sidebar.dataset.id;
+				raw.querySelector("textarea").value = data;
+			});
+		}
 	};
 
 	var _onItemClicked = function(evt) {
-		document.querySelector("#app-sidebar").classList.add("hidden");
 		let id = evt.target.closest("tr").dataset.id;
 		OCA.Books.Core.open(id, "reader");
+		_closeSidebar();
 	};
 
 	var _onItemActionClicked = function(evt) {
@@ -280,7 +300,11 @@ OCA.Books.UI = (function() {
 			});
 			document.querySelector("#app-sidebar > header > a").addEventListener("click", function(evt){
 				evt.preventDefault();
-				document.querySelector("#app-sidebar").classList.add("hidden");
+				_closeSidebar();
+			});
+			document.querySelector("#app-sidebar-raw .icon-fullscreen").addEventListener("click", function(evt){
+				evt.preventDefault();
+				document.querySelector("#app-sidebar").classList.toggle("wide");
 			});
 
 			let cats = document.querySelectorAll("#list-category > li > a");
