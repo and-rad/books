@@ -298,7 +298,7 @@ OCA.Books.UI = (function() {
 				item.className = "app-shelf-item";
 
 				if (book.status != 0) {
-					fields[0].querySelector(`svg.status-${book.status}`).style.display = "block";
+					fields[0].querySelector(`.status-${book.status}`).style.display = "block";
 				}
 				if (book.hasCover) {
 					fields[0].firstElementChild.style.backgroundImage = OCA.Books.Backend.coverUrl(book.id);
@@ -416,7 +416,7 @@ OCA.Books.UI = (function() {
 		},
 
 		refreshStatus: function(id, statusNew, statusOld) {
-			let icons = document.querySelectorAll(`#app-content tr[data-id="${id}"] .cover svg`);
+			let icons = document.querySelectorAll(`#app-content tr[data-id="${id}"] .cover .icon`);
 			for (let i = 0, icon; icon = icons[i]; i++) {
 				icon.style.display = (icon.classList.contains(`status-${statusNew}`)) ? "block" : "none";
 			}

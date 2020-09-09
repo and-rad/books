@@ -210,7 +210,7 @@ th:hover .sort-indicator.hidden {
 	width: 4.5em;
 }
 
-.app-shelf-item .cover div {
+.app-shelf-item .cover > div {
 	background-color: #888;
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -221,7 +221,7 @@ th:hover .sort-indicator.hidden {
 	border-radius: 1.75em;
 }
 
-.app-shelf-item .cover div .placeholder {
+.app-shelf-item .cover > div .placeholder {
 	position: absolute;
 	text-align: center;
 	width: 100%;
@@ -231,27 +231,26 @@ th:hover .sort-indicator.hidden {
 	font-size: 2em;
 }
 
-.app-shelf-item .cover div .icon {
+.app-shelf-item .cover > div .icon {
 	width: 35%;
-	height: auto;
+	height: 35%;
 	position: absolute;
 	top: -2px;
 	left: -2px;
 	box-shadow: 0 0 4px #222;
-	fill: #fff;
 	display: none;
 }
 
-.app-shelf-item .cover svg.status-1 {
-	background: #ff9300;
+.app-shelf-item .cover .status-1 {
+	background-color: #ff9300;
 }
 
-.app-shelf-item .cover svg.status-2 {
-	background: rgb(53, 192, 53);
+.app-shelf-item .cover .status-2 {
+	background-color: rgb(53, 192, 53);
 }
 
-.app-shelf-item .cover svg.status-3 {
-	background: rgb(192, 53, 53);
+.app-shelf-item .cover .status-3 {
+	background-color: rgb(192, 53, 53);
 }
 
 .app-shelf-item .field > div {
