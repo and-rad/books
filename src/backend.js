@@ -62,6 +62,10 @@ OCA.Books.Backend = (function() {
 			});
 		},
 
+		coverPath: function(id) {
+			return `${generateUrl("apps/books/api/0.1/cover")}/${id}`;
+		},
+
 		coverUrl: function(id) {
 			return `url("${generateUrl("apps/books/api/0.1/cover")}/${id}")`;
 		}

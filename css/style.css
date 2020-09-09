@@ -408,6 +408,31 @@ th:hover .sort-indicator.hidden {
 	padding: 0.5em;
 }
 
+#app-sidebar-details figure {
+	float: left;
+	width: 192px;
+	max-height: 300px;
+	overflow: hidden;
+	margin: 0 0.5em 0.5em 0;
+	border: 1px solid var(--color-border);
+}
+
+#app-sidebar-details figure img {
+	display: block;
+}
+
+#app-sidebar-details .description + * {
+	clear: both;
+}
+
+#app-sidebar-details .title {
+	font-size: 1.2em;
+}
+
+#app-sidebar-details .author {
+	color: var(--color-text-lighter);
+}
+
 /* EPUB reader */
 
 #reader-wrapper {

@@ -10,6 +10,10 @@
 	</header>
 	<div class='tabcontent'>
 		<div id='app-sidebar-details'>
+			<figure><img alt='Cover'></figure>
+			<p class='description'></p>
+			<p class="title"></p>
+			<p class="author"></p>
 		</div>
 
 		<div id='app-sidebar-metadata'>
@@ -17,5 +21,5 @@
 
 		<div id='app-sidebar-raw'>
 		</div>
-		</div>
+	</div>
 </div>

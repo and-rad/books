@@ -156,6 +156,19 @@ OCA.Books.UI = (function() {
 		if (sidebar.classList.contains("hidden")) {
 			_showSidebarSection(0);
 		}
+
+		let data = OCA.Books.Core.getBook(id);
+		let details = sidebar.querySelector("#app-sidebar-details");
+		details.querySelector("figure > img").src = OCA.Books.Backend.coverPath(id);
+		details.querySelector(".description").textContent = data.desc;
+
+		if (data.meta.titles) {
+			details.querySelector(".title").textContent = data.meta.titles[0].name;
+		}
+		if (data.meta.authors) {
+			details.querySelector(".author").textContent = data.meta.authors[0].name;
+		}
+
 		sidebar.classList.remove("hidden");
 	};
 
