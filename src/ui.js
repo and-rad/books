@@ -152,6 +152,7 @@ OCA.Books.UI = (function() {
 	};
 
 	var _onItemClicked = function(evt) {
+		document.querySelector("#app-sidebar").classList.add("hidden");
 		let id = evt.target.closest("tr").dataset.id;
 		OCA.Books.Core.open(id, "reader");
 	};
