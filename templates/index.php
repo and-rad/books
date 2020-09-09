@@ -3,6 +3,7 @@ script('books', 'vendor');
 script('books', 'app');
 script('books', 'jszip.min');
 script('books', 'epub.min');
+style('books', 'icons');
 style('books', 'style');
 ?>
 

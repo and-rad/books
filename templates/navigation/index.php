@@ -1,29 +1,19 @@
 <div id='app-navigation-main'>
 	<ul id='list-category'>
 		<li data-group='author'>
-			<a href='#' class='app-navigation-noclose'>
-				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#person'/></svg> Authors
-			</a>
+			<a href='#' class='app-navigation-noclose nav-icon-author'>Authors</a>
 		</li>
 		<li data-group='series'>
-			<a href='#' class='app-navigation-noclose'>
-				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#series'/></svg> Series
-			</a>
+			<a href='#' class='app-navigation-noclose nav-icon-series'>Series</a>
 		</li>
 		<li data-group='genre'>
-			<a href='#' class='app-navigation-noclose'>
-				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#genres'/></svg> Genres
-			</a>
+			<a href='#' class='app-navigation-noclose nav-icon-genre'>Genres</a>
 		</li>
 		<li data-group='status'>
-			<a href='#' class='app-navigation-noclose'>
-				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#done'/></svg> Read Status
-			</a>
+			<a href='#' class='app-navigation-noclose nav-icon-status'>Read Status</a>
 		</li>
 		<li data-group='shelf'>
-			<a href='#' class='app-navigation-noclose'>
-				<svg viewBox='0 0 24 24'><use href='/apps/books/img/icons.svg#star'/></svg> Shelves
-			</a>
+			<a href='#' class='app-navigation-noclose nav-icon-shelf'>Shelves</a>
 		</li>
 	</ul>
 	<div id='category'>

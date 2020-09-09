@@ -26,20 +26,14 @@
 
 #list-category > li > a {
 	display: block;
+	background-size: 16px 16px;
+	background-position: 14px center;
+	background-repeat: no-repeat;
 	padding: 0 12px 0 44px;
 	min-height: 44px;
 	line-height: 44px;
 	overflow-x: hidden;
 	text-overflow: ellipsis;
-}
-
-#list-category > li > a > svg {
-	width: 1.2em;
-	height: 1.2em;
-	position: absolute;
-	top: 50%;
-	left: 14px;
-	transform: translateY(-50%);
 }
 
 #list-category > li:hover,
