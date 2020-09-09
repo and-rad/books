@@ -151,6 +151,25 @@ OCA.Books.UI = (function() {
 		return list;
 	};
 
+	var _openSidebar = function(id) {
+		let sidebar = document.querySelector("#app-sidebar")
+		if (sidebar.classList.contains("hidden")) {
+			_showSidebarSection(0);
+		}
+		sidebar.classList.remove("hidden");
+	};
+
+	var _showSidebarSection = function(idx) {
+		let tabs = document.querySelectorAll("#app-sidebar header nav > a");
+		for (let i = 0, tab; tab = tabs[i]; i++) {
+			i == idx ? tab.classList.add("active") : tab.classList.remove("active");
+		}
+		let secs = document.querySelectorAll("#app-sidebar .tabcontent > div");
+		for (let i = 0, sec; sec = secs[i]; i++) {
+			i == idx ? sec.style.display = "block" : sec.style.display = "none";
+		}
+	};
+
 	var _onItemClicked = function(evt) {
 		document.querySelector("#app-sidebar").classList.add("hidden");
 		let id = evt.target.closest("tr").dataset.id;
@@ -160,12 +179,7 @@ OCA.Books.UI = (function() {
 	var _onItemActionClicked = function(evt) {
 		evt.preventDefault();
 		evt.stopPropagation();
-		document.querySelector("#app-sidebar").classList.remove("hidden");
-	};
-
-	var _onSidebarClosed = function(evt) {
-		evt.preventDefault();
-		document.querySelector("#app-sidebar").classList.add("hidden");
+		_openSidebar(evt.target.closest("tr").dataset.id);
 	};
 
 	var _onTOCItemClicked = function(evt) {
@@ -252,13 +266,24 @@ OCA.Books.UI = (function() {
 			document.querySelector("#font-settings").addEventListener("change", function(evt){
 				OCA.Books.UI.Style.setFontSize(evt.target.value);
 			});
-			document.querySelector("#app-sidebar > header > a").addEventListener("click", _onSidebarClosed);
+			document.querySelector("#app-sidebar > header > a").addEventListener("click", function(evt){
+				evt.preventDefault();
+				document.querySelector("#app-sidebar").classList.add("hidden");
+			});
 
 			let cats = document.querySelectorAll("#list-category > li > a");
 			for (let i = 0, cat; cat = cats[i]; i++) {
 				cat.addEventListener("click", function(evt){
 					_showCategory(evt.target.parentNode.dataset.group);
 					evt.preventDefault();
+				});
+			}
+
+			let tabs = document.querySelectorAll("#app-sidebar header nav > a");
+			for (let i = 0, tab; tab = tabs[i]; i++) {
+				tab.addEventListener("click", function(evt){
+					evt.preventDefault();
+					_showSidebarSection(Array.from(tab.parentNode.children).indexOf(evt.target));
 				});
 			}
 

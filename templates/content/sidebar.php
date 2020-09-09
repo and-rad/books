@@ -2,11 +2,20 @@
 	<header>
 		<a href="#" class="icon-close"></a>
 		<h1>Book Details</h1>
-		<div class='tabbar'>
-			<a href='#' class='active'>Details</a>
+		<nav class='tabbar'>
+			<a href='#'>Details</a>
 			<a href='#'>Metadata</a>
 			<a href='#'>Raw Data</a>
-		</div>
+		</nav>
 	</header>
-	<div></div>
+	<div class='tabcontent'>
+		<div id='app-sidebar-details'>
+		</div>
+
+		<div id='app-sidebar-metadata'>
+		</div>
+
+		<div id='app-sidebar-raw'>
+		</div>
+		</div>
 </div>
