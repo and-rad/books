@@ -36,12 +36,6 @@ OCA.Books.Backend = (function() {
 			});
 		},
 
-		getLocation: function(id, callback) {
-			_get(generateUrl("apps/books/api/0.1/loc/"+id), function() {
-				callback(JSON.parse(this.response));
-			});
-		},
-
 		saveProgress: function(id, value, callback) {
 			let data = `id=${id}&progress=${value}`;
 			_post(generateUrl("apps/books/api/0.1/progress"), data, function() {

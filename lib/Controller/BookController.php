@@ -68,26 +68,6 @@ class BookController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 */
-	public function location($id) : JSONResponse {
-		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');
-		$root = $this->rootFolder->getUserFolder($this->userId);
-
-		if (!$root->nodeExists($dir)) {
-			return new JSONResponse(['success' => false, 'message' => 'err.dir']);
-		}
-
-		$loc = (new LibraryService($root->get($dir), new EventLog(), $this->config))->location($id);
-		return new JSONResponse([
-			'success' => true,
-			'message' => 'msg.ok',
-			'data' => '/remote.php/webdav'.$dir.$loc,
-		]);
-	}
-
-	/**
-	 * @NoAdminRequired
 	 */
 	public function progress(int $id, string $progress) : JSONResponse {
 		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');

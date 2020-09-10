@@ -39,6 +39,7 @@ class PageController extends Controller {
 
 		return new JSONResponse([
 			'library' => $lib,
+			'remote' => '/remote.php/webdav'.$lib,
 		]);
 	}
 }

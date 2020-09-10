@@ -3,6 +3,7 @@ if (!OCA.Books) {
 }
 
 OCA.Books.Core = (function() {
+	var _conf = {};
 	var _books = [];
 	var _section = {};
 	var _rendition = undefined;
@@ -76,11 +77,11 @@ OCA.Books.Core = (function() {
 
 			OCA.Books.Backend.getConfig(function(obj) {
 				document.querySelector("#path-settings").value = obj.library;
+				_conf = obj;
 			});
 			OCA.Books.Backend.getBooks(function(obj) {
 				if (obj.success) {
 					_books = obj.data;
-					console.log(_books);
 					OCA.Books.UI.buildShelf(_books);
 					OCA.Books.UI.buildNavigation(_books);
 				}
@@ -90,45 +91,45 @@ OCA.Books.Core = (function() {
 
 		open: function(id, elem) {
 			this.close();
-			OCA.Books.Backend.getLocation(id, function(obj) {
-				if (obj.success) {
-					OCA.Books.UI.openReader();
-					OCA.Books.UI.showLoadingScreen();
-					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
-					book.loaded.navigation.then(function(toc){
-						let tocPath = book.packaging.navPath || book.packaging.ncxPath;
-						if (tocPath) {
-							_resolveTOCPath(toc.toc, tocPath);
-						} else {
-							toc = book.spine.items.map(i => ({label: i.idref, href: i.href, subitems:[]}));
-						}
-						OCA.Books.UI.buildTOC(toc);
-					});
-					book.ready.then(function(){
-						book.locations.generate(1000).then(function(){
-							OCA.Books.UI.hideLoadingScreen();
 
-							let markers = [];
-							book.spine.each(function(elem){
-								let cfi = elem.cfiFromElement(elem.document);
-								markers.push(book.locations.percentageFromCfi(cfi));
-							});
-							OCA.Books.UI.buildMarkers(markers);
+			OCA.Books.UI.openReader();
+			OCA.Books.UI.showLoadingScreen();
 
-							_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
-							_rendition.id = id;
-							_rendition.themes.default(OCA.Books.UI.Style.get());
-							_rendition.display(_progress(id));
-							_rendition.on("relocated", function(){
-								_updateProgressUI();
-								_saveProgress();
-							});
-							_rendition.on("rendered", function(section){
-								_section = section;
-							});
-						});
-					});
+			let path = _conf.remote + this.getBook(id).filename;
+			let book = ePub(path, { replacements: "blobUrl", openAs: "epub" });
+			book.loaded.navigation.then(function(toc){
+				let tocPath = book.packaging.navPath || book.packaging.ncxPath;
+				if (tocPath) {
+					_resolveTOCPath(toc.toc, tocPath);
+				} else {
+					toc = book.spine.items.map(i => ({label: i.idref, href: i.href, subitems:[]}));
 				}
+				OCA.Books.UI.buildTOC(toc);
+			});
+
+			book.ready.then(function(){
+				book.locations.generate(1000).then(function(){
+					OCA.Books.UI.hideLoadingScreen();
+
+					let markers = [];
+					book.spine.each(function(elem){
+						let cfi = elem.cfiFromElement(elem.document);
+						markers.push(book.locations.percentageFromCfi(cfi));
+					});
+					OCA.Books.UI.buildMarkers(markers);
+
+					_rendition = book.renderTo(elem, { width: "100%", height: "100%" });
+					_rendition.id = id;
+					_rendition.themes.default(OCA.Books.UI.Style.get());
+					_rendition.display(_progress(id));
+					_rendition.on("relocated", function(){
+						_updateProgressUI();
+						_saveProgress();
+					});
+					_rendition.on("rendered", function(section){
+						_section = section;
+					});
+				});
 			});
 		},
 
@@ -222,14 +223,11 @@ OCA.Books.Core = (function() {
 		},
 
 		getOPF: function(id, callback) {
-			OCA.Books.Backend.getLocation(id, function(obj) {
-				if (obj.success) {
-					let book = ePub(obj.data, { replacements: "blobUrl", openAs: "epub" });
-					book.ready.then(function(){
-						let file = Object.keys(book.archive.zip.files).filter(f => f.endsWith(".opf"))[0];
-						book.archive.getText(`/${file}`).then(callback);
-					});
-				}
+			let path = _conf.remote + this.getBook(id).filename;
+			let book = ePub(path, { replacements: "blobUrl", openAs: "epub" });
+			book.ready.then(function(){
+				let file = Object.keys(book.archive.zip.files).filter(f => f.endsWith(".opf"))[0];
+				book.archive.getText(`/${file}`).then(callback);
 			});
 		}
 	};
