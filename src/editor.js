@@ -30,6 +30,16 @@ OCA.Books.Editor = (function() {
 		return _cm.Pass;
 	};
 
+	var _completeInTag = function(ed) {
+		return _completeAfter(ed, function() {
+			let tok = ed.getTokenAt(ed.getCursor());
+			if (tok.type == "string" && (!/['"]/.test(tok.string.charAt(tok.string.length - 1)) || tok.string.length == 1)) {
+				return false;
+			}
+			return _cm.innerMode(ed.getMode(), tok.state).state.tagName;
+		});
+	};
+
 	var _schemaOpf = {
 		"!top": ["one"],
 		one: {children: ["two","three"]},
@@ -45,6 +55,8 @@ OCA.Books.Editor = (function() {
 		autoCloseTags: true,
 		extraKeys: {
 			"'<'": _completeAfter,
+			"' '": _completeInTag,
+			"'='": _completeInTag,
 			"Ctrl-Space": "autocomplete"
 		},
 		hintOptions: {
