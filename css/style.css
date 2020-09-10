@@ -411,9 +411,13 @@ th:hover .sort-indicator.hidden {
 }
 
 #app-sidebar > div {
-	padding: 0.5em;
 	overflow-y: auto;
 	height: calc(100vh - 131px);
+}
+
+#app-sidebar-details,
+#app-sidebar-metadata {
+	padding: 0.5em;
 }
 
 #app-sidebar-details figure {
@@ -449,18 +453,26 @@ th:hover .sort-indicator.hidden {
 
 #app-sidebar-raw {
 	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+#app-sidebar-raw.hidden {
+	display: none;
 }
 
 #app-sidebar-raw .CodeMirror {
-	height: calc(100% - 42px);
-	margin-bottom: 0.5em;
-	border: 1px solid var(--color-border);
+	flex-grow: 1;
+	border-bottom: 1px solid var(--color-border);
+	font-size: 11px;
+	line-height: normal;
 }
 
 #app-sidebar-raw .editor-controls {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	padding: 0.5em;
 }
 
 #app-sidebar-raw .editor-controls a {

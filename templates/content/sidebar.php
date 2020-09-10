@@ -9,17 +9,17 @@
 		</nav>
 	</header>
 	<div class='tabcontent'>
-		<div id='app-sidebar-details'>
+		<div id='app-sidebar-details' class='hidden'>
 			<p class="title"></p>
 			<p class="author"></p>
 			<figure><img alt='Cover'></figure>
 			<p class='description'></p>
 		</div>
 
-		<div id='app-sidebar-metadata'>
+		<div id='app-sidebar-metadata' class='hidden'>
 		</div>
 
-		<div id='app-sidebar-raw'>
+		<div id='app-sidebar-raw' class='hidden'>
 			<textarea></textarea>
 			<div class='editor-controls'>
 				<a href='#' class='icon-fullscreen'></a>
