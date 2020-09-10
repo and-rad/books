@@ -1,11 +1,11 @@
 <div id='app-sidebar' class='hidden'>
 	<header>
 		<a href='#' class='icon-close'></a>
-		<h1>Book Details</h1>
+		<h1><?php p($l->t('sidebar-head')); ?></h1>
 		<nav class='tabbar'>
-			<a href='#'>Details</a>
-			<a href='#'>Metadata</a>
-			<a href='#'>Raw Data</a>
+			<a href='#'><?php p($l->t('sidebar-details')); ?></a>
+			<a href='#'><?php p($l->t('sidebar-meta')); ?></a>
+			<a href='#'><?php p($l->t('sidebar-editor')); ?></a>
 		</nav>
 	</header>
 	<div class='tabcontent'>
@@ -18,22 +18,22 @@
 			</section>
 			<section>
 				<div class='row'>
-					<label>Read Status</label>
+					<label><?php p($l->t('status')); ?></label>
 					<select class='status'>
-						<option value='0'>Unread</option>
-						<option value='1'>In Progress</option>
-						<option value='2'>Finished</option>
-						<option value='3'>Aborted</option>
+						<option value='0'><?php p($l->t('status-0')); ?></option>
+						<option value='1'><?php p($l->t('status-1')); ?></option>
+						<option value='2'><?php p($l->t('status-2')); ?></option>
+						<option value='3'><?php p($l->t('status-3')); ?></option>
 					</select>
 				</div>
 				<div class='row'>
-					<label>Shelves</label>
+					<label><?php p($l->t('shelves')); ?></label>
 					<div class='multiselect input'>
 						<input type='text'>
 					</div>
 				</div>
 				<div class='row'>
-					<label>File Name</label>
+					<label><?php p($l->t('book-filename')); ?></label>
 					<input type='text' class='location' readonly>
 				</div>
 			</section>
@@ -46,7 +46,7 @@
 			<textarea></textarea>
 			<div class='editor-controls'>
 				<a href='#' class='icon-fullscreen'></a>
-				<button>Save</button>
+				<button><?php p($l->t('wgt-save')); ?></button>
 			</div>
 		</div>
 	</div>

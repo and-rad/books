@@ -1,7 +1,17 @@
 {
 	"translations": {
-		"books.ok": "Ok",
-		"books.err": "There was an error reading the library"
+		"book-filename": "File Name",
+		"shelves": "Shelves",
+		"sidebar-details": "Details",
+		"sidebar-editor": "Editor",
+		"sidebar-head": "Book Details",
+		"sidebar-meta": "Metadata",
+		"status": "Read Status",
+		"status-0": "Unread",
+		"status-1": "In Progress",
+		"status-2": "Finished",
+		"status-3": "Aborted",
+		"wgt-save": "Save"
 	},
 	"pluralForm": ""
 }
