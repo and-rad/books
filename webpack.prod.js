@@ -5,8 +5,9 @@ module.exports = {
 	entry: {
 		'app': [
 			path.join(__dirname, 'src', 'core.js'),
-			path.join(__dirname, 'src', 'ui.js'),
 			path.join(__dirname, 'src', 'backend.js'),
+			path.join(__dirname, 'src', 'editor.js'),
+			path.join(__dirname, 'src', 'ui.js'),
 		],
 	},
 	output: {

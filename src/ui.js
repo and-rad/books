@@ -1,27 +1,11 @@
 import { showMessage, showSuccess, showError } from "@nextcloud/dialogs";
 import "@nextcloud/dialogs/styles/toast.scss";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/lucario.css";
-import "codemirror/addon/edit/closetag";
-import "codemirror/addon/edit/matchtags";
-import "codemirror/addon/fold/xml-fold";
-import "codemirror/addon/selection/active-line";
-import "codemirror/mode/xml/xml";
 
 OCA.Books.UI = (function() {
 	var _groupBy = "author";
 	var _sortBy = "title";
 	var _sortAsc = true;
 	var _timeoutHandleSlider = undefined;
-	var _editor = undefined;
-	var _editorOptions = {
-		mode: "xml",
-		lineNumbers: true,
-		styleActiveLine: true,
-		matchTags: true,
-		autoCloseTags: true,
-		theme: "default"
-	};
 
 	var _refreshMore = function(objs, field) {
 		let more = field.querySelector(".more");
@@ -189,11 +173,7 @@ OCA.Books.UI = (function() {
 		cover.src = OCA.Books.Backend.coverPath(id);
 		cover.style.display = data.hasCover ? "block" : "none";
 
-		if (_editor === undefined) {
-			_editor = (require("codemirror")).fromTextArea(document.querySelector("#app-sidebar-raw textarea"), _editorOptions);
-			_editor.refresh();
-		}
-
+		OCA.Books.Editor.init("#app-sidebar-raw textarea");
 		sidebar.classList.remove("hidden");
 	};
 
@@ -202,10 +182,7 @@ OCA.Books.UI = (function() {
 		sidebar.classList.add("hidden");
 		sidebar.classList.remove("wide");
 		sidebar.querySelector("#app-sidebar-raw").dataset.id = undefined;
-		if (_editor) {
-			_editor.toTextArea();
-			_editor = undefined;
-		}
+		OCA.Books.Editor.close();
 	};
 
 	var _showSidebarSection = function(idx) {
@@ -223,15 +200,8 @@ OCA.Books.UI = (function() {
 		if (idx == 2 && raw.dataset.id != sidebar.dataset.id) {
 			OCA.Books.Core.getOPF(sidebar.dataset.id, function(data){
 				raw.dataset.id = sidebar.dataset.id;
-				_editor.setValue(data);
+				OCA.Books.Editor.setValue(data);
 			});
-		}
-	};
-
-	var _setEditorTheme = function(mode) {
-		_editorOptions.theme = mode;
-		if (_editor) {
-			_editor.setOption("theme", mode);
 		}
 	};
 
@@ -289,12 +259,7 @@ OCA.Books.UI = (function() {
 
 	return {
 		init: function() {
-			window.addEventListener("themechange", function(evt){
-				_setEditorTheme(evt.detail);
-			});
-
 			this.Style.init();
-
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
 				OCA.Books.UI.showLoadingScreen();
 				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, (function(){
