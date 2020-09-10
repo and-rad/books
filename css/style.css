@@ -461,6 +461,8 @@ th:hover .sort-indicator.hidden {
 	display: none;
 }
 
+/* code editor */
+
 #app-sidebar-raw .CodeMirror {
 	flex-grow: 1;
 	border-bottom: 1px solid var(--color-border);
@@ -470,6 +472,10 @@ th:hover .sort-indicator.hidden {
 
 .cm-s-lucario .CodeMirror-activeline-background {
 	background: #556 !important;
+}
+
+.CodeMirror-hints {
+	z-index: 1050 !important;
 }
 
 #app-sidebar-raw .editor-controls {

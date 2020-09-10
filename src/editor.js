@@ -1,12 +1,22 @@
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/lucario.css";
+import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/matchtags";
 import "codemirror/addon/fold/xml-fold";
+import "codemirror/addon/hint/show-hint";
+import "codemirror/addon/hint/xml-hint";
 import "codemirror/addon/selection/active-line";
 import "codemirror/mode/xml/xml";
 
 OCA.Books.Editor = (function() {
+	var _schemaOpf = {
+		"!top": ["one"],
+		one: {children: ["two","three"]},
+		two: {children: []},
+		three: {children: []}
+	};
+
 	var _cm = require("codemirror");
 	var _editor = undefined;
 	var _options = {
@@ -15,6 +25,13 @@ OCA.Books.Editor = (function() {
 		styleActiveLine: true,
 		matchTags: true,
 		autoCloseTags: true,
+		extraKeys: {
+			"Ctrl-Space": "autocomplete"
+		},
+		hintOptions: {
+			completeSingle: false,
+			schemaInfo: _schemaOpf
+		},
 		theme: "default"
 	};
 
