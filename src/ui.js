@@ -1,14 +1,20 @@
 import { showMessage, showSuccess, showError } from "@nextcloud/dialogs";
 import "@nextcloud/dialogs/styles/toast.scss";
 import "codemirror/lib/codemirror.css";
+import "codemirror/theme/lucario.css";
 import "codemirror/mode/xml/xml";
 
 OCA.Books.UI = (function() {
 	var _groupBy = "author";
 	var _sortBy = "title";
 	var _sortAsc = true;
-	var _editor = undefined;
 	var _timeoutHandleSlider = undefined;
+	var _editor = undefined;
+	var _editorOptions = {
+		mode: "xml",
+		lineNumbers: true,
+		theme: "default"
+	};
 
 	var _refreshMore = function(objs, field) {
 		let more = field.querySelector(".more");
@@ -177,10 +183,7 @@ OCA.Books.UI = (function() {
 		cover.style.display = data.hasCover ? "block" : "none";
 
 		if (_editor === undefined) {
-			_editor = (require("codemirror")).fromTextArea(document.querySelector("#app-sidebar-raw textarea"),{
-				mode: "xml",
-				lineNumbers: true,
-			});
+			_editor = (require("codemirror")).fromTextArea(document.querySelector("#app-sidebar-raw textarea"), _editorOptions);
 			_editor.refresh();
 		}
 
@@ -203,7 +206,7 @@ OCA.Books.UI = (function() {
 		}
 		let secs = document.querySelectorAll("#app-sidebar .tabcontent > div");
 		for (let i = 0, sec; sec = secs[i]; i++) {
-			i == idx ? sec.style.display = "block" : sec.style.display = "none";
+			i == idx ? sec.classList.remove("hidden") : sec.classList.add("hidden");
 		}
 
 		let sidebar = document.querySelector("#app-sidebar");
@@ -213,6 +216,13 @@ OCA.Books.UI = (function() {
 				raw.dataset.id = sidebar.dataset.id;
 				_editor.setValue(data);
 			});
+		}
+	};
+
+	var _setEditorTheme = function(mode) {
+		_editorOptions.theme = mode;
+		if (_editor) {
+			_editor.setOption("theme", mode);
 		}
 	};
 
@@ -270,7 +280,12 @@ OCA.Books.UI = (function() {
 
 	return {
 		init: function() {
+			window.addEventListener("themechange", function(evt){
+				_setEditorTheme(evt.detail);
+			});
+
 			this.Style.init();
+
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
 				OCA.Books.UI.showLoadingScreen();
 				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, (function(){

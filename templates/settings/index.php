@@ -26,8 +26,8 @@
 		<label>
 			Color Mode
 			<select id="color-settings">
-				<option value="light">Light</option>
-				<option value="dark">Dark</option>
+				<option value="default">Light</option>
+				<option value="lucario">Dark</option>
 			</select>
 		</label>
 		<label>
