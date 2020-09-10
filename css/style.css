@@ -466,8 +466,12 @@ th:hover .sort-indicator.hidden {
 #app-sidebar-raw .CodeMirror {
 	flex-grow: 1;
 	border-bottom: 1px solid var(--color-border);
-	font-size: 11px;
 	line-height: normal;
+}
+
+#app-sidebar-raw .CodeMirror *,
+.CodeMirror-hints {
+	font-size: 12px;
 }
 
 .cm-s-lucario .CodeMirror-activeline-background {
@@ -475,7 +479,28 @@ th:hover .sort-indicator.hidden {
 }
 
 .CodeMirror-hints {
-	z-index: 1050 !important;
+	position: absolute;
+	z-index: 1050;
+	background: #ffffff;
+	box-shadow: 0 0 4px #888;
+	list-style: none;
+	font-family: monospace;
+	max-height: 20em;
+	overflow-y: auto;
+}
+
+.CodeMirror-hint {
+	padding: 0 0.5em;
+	white-space: nowrap;
+	cursor: pointer;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	width: 20em;
+}
+
+li.CodeMirror-hint-active {
+	color: #ffffff;
+	background: var(--color-primary-element-light);
 }
 
 #app-sidebar-raw .editor-controls {

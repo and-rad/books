@@ -1,6 +1,5 @@
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/lucario.css";
-import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/edit/closetag";
 import "codemirror/addon/edit/matchtags";
 import "codemirror/addon/fold/xml-fold";
