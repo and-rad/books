@@ -2,6 +2,10 @@ import { showMessage, showSuccess, showError } from "@nextcloud/dialogs";
 import "@nextcloud/dialogs/styles/toast.scss";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/lucario.css";
+import "codemirror/addon/edit/closetag";
+import "codemirror/addon/edit/matchtags";
+import "codemirror/addon/fold/xml-fold";
+import "codemirror/addon/selection/active-line";
 import "codemirror/mode/xml/xml";
 
 OCA.Books.UI = (function() {
@@ -13,6 +17,9 @@ OCA.Books.UI = (function() {
 	var _editorOptions = {
 		mode: "xml",
 		lineNumbers: true,
+		styleActiveLine: true,
+		matchTags: true,
+		autoCloseTags: true,
 		theme: "default"
 	};
 

@@ -468,6 +468,10 @@ th:hover .sort-indicator.hidden {
 	line-height: normal;
 }
 
+.cm-s-lucario .CodeMirror-activeline-background {
+	background: #556 !important;
+}
+
 #app-sidebar-raw .editor-controls {
 	display: flex;
 	justify-content: space-between;
