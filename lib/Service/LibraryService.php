@@ -150,9 +150,11 @@ class LibraryService {
 			$metadata[$id]->status = 0;
 		}
 
-		$res = $db->query('select id,desc from book');
+		$res = $db->query('select id,filename,desc from book');
 		while ($set = $res->fetchArray()) {
-			$metadata[$set['id']]->description = $set['desc'];
+			$id = $set['id'];
+			$metadata[$id]->description = $set['desc'];
+			$metadata[$id]->filename = $set['filename'];
 		}
 
 		$res = $db->query('select distinct book_id from cover');
