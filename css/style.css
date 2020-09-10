@@ -451,29 +451,27 @@ th:hover .sort-indicator.hidden {
 	height: 100%;
 }
 
-#app-sidebar-raw textarea {
-	margin: 0;
-	width: 100%;
+#app-sidebar-raw .CodeMirror {
 	height: calc(100% - 42px);
-	font-family: monospace;
-	font-size: 11px;
+	margin-bottom: 0.5em;
+	border: 1px solid var(--color-border);
 }
 
-#app-sidebar-raw textarea + div {
+#app-sidebar-raw .editor-controls {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 }
 
-#app-sidebar-raw textarea + div > a {
+#app-sidebar-raw .editor-controls a {
 	opacity: 0.6;
 }
 
-#app-sidebar-raw textarea + div > a:hover {
+#app-sidebar-raw .editor-controls a:hover {
 	opacity: 1;
 }
 
-#app-sidebar-raw textarea + div > button {
+#app-sidebar-raw .editor-controls button {
 	margin: 0;
 }
 

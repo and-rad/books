@@ -20,7 +20,8 @@
 	},
 	"dependencies": {
 		"@nextcloud/dialogs": "^2.0.1",
-		"@nextcloud/router": "^1.2.0"
+		"@nextcloud/router": "^1.2.0",
+		"codemirror": "^5.57.0"
 	},
 	"devDependencies": {
 		"css-loader": "^4.2.2",

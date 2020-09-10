@@ -1,10 +1,13 @@
 import { showMessage, showSuccess, showError } from "@nextcloud/dialogs";
 import "@nextcloud/dialogs/styles/toast.scss";
+import "codemirror/lib/codemirror.css";
+import "codemirror/mode/xml/xml";
 
 OCA.Books.UI = (function() {
 	var _groupBy = "author";
 	var _sortBy = "title";
 	var _sortAsc = true;
+	var _editor = undefined;
 	var _timeoutHandleSlider = undefined;
 
 	var _refreshMore = function(objs, field) {
@@ -173,6 +176,14 @@ OCA.Books.UI = (function() {
 		cover.src = OCA.Books.Backend.coverPath(id);
 		cover.style.display = data.hasCover ? "block" : "none";
 
+		if (_editor === undefined) {
+			_editor = (require("codemirror")).fromTextArea(document.querySelector("#app-sidebar-raw textarea"),{
+				mode: "xml",
+				lineNumbers: true,
+			});
+			_editor.refresh();
+		}
+
 		sidebar.classList.remove("hidden");
 	};
 
@@ -180,6 +191,9 @@ OCA.Books.UI = (function() {
 		let sidebar = document.querySelector("#app-sidebar");
 		sidebar.classList.add("hidden");
 		sidebar.classList.remove("wide");
+		sidebar.querySelector("#app-sidebar-raw").dataset.id = undefined;
+		_editor.toTextArea();
+		_editor = undefined;
 	};
 
 	var _showSidebarSection = function(idx) {
@@ -197,7 +211,7 @@ OCA.Books.UI = (function() {
 		if (idx == 2 && raw.dataset.id != sidebar.dataset.id) {
 			OCA.Books.Core.getOPF(sidebar.dataset.id, function(data){
 				raw.dataset.id = sidebar.dataset.id;
-				raw.querySelector("textarea").value = data;
+				_editor.setValue(data);
 			});
 		}
 	};
