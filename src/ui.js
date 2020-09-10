@@ -312,6 +312,9 @@ OCA.Books.UI = (function() {
 			document.querySelector("#font-settings").addEventListener("change", function(evt){
 				OCA.Books.UI.Style.setFontSize(evt.target.value);
 			});
+			document.querySelector("#color-settings").addEventListener("change", function(evt){
+				OCA.Books.UI.Style.setTheme(evt.target.value);
+			});
 			document.querySelector("#app-sidebar > header > a").addEventListener("click", function(evt){
 				evt.preventDefault();
 				_closeSidebar();
@@ -526,11 +529,24 @@ OCA.Books.UI = (function() {
 				}
 			};
 
+			var _setFontSize = function(val) {
+				_style.html["font-size"] = val;
+				window.dispatchEvent(new Event("bookstylechange"));
+			};
+
+			var _setTheme = function(val) {
+				window.dispatchEvent(new CustomEvent("themechange", {detail: val}));
+			}
+
 			return {
 				setFontSize: function(val) {
-					_style.html["font-size"] = val;
 					window.localStorage.setItem("font-size", val);
-					window.dispatchEvent(new Event("bookstylechange"));
+					_setFontSize(val);
+				},
+
+				setTheme: function(val) {
+					window.localStorage.setItem("theme", val);
+					_setTheme(val);
 				},
 
 				get: function() {
@@ -538,8 +554,12 @@ OCA.Books.UI = (function() {
 				},
 
 				init: function() {
-					_style.html["font-size"] = window.localStorage.getItem("font-size");
-					document.querySelector("#font-settings").value = _style.html["font-size"];
+					let fontSize = window.localStorage.getItem("font-size") || "initial";
+					let theme = window.localStorage.getItem("theme") || "default";
+					document.querySelector("#font-settings").value = fontSize;
+					document.querySelector("#color-settings").value = theme;
+					_setFontSize(fontSize);
+					_setTheme(theme);
 				}
 			};
 		})()
