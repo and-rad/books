@@ -168,6 +168,8 @@ OCA.Books.UI = (function() {
 		details.querySelector(".description").innerHTML = data.description;
 		details.querySelector(".title").textContent = data.titles ? data.titles[0].name : "";
 		details.querySelector(".author").textContent = data.authors ? data.authors[0].name : "";
+		details.querySelector(".status").value = data.status;
+		details.querySelector(".location").value = data.filename;
 
 		let cover = details.querySelector("figure > img");
 		cover.src = OCA.Books.Backend.coverPath(id);

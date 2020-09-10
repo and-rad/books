@@ -345,6 +345,11 @@ th:hover .sort-indicator.hidden {
 
 /* sidebar */
 
+.multiselect > input {
+	width: 100%;
+	cursor: pointer;
+}
+
 #app-sidebar {
 	position: fixed;
 	max-width: calc(100vw - 44px);
@@ -415,9 +420,35 @@ th:hover .sort-indicator.hidden {
 	height: calc(100vh - 131px);
 }
 
-#app-sidebar-details,
-#app-sidebar-metadata {
+#app-sidebar section {
 	padding: 0.5em;
+	clear: both;
+}
+
+#app-sidebar section:not(:first-child) {
+	border-top: 1px solid var(--color-border);
+}
+
+#app-sidebar section > .row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+input[type="text"],
+select {
+	margin-right: 0;
+}
+
+#app-sidebar section > .row > select,
+#app-sidebar section > .row > input,
+#app-sidebar section > .row > .input {
+	flex-basis: 66%;
+}
+
+#app-sidebar section > .row input[readonly] {
+	color: var(--color-text-lighter);
+	pointer-events: none;
 }
 
 #app-sidebar-details figure {
@@ -436,10 +467,6 @@ th:hover .sort-indicator.hidden {
 	display: block;
 	width: 100%;
 	height: auto;
-}
-
-#app-sidebar-details .description + * {
-	clear: both;
 }
 
 #app-sidebar-details .title {

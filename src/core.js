@@ -80,6 +80,7 @@ OCA.Books.Core = (function() {
 			OCA.Books.Backend.getBooks(function(obj) {
 				if (obj.success) {
 					_books = obj.data;
+					console.log(_books);
 					OCA.Books.UI.buildShelf(_books);
 					OCA.Books.UI.buildNavigation(_books);
 				}
