@@ -195,8 +195,10 @@ OCA.Books.UI = (function() {
 		sidebar.classList.add("hidden");
 		sidebar.classList.remove("wide");
 		sidebar.querySelector("#app-sidebar-raw").dataset.id = undefined;
-		_editor.toTextArea();
-		_editor = undefined;
+		if (_editor) {
+			_editor.toTextArea();
+			_editor = undefined;
+		}
 	};
 
 	var _showSidebarSection = function(idx) {
