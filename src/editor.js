@@ -9,6 +9,27 @@ import "codemirror/addon/selection/active-line";
 import "codemirror/mode/xml/xml";
 
 OCA.Books.Editor = (function() {
+	var _cm = require("codemirror");
+	var _editor = undefined;
+
+	window.addEventListener("themechange", function(evt){
+		_options.theme = evt.detail;
+		if (_editor) {
+			_editor.setOption("theme", evt.detail);
+		}
+	});
+
+	var _completeAfter = function(ed, pred) {
+		if (!pred || pred()) {
+			setTimeout(function() {
+				if (!ed.state.completionActive) {
+					ed.showHint();
+				}
+			}, 100);
+		}
+		return _cm.Pass;
+	};
+
 	var _schemaOpf = {
 		"!top": ["one"],
 		one: {children: ["two","three"]},
@@ -16,8 +37,6 @@ OCA.Books.Editor = (function() {
 		three: {children: []}
 	};
 
-	var _cm = require("codemirror");
-	var _editor = undefined;
 	var _options = {
 		mode: "xml",
 		lineNumbers: true,
@@ -25,6 +44,7 @@ OCA.Books.Editor = (function() {
 		matchTags: true,
 		autoCloseTags: true,
 		extraKeys: {
+			"'<'": _completeAfter,
 			"Ctrl-Space": "autocomplete"
 		},
 		hintOptions: {
@@ -33,13 +53,6 @@ OCA.Books.Editor = (function() {
 		},
 		theme: "default"
 	};
-
-	window.addEventListener("themechange", function(evt){
-		_options.theme = evt.detail;
-		if (_editor) {
-			_editor.setOption("theme", evt.detail);
-		}
-	});
 
 	return {
 		init: function(selector) {
