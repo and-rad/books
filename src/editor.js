@@ -41,10 +41,47 @@ OCA.Books.Editor = (function() {
 	};
 
 	var _schemaOpf = {
-		"!top": ["one"],
-		one: {children: ["two","three"]},
-		two: {children: []},
-		three: {children: []}
+		"!top": ["package"],
+		package: {
+			attrs: {
+				"unique-identifier": null,
+				version: ["2.0", "3.0"],
+				dir: ["ltr", "rtl"],
+				id: null,
+				prefix: null,
+				"xml:lang": null,
+			},
+			children: ["metadata","manifest", "spine", "guide", "collection"],
+		},
+		metadata: {
+			children: ["dc:identifier", "dc:title", "dc:language", "dc:contributor", "dc:coverage", "dc:creator", "dc:date", "dc:description", "dc:format", "dc:publisher", "dc:relation", "dc:rights", "dc:source", "dc:subject", "dc:type", "meta", "link"],
+		},
+		manifest: {
+			attrs: {
+				id: null,
+			},
+			children: ["item"],
+		},
+		spine: {
+			attrs: {
+				id: null,
+				"page-progression-direction": ["default", "ltr", "rtl"],
+				toc: ["ncx"],
+			},
+			children: ["itemref"],
+		},
+		guide: {
+			children: ["reference"],
+		},
+		collection: {
+			attrs: {
+				role: null,
+				dir: ["ltr", "rtl"],
+				id: null,
+				"xml:lang": null,
+			},
+			children: ["metadata", "collection", "link"],
+		},
 	};
 
 	var _options = {
@@ -53,6 +90,7 @@ OCA.Books.Editor = (function() {
 		styleActiveLine: true,
 		matchTags: true,
 		autoCloseTags: true,
+		tabSize: 2,
 		extraKeys: {
 			"'<'": _completeAfter,
 			"' '": _completeInTag,
