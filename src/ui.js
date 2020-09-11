@@ -284,9 +284,13 @@ OCA.Books.UI = (function() {
 				})());
 			});
 			document.querySelector("#settings-item-reset").addEventListener("click", function() {
-				OCA.Books.Backend.reset(function(obj) {
-					OCA.Books.UI.toast(obj.message, obj.success);
-				});
+				OC.dialogs.confirm(t("books","msg-reset"), t("books", "head-reset"), function(ok){
+					if (ok) {
+						OCA.Books.Backend.reset(function(obj) {
+							OCA.Books.UI.toast(obj.message, obj.success);
+						});
+					}
+				}, true);
 			});
 			document.querySelector("#reader-prev").addEventListener("click", function(){
 				OCA.Books.Core.prevPage();
