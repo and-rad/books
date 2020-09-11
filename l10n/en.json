@@ -1,6 +1,20 @@
 {
 	"translations": {
-		"book-filename": "File Name",
+		"all": "All",
+		"author": "Author",
+		"authors": "Authors",
+		"auto": "Automatic",
+		"filename": "File Name",
+		"fontsize": "Font Size",
+		"genre": "Genre",
+		"genres": "Genres",
+		"lang": "Language",
+		"library": "Library",
+		"mode": "Color Mode",
+		"mode-dark": "Dark",
+		"mode-light": "Light",
+		"series": "Series",
+		"settings": "Settings",
 		"shelves": "Shelves",
 		"sidebar-details": "Details",
 		"sidebar-editor": "Editor",
@@ -11,7 +25,10 @@
 		"status-1": "In Progress",
 		"status-2": "Finished",
 		"status-3": "Aborted",
-		"wgt-save": "Save"
+		"title": "Title",
+		"wgt-reset": "Reset library",
+		"wgt-save": "Save",
+		"wgt-scan": "Scan for books"
 	},
 	"pluralForm": ""
 }

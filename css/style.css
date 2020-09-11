@@ -15,8 +15,7 @@
 	overflow-y: auto;
 }
 
-#list-category,
-.app-navigation-new {
+#list-category {
 	border-bottom: 1px solid var(--color-border);
 }
 

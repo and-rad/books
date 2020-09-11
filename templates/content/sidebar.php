@@ -31,7 +31,7 @@
 					<?php print_unescaped($this->inc('template/multiselect')); ?>
 				</div>
 				<div class='row'>
-					<label><?php p($l->t('book-filename')); ?></label>
+					<label><?php p($l->t('filename')); ?></label>
 					<input type='text' class='location' readonly>
 				</div>
 			</section>

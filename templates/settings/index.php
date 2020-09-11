@@ -1,12 +1,12 @@
 <div id='app-settings'>
 	<div id='app-settings-header'>
-		<button class='settings-button' data-apps-slide-toggle='#app-settings-content'>Settings</button>
+		<button class='settings-button' data-apps-slide-toggle='#app-settings-content'><?php p($l->t('settings')); ?></button>
 	</div>
 	<div id='app-settings-content'>
 		<label>
-			Font Size
+			<?php p($l->t('fontsize')); ?>
 			<select id="font-settings">
-				<option value="inherit">Automatic</option>
+				<option value="inherit"><?php p($l->t('auto')); ?></option>
 				<option disabled></option>
 				<option value="8px">8 px</option>
 				<option value="10px">10 px</option>
@@ -24,19 +24,19 @@
 			</select>
 		</label>
 		<label>
-			Color Mode
+			<?php p($l->t('mode')); ?>
 			<select id="color-settings">
-				<option value="default">Light</option>
-				<option value="lucario">Dark</option>
+				<option value="default"><?php p($l->t('mode-light')); ?></option>
+				<option value="lucario"><?php p($l->t('mode-dark')); ?></option>
 			</select>
 		</label>
 		<label>
-			Library
+			<?php p($l->t('library')); ?>
 			<input type='text' id='path-settings' placeholder='Location'>
 		</label>
 		<ul>
-			<li class='app-settings-item icon-search'><button id='settings-item-scan'>Scan for books</button></li>
-			<li class='app-settings-item icon-delete'><button id='settings-item-reset'>Reset library</button></li>
+			<li class='app-settings-item icon-search'><button id='settings-item-scan'><?php p($l->t('wgt-scan')); ?></button></li>
+			<li class='app-settings-item icon-delete'><button id='settings-item-reset'><?php p($l->t('wgt-reset')); ?></button></li>
 		</ul>
 	</div>
 </div>
