@@ -717,7 +717,8 @@ li.CodeMirror-hint-active {
 }
 
 #spinner {
-	position: absolute;
+	position: fixed;
+	z-index: 1050;
 	display: none;
 	width: 76px;
 	height: 76px;
@@ -825,9 +826,4 @@ li.CodeMirror-hint-active {
 
 #app.reader #reader-wrapper {
 	display: block;
-}
-
-#app.reader #spinner {
-	position: fixed;
-	z-index: 1050;
 }
