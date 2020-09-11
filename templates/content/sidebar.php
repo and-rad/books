@@ -28,9 +28,7 @@
 				</div>
 				<div class='row'>
 					<label><?php p($l->t('shelves')); ?></label>
-					<div class='multiselect input'>
-						<input type='text'>
-					</div>
+					<?php print_unescaped($this->inc('template/multiselect')); ?>
 				</div>
 				<div class='row'>
 					<label><?php p($l->t('book-filename')); ?></label>
