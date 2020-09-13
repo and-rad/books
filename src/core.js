@@ -208,9 +208,9 @@ OCA.Books.Core = (function() {
 			let meta = [];
 
 			if (key == "author") {
-				meta = _books.filter(b => b.authors !== undefined).map(b => b.authors.map(a => [a.fileAs, a.name])).flat();
+				meta = _books.filter(b => b.authors !== undefined).map(b => b.authors.map(a => [a.fileAs, a.fileAs])).flat();
 			} else if (key == "series") {
-				meta = _books.filter(b => b.series !== undefined).map(b => b.series.map(s => [s.fileAs, s.name])).flat();
+				meta = _books.filter(b => b.series !== undefined).map(b => b.series.map(s => [s.fileAs, s.fileAs])).flat();
 			} else if (key == "genre") {
 				meta = _books.filter(b => b.genres !== undefined).map(b => b.genres.map(g => [g, g])).flat();
 			} else if (key == "status") {
