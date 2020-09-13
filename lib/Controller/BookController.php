@@ -99,4 +99,22 @@ class BookController extends Controller {
 
 		return new JSONResponse(['success' => true, 'message' => 'msg.ok']);
 	}
+
+	/**
+	 * @NoAdminRequired
+	 */
+	public function status(int $id, int $status) : JSONResponse {
+		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');
+		$root = $this->rootFolder->getUserFolder($this->userId);
+
+		if (!$root->nodeExists($dir)) {
+			return new JSONResponse(['success' => false, 'message' => sprintf("directory %s doesn't exist anymore", $dir)]);
+		}
+
+		if (!(new LibraryService($root->get($dir), new EventLog(), $this->config))->saveStatus($id, $status)) {
+			return new JSONResponse(['success' => false, 'message' => "save failed"]);
+		}
+
+		return new JSONResponse(['success' => true, 'message' => 'msg.ok']);
+	}
 }

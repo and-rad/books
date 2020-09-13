@@ -152,6 +152,34 @@ class LibraryService {
 		return false;
 	}
 
+	public function saveStatus(int $id, string $value) : bool {
+		if ($this->node->nodeExists($this::DBNAME)) {
+			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+			$stmt = $db->prepare('select identifier from progress where identifier=(select identifier from book where id=?)');
+			$stmt->bindValue(1, $id);
+			$set = $stmt->execute()->fetchArray();
+
+			if ($set === false) {
+				$stmt = $db->prepare('insert into progress (identifier,progress,status) values ((select identifier from book where id=?),"",?)');
+				$stmt->bindValue(1, $id);
+				$stmt->bindValue(2, $value);
+			} else {
+				$stmt = $db->prepare('update progress set status=? where identifier=?');
+				$stmt->bindValue(1, $value);
+				$stmt->bindValue(2, $set['identifier']);
+			}
+
+			$res = $stmt->execute();
+			$db->close();
+
+			if ($res !== false) {
+				$this->node->get($this::DBNAME)->touch();
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private function readAll(array &$metadata) : bool {
 		$db = new SQLite3($this->abs($this->node).$this::DBNAME);
 

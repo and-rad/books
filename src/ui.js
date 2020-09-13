@@ -319,6 +319,17 @@ OCA.Books.UI = (function() {
 				evt.preventDefault();
 				document.querySelector("#app-sidebar").classList.toggle("wide");
 			});
+			document.querySelector("#app-sidebar-details .status").addEventListener("change", function(evt){
+				let id = parseInt(document.querySelector("#app-sidebar").dataset.id);
+				let now = parseInt(evt.target.value);
+				let old = OCA.Books.Core.getBook(id).status;
+				OCA.Books.Backend.saveStatus(id, now, function(obj){
+					if (obj.success) {
+						OCA.Books.Core.getBook(id).status = now;
+						OCA.Books.UI.refreshStatus(id, now, old);
+					}
+				});
+			});
 
 			let cats = document.querySelectorAll("#list-category > li > a");
 			for (let i = 0, cat; cat = cats[i]; i++) {

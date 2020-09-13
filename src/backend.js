@@ -43,6 +43,13 @@ OCA.Books.Backend = (function() {
 			});
 		},
 
+		saveStatus: function(id, value, callback) {
+			let data = `id=${id}&status=${value}`;
+			_post(generateUrl("apps/books/api/0.1/status"), data, function() {
+				callback(JSON.parse(this.response));
+			});
+		},
+
 		scan: function(dir, callback) {
 			let source = new OC.EventSource(generateUrl("apps/books/api/0.1/scan?dir="+dir));
 			source.listen('progress', callback.updateFunc);

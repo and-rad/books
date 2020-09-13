@@ -12,6 +12,7 @@ return [
 		['name' => 'book#cover', 'url' => '/api/0.1/cover/{id}', 'verb' => 'GET'],
 		['name' => 'book#coverLarge', 'url' => '/api/0.1/coverlarge/{id}', 'verb' => 'GET'],
 		['name' => 'book#progress', 'url' => '/api/0.1/progress', 'verb' => 'POST'],
+		['name' => 'book#status', 'url' => '/api/0.1/status', 'verb' => 'POST'],
 		['name' => 'library#scan', 'url' => '/api/0.1/scan', 'verb' => 'GET'],
 		['name' => 'library#reset', 'url' => '/api/0.1/reset', 'verb' => 'POST'],
 	]
