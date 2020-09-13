@@ -263,6 +263,7 @@ OCA.Books.UI = (function() {
 	return {
 		init: function() {
 			this.Style.init();
+			this.Multiselect.init();
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
 				OCA.Books.UI.showLoadingScreen();
 				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, (function(){
@@ -567,6 +568,33 @@ OCA.Books.UI = (function() {
 					document.querySelector("#color-settings").value = theme;
 					_setFontSize(fontSize);
 					_setTheme(theme);
+				}
+			};
+		})(),
+
+		Multiselect: (function(){
+			var _tpl = `<ul></ul><input type='text' placeholder='${t("books","hint-ms")}'><div class='selected'></div>`;
+			return {
+				init: function() {
+					let all = document.querySelectorAll("#app-sidebar multiselect");
+					for (let i = 0, sel; sel = all[i]; i++) {
+						if (sel.children.length == 0) {
+							console.log("found one");
+							sel.innerHTML = _tpl;
+							sel.querySelector(".selected").addEventListener("click", function(evt){
+								evt.target.style.display = "none";
+								let input = evt.target.parentNode.querySelector("input");
+								input.style.display = "block";
+								input.focus();
+								evt.target.parentNode.querySelector("ul").style.display = "block";
+							});
+							sel.querySelector("input").addEventListener("blur", function(evt){
+								evt.target.style.display = "none";
+								evt.target.parentNode.querySelector("ul").style.display = "none";
+								evt.target.parentNode.querySelector(".selected").style.display = "block";
+							});
+						}
+					}
 				}
 			};
 		})()

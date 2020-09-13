@@ -28,7 +28,7 @@
 				</div>
 				<div class='row'>
 					<label><?php p($l->t('shelves')); ?></label>
-					<?php print_unescaped($this->inc('template/multiselect')); ?>
+					<multiselect></multiselect>
 				</div>
 				<div class='row'>
 					<label><?php p($l->t('filename')); ?></label>

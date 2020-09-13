@@ -2,6 +2,45 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
+multiselect {
+	position: relative;
+}
+
+multiselect > input[type="text"] {
+	display: none;
+	width: 100%;
+}
+
+multiselect > div.selected {
+	margin: 3px 0;
+	padding: 7px 6px;
+	font-size: 13px;
+	background-color: var(--color-main-background);
+	color: var(--color-main-text);
+	border: 1px solid var(--color-border-dark);
+	outline: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	height: 34px;
+}
+
+multiselect > div.selected:hover {
+	border-color: var(--color-primary-element);
+	outline: none;
+}
+
+multiselect > ul {
+	border-radius: 0 0 var(--border-radius) var(--border-radius);
+	background-color: var(--color-main-background);
+	border: 1px solid var(--color-border-dark);
+	position: absolute;
+	z-index: inherit;
+	width: 100%;
+	top: calc(3px - 12em);
+	height: 12em;
+	display: none;
+}
+
 #app {
 	width: 100%;
 }
@@ -344,11 +383,6 @@ th:hover .sort-indicator.hidden {
 
 /* sidebar */
 
-.multiselect > input {
-	width: 100%;
-	cursor: pointer;
-}
-
 #app-sidebar {
 	position: fixed;
 	max-width: calc(100vw - 44px);
@@ -440,6 +474,7 @@ select {
 }
 
 #app-sidebar section > .row > select,
+#app-sidebar section > .row > multiselect,
 #app-sidebar section > .row > input,
 #app-sidebar section > .row > .input {
 	flex-basis: 66%;
