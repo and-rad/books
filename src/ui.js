@@ -172,7 +172,7 @@ OCA.Books.UI = (function() {
 		details.querySelector(".location").value = data.filename;
 
 		let cover = details.querySelector("figure > img");
-		cover.src = OCA.Books.Backend.coverPath(id);
+		cover.src = OCA.Books.Backend.coverPath(id, true);
 		cover.style.display = data.hasCover ? "block" : "none";
 
 		OCA.Books.Editor.init("#app-sidebar-raw textarea");
@@ -184,6 +184,7 @@ OCA.Books.UI = (function() {
 		sidebar.classList.add("hidden");
 		sidebar.classList.remove("wide");
 		sidebar.querySelector("#app-sidebar-raw").dataset.id = undefined;
+		sidebar.querySelector("#app-sidebar-details figure > img").src = "";
 		OCA.Books.Editor.close();
 	};
 

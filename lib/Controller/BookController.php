@@ -68,6 +68,22 @@ class BookController extends Controller {
 
 	/**
 	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 */
+	public function coverLarge($id) : CoverResponse {
+		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');
+		$root = $this->rootFolder->getUserFolder($this->userId);
+
+		if (!$root->nodeExists($dir)) {
+			return new CoverResponse('');
+		}
+
+		$data = (new LibraryService($root->get($dir), new EventLog(), $this->config))->coverLarge($id);
+		return new CoverResponse($data);
+	}
+
+	/**
+	 * @NoAdminRequired
 	 */
 	public function progress(int $id, string $progress) : JSONResponse {
 		$dir = $this->config->getUserValue($this->userId, $this->appName, 'library');

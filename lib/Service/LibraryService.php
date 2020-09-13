@@ -9,6 +9,7 @@ use OCP\Files\Node;
 
 class LibraryService {
 	private const DBNAME = '.books.db';
+	private const COVERCACHE = '.covers/';
 
 	private $root;
 	private $node;
@@ -46,6 +47,16 @@ class LibraryService {
 			$db->close();
 		}
 
+		return base64_decode($data);
+	}
+
+	public function coverLarge($id) : string {
+		$data = '';
+
+		if ($this->node->nodeExists($this::COVERCACHE.$id)) {
+			$data = $this->node->get($this::COVERCACHE.$id)->getContent();
+		}
+
 		return $data;
 	}
 
@@ -68,6 +79,11 @@ class LibraryService {
 	public function scan($eventSource) : bool {
 		if (!$this->node->nodeExists($this::DBNAME)) {
 			if (!$this->create()) {
+				return false;
+			}
+		}
+		if (!$this->node->nodeExists($this::COVERCACHE)) {
+			if (!$this->node->newFolder($this::COVERCACHE)) {
 				return false;
 			}
 		}
@@ -300,6 +316,7 @@ class LibraryService {
 		$db->exec($ok ? "commit" : "rollback");
 		$db->close();
 		$this->node->get($this::DBNAME)->touch();
+		$this->node->get($this::COVERCACHE)->delete();
 
 		return $ok;
 	}
@@ -309,21 +326,25 @@ class LibraryService {
 		$db->exec("pragma foreign_keys=ON");
 
 		$names = [];
-		$res = $db->query('select filename from book');
+		$res = $db->query('select id, filename from book');
 		while ($set = $res->fetchArray()) {
-			$names[] = $set['filename'];
+			$names[$set['id']] = $set['filename'];
 		}
 
-		$removed = array_values(array_diff($names, $filenames));
-		if (count($removed) == 0) {
+		$diff = array_diff($names, $filenames);
+		if (count($diff) == 0) {
 			return true;
 		}
 
+		$removed = array_keys($diff);
 		$vals = array_fill(0, count($removed), '?');
-		$query = sprintf('delete from book where filename in (%s)', implode(',', $vals));
+		$query = sprintf('delete from book where id in (%s)', implode(',', $vals));
 		$stmt = $db->prepare($query);
 		for ($i = 0; $i < count($removed); $i++) {
 			$stmt->bindValue($i+1, $removed[$i]);
+			if ($this->node->nodeExists($this::COVERCACHE.$removed[$i])) {
+				$this->node->get($this::COVERCACHE.$removed[$i])->delete();
+			}
 		}
 
 		$ok = ($stmt->execute() !== false);
@@ -430,6 +451,24 @@ class LibraryService {
 		}
 
 		if ($meta->cover) {
+			if ($this->node->nodeExists($this::COVERCACHE)) {
+				$this->node->get($this::COVERCACHE)->newFile($bookId)->putContent($meta->cover);
+			}
+
+			$dst = imagecreatetruecolor(96,96);
+			$src = imagecreatefromstring($meta->cover);
+			list($w,$h) = getimagesizefromstring($meta->cover);
+			if ($src !== false) {
+				imagecopyresampled($dst, $src, 0, 0, max(0, ($w-$h)/2), max(0,($h-$w)/2), 96, 96, min($w,$h), min($w, $h));
+				ob_start();
+				imagejpeg($dst);
+				$img = ob_get_contents();
+				ob_end_clean();
+				$meta->cover = base64_encode($img);
+			}
+			imagedestroy($dst);
+			imagedestroy($src);
+
 			$stmt = $db->prepare("insert into cover(cover,book_id) values (?,?)");
 			$stmt->bindValue(1, $meta->cover);
 			$stmt->bindValue(2, $bookId);
