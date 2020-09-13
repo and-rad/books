@@ -212,7 +212,7 @@ OCA.Books.Core = (function() {
 			} else if (key == "series") {
 				meta = _books.filter(b => b.series !== undefined).map(b => b.series.map(s => [s.fileAs, s.name])).flat();
 			} else if (key == "genre") {
-				meta = _books.filter(b => b.genres !== undefined).map(b => b.genres.map(g => [g, t("books",g)])).flat();
+				meta = _books.filter(b => b.genres !== undefined).map(b => b.genres.map(g => [g, g])).flat();
 			} else if (key == "status") {
 				meta = _books.map(b => [[b.status], t("books", `status-${b.status}`)]);
 			} else if (key == "shelf") {

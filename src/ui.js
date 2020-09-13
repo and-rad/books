@@ -400,7 +400,7 @@ OCA.Books.UI = (function() {
 
 				if (book.genres) {
 					fields[3].dataset.fileAs = book.genres[0];
-					fields[3].querySelector(".genre-1").textContent = t("books", book.genres[0]);
+					fields[3].querySelector(".genre-1").textContent = book.genres[0];
 					_refreshMore(book.genres,fields[3]);
 				}
 
