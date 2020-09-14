@@ -579,20 +579,47 @@ OCA.Books.UI = (function() {
 					let all = document.querySelectorAll("#app-sidebar multiselect");
 					for (let i = 0, sel; sel = all[i]; i++) {
 						if (sel.children.length == 0) {
-							console.log("found one");
 							sel.innerHTML = _tpl;
-							sel.querySelector(".selected").addEventListener("click", function(evt){
-								evt.target.style.display = "none";
-								let input = evt.target.parentNode.querySelector("input");
+							let list = sel.querySelector("ul");
+							let selected = sel.querySelector(".selected");
+							let input = sel.querySelector("input");
+
+							sel.addEventListener("focusout", function(evt){
+								if (sel.contains(evt.relatedTarget)) {
+									evt.preventDefault();
+								} else {
+									input.style.display = "none";
+									list.style.display = "none";
+									selected.style.display = "block";
+								}
+							});
+
+							selected.addEventListener("click", function(evt){
+								selected.style.display = "none";
 								input.style.display = "block";
 								input.focus();
-								evt.target.parentNode.querySelector("ul").style.display = "block";
+								list.style.display = "block";
+								list.style.top = `-${list.clientHeight + 2}px`;
 							});
-							sel.querySelector("input").addEventListener("blur", function(evt){
-								evt.target.style.display = "none";
-								evt.target.parentNode.querySelector("ul").style.display = "none";
-								evt.target.parentNode.querySelector(".selected").style.display = "block";
-							});
+
+							sel.setOptions = function(options) {
+								let frag = document.createDocumentFragment();
+								options.forEach(item => {
+									let elem = document.createElement("li");
+									elem.dataset.value = item.value;
+									elem.textContent = item.text;
+									elem.tabIndex = 0;
+									elem.addEventListener("click", function(evt){
+										evt.target.classList.toggle("selected");
+										input.value = "";
+										input.focus();
+
+									});
+									frag.appendChild(elem);
+								});
+								list.innerHTML = "";
+								list.appendChild(frag);
+							};
 						}
 					}
 				}

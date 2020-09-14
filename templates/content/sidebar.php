@@ -28,7 +28,7 @@
 				</div>
 				<div class='row'>
 					<label><?php p($l->t('shelves')); ?></label>
-					<multiselect></multiselect>
+					<multiselect class='shelves'></multiselect>
 				</div>
 				<div class='row'>
 					<label><?php p($l->t('filename')); ?></label>

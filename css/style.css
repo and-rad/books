@@ -4,15 +4,16 @@
 
 multiselect {
 	position: relative;
+	margin: 3px 3px 3px 0;
 }
 
 multiselect > input[type="text"] {
 	display: none;
+	margin: 0;
 	width: 100%;
 }
 
 multiselect > div.selected {
-	margin: 3px 0;
 	padding: 7px 6px;
 	font-size: 13px;
 	background-color: var(--color-main-background);
@@ -36,9 +37,35 @@ multiselect > ul {
 	position: absolute;
 	z-index: inherit;
 	width: 100%;
-	top: calc(3px - 12em);
-	height: 12em;
+	max-height: 20em;
 	display: none;
+	overflow-y: auto;
+}
+
+multiselect > ul > li {
+	padding: 8px;
+	padding-left: 32px;
+	opacity: 0.57;
+	white-space: nowrap;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	background-size: 16px 16px;
+	background-position: 8px center;
+	background-repeat: no-repeat;
+}
+
+multiselect > ul > li:hover {
+	background-color: var(--color-background-hover);
+	background-image: var(--icon-checkmark-000);
+	opacity: 1;
+}
+
+multiselect > ul > li.selected {
+	background-image: var(--icon-checkmark-000);
+}
+
+multiselect > ul > li.selected:hover {
+	background-image: var(--icon-close-000);
 }
 
 #app {
@@ -469,7 +496,8 @@ th:hover .sort-indicator.hidden {
 }
 
 input[type="text"],
-select {
+select,
+multiselect {
 	margin-right: 0;
 }
 
