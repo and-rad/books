@@ -332,6 +332,12 @@ OCA.Books.UI = (function() {
 				});
 			});
 
+			let shelves = document.querySelector("#app-sidebar-details .shelves");
+			shelves.addEventListener("change", function(evt){
+				let id = parseInt(document.querySelector("#app-sidebar").dataset.id);
+				console.log(id, evt.detail);
+			});
+
 			let cats = document.querySelectorAll("#list-category > li > a");
 			for (let i = 0, cat; cat = cats[i]; i++) {
 				cat.addEventListener("click", function(evt){
@@ -574,6 +580,12 @@ OCA.Books.UI = (function() {
 
 		Multiselect: (function(){
 			var _tpl = `<ul></ul><input type='text' placeholder='${t("books","hint-ms")}'><div class='selected'></div>`;
+
+			var _changeEvent = function(ul) {
+				let vals = Array.from(ul.querySelectorAll(".selected")).map(c => c.dataset.value);
+				return new CustomEvent("change", {detail: vals});
+			};
+
 			return {
 				init: function() {
 					let all = document.querySelectorAll("#app-sidebar multiselect");
@@ -602,6 +614,12 @@ OCA.Books.UI = (function() {
 								list.style.top = `-${list.clientHeight + 2}px`;
 							});
 
+							sel.refresh = function() {
+								let all = Array.from(list.querySelectorAll(".selected"));
+								selected.innerHTML = all.map(c => `<span>${c.textContent}</span>`).join("");
+								input.value = "";
+							};
+
 							sel.setOptions = function(options) {
 								let frag = document.createDocumentFragment();
 								options.forEach(item => {
@@ -611,14 +629,26 @@ OCA.Books.UI = (function() {
 									elem.tabIndex = 0;
 									elem.addEventListener("click", function(evt){
 										evt.target.classList.toggle("selected");
-										input.value = "";
+										sel.refresh();
+										sel.dispatchEvent(_changeEvent(list));
 										input.focus();
-
 									});
 									frag.appendChild(elem);
 								});
 								list.innerHTML = "";
 								list.appendChild(frag);
+								sel.refresh();
+							};
+
+							sel.setSelection = function(selection) {
+								list.children.forEach(c => {
+									if (selection.includes(c.dataset.value)) {
+										c.classList.add("selected")
+									} else {
+										 c.classList.remove("selected");
+									}
+								});
+								sel.refresh();
 							};
 						}
 					}
