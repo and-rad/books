@@ -621,6 +621,7 @@ OCA.Books.UI = (function() {
 							};
 
 							sel.setOptions = function(options) {
+								options = options.filter((o, i, self) => self.findIndex(t => t.value === o.value) === i);
 								let frag = document.createDocumentFragment();
 								options.forEach(item => {
 									let elem = document.createElement("li");
