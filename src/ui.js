@@ -337,7 +337,8 @@ OCA.Books.UI = (function() {
 			shelves.setOptions(OCA.Books.Core.getMeta("shelf").map(s => ({value:s[0],text:s[1]})));
 			shelves.addEventListener("changed", function(evt){
 				let id = parseInt(document.querySelector("#app-sidebar").dataset.id);
-				console.log(id, evt.detail);
+				OCA.Books.Core.getBook(id).shelves = evt.detail;
+				_refreshCategory("shelf");
 			});
 
 			let cats = document.querySelectorAll("#list-category > li > a");
