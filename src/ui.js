@@ -335,7 +335,7 @@ OCA.Books.UI = (function() {
 
 			let shelves = document.querySelector("#app-sidebar-details .shelves");
 			shelves.setOptions(OCA.Books.Core.getMeta("shelf").map(s => ({value:s[0],text:s[1]})));
-			shelves.addEventListener("change", function(evt){
+			shelves.addEventListener("changed", function(evt){
 				let id = parseInt(document.querySelector("#app-sidebar").dataset.id);
 				console.log(id, evt.detail);
 			});
@@ -585,7 +585,7 @@ OCA.Books.UI = (function() {
 
 			var _changeEvent = function(ul) {
 				let vals = Array.from(ul.querySelectorAll(".selected")).map(c => c.dataset.value);
-				return new CustomEvent("change", {detail: vals});
+				return new CustomEvent("changed", {detail: vals});
 			};
 
 			return {
@@ -597,24 +597,6 @@ OCA.Books.UI = (function() {
 							let list = sel.querySelector("ul");
 							let selected = sel.querySelector(".selected");
 							let input = sel.querySelector("input");
-
-							sel.addEventListener("focusout", function(evt){
-								if (sel.contains(evt.relatedTarget)) {
-									evt.preventDefault();
-								} else {
-									input.style.display = "none";
-									list.style.display = "none";
-									selected.style.display = "block";
-								}
-							});
-
-							selected.addEventListener("click", function(evt){
-								selected.style.display = "none";
-								input.style.display = "block";
-								input.focus();
-								list.style.display = "block";
-								list.style.top = `-${list.clientHeight + 2}px`;
-							});
 
 							sel.refresh = function() {
 								let all = Array.from(list.querySelectorAll(".selected"));
@@ -655,6 +637,37 @@ OCA.Books.UI = (function() {
 								});
 								sel.refresh();
 							};
+
+							sel.addEventListener("focusout", function(evt){
+								if (sel.contains(evt.relatedTarget)) {
+									evt.preventDefault();
+								} else {
+									selected.style.display = "block";
+									input.style.display = "none";
+									input.value = "";
+									list.style.display = "none";
+									list.children.forEach(c => c.style.display = "list-item");
+								}
+							});
+
+							selected.addEventListener("click", function(){
+								selected.style.display = "none";
+								input.style.display = "block";
+								input.focus();
+								list.style.display = "block";
+								list.style.top = `-${list.clientHeight + 2}px`;
+							});
+
+							input.addEventListener("input", function(){
+								list.children.forEach(c => {
+									if (c.textContent.toLowerCase().includes(input.value.toLowerCase())) {
+										c.style.display = "list-item";
+									} else {
+										c.style.display = "none";
+									}
+								});
+								list.style.top = `-${list.clientHeight + 2}px`;
+							});
 						}
 					}
 				}
