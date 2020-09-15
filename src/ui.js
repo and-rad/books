@@ -621,7 +621,9 @@ OCA.Books.UI = (function() {
 							};
 
 							sel.setOptions = function(options) {
+								let locale = document.documentElement.dataset.locale || "en";
 								options = options.filter((o, i, self) => self.findIndex(t => t.value === o.value) === i);
+								options.sort((a,b) => a.text.localeCompare(b.text, locale, {numeric: true}));
 								let frag = document.createDocumentFragment();
 								options.forEach(item => {
 									let elem = document.createElement("li");
