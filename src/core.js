@@ -82,11 +82,11 @@ OCA.Books.Core = (function() {
 			OCA.Books.Backend.getBooks(function(obj) {
 				if (obj.success) {
 					_books = obj.data;
+					OCA.Books.UI.init();
 					OCA.Books.UI.buildShelf(_books);
 					OCA.Books.UI.buildNavigation(_books);
 				}
 			});
-			OCA.Books.UI.init();
 		},
 
 		open: function(id, elem) {

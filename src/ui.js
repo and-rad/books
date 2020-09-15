@@ -170,6 +170,7 @@ OCA.Books.UI = (function() {
 		details.querySelector(".author").textContent = data.authors ? data.authors[0].name : "";
 		details.querySelector(".status").value = data.status;
 		details.querySelector(".location").value = data.filename;
+		details.querySelector(".shelves").setSelection(data.shelves || []);
 
 		let cover = details.querySelector("figure > img");
 		cover.src = OCA.Books.Backend.coverPath(id, true);
@@ -333,6 +334,7 @@ OCA.Books.UI = (function() {
 			});
 
 			let shelves = document.querySelector("#app-sidebar-details .shelves");
+			shelves.setOptions(OCA.Books.Core.getMeta("shelf").map(s => ({value:s[0],text:s[1]})));
 			shelves.addEventListener("change", function(evt){
 				let id = parseInt(document.querySelector("#app-sidebar").dataset.id);
 				console.log(id, evt.detail);

@@ -237,6 +237,14 @@ class LibraryService {
 			}
 		}
 
+		$res = $db->query('select shelf,book_id from shelf');
+		while ($set = $res->fetchArray()) {
+			$id = $set['book_id'];
+			if ($metadata[$id]) {
+				$metadata[$id]->shelves[] = $set['shelf'];
+			}
+		}
+
 		$db->close();
 		return true;
 	}
@@ -320,6 +328,12 @@ class LibraryService {
 			identifier integer not null,
 			progress text default '',
 			status integer default 0)"
+		)
+		&& $db->exec("create table if not exists shelf(
+			id integer primary key autoincrement,
+			shelf text not null,
+			book_id integer not null,
+			foreign key(book_id) references book(id) on delete cascade)"
 		);
 
 		$db->exec($ok ? "commit" : "rollback");
