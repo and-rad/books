@@ -5,6 +5,8 @@
 multiselect {
 	position: relative;
 	margin: 3px 3px 3px 0;
+	white-space: nowrap;
+	min-width: 120px;
 }
 
 multiselect > input[type="text"] {
@@ -17,12 +19,13 @@ multiselect > div.selected {
 	padding: 3px 6px;
 	font-size: 13px;
 	background-color: var(--color-main-background);
-	color: var(--color-text-lighter);
 	border: 1px solid var(--color-border-dark);
 	outline: none;
 	border-radius: var(--border-radius);
 	cursor: pointer;
 	height: 34px;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
 }
 
 multiselect > div.selected > span {
