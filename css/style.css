@@ -46,6 +46,7 @@ multiselect > ul {
 	z-index: inherit;
 	width: 100%;
 	max-height: 20em;
+	min-height: 2em;
 	display: none;
 	overflow-y: auto;
 }
@@ -74,6 +75,10 @@ multiselect > ul > li.selected {
 
 multiselect > ul > li.selected:hover {
 	background-image: var(--icon-close-000);
+}
+
+multiselect > ul > li:last-child {
+	background-image: var(--icon-add-000);
 }
 
 #app {

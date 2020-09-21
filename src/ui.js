@@ -582,11 +582,149 @@ OCA.Books.UI = (function() {
 		})(),
 
 		Multiselect: (function(){
-			var _tpl = `<ul></ul><input type='text' placeholder='${t("books","hint-ms")}'><div class='selected'></div>`;
+			var _tpl = `<ul><li tabindex='0'></li></ul><input type='text' placeholder='${t("books","hint-ms")}'><div class='selected'></div>`;
 
 			var _changeEvent = function(ul) {
 				let vals = Array.from(ul.querySelectorAll(".selected")).map(c => c.dataset.value);
 				return new CustomEvent("changed", {detail: vals});
+			};
+
+			let _createOption = function(val, text, isSelected) {
+				let elem = document.createElement("li");
+				elem.dataset.value = val;
+				elem.textContent = text;
+				elem.tabIndex = 0;
+				elem.className = isSelected ? "selected" : "";
+				elem.addEventListener("click", function(evt){
+					evt.target.classList.toggle("selected");
+					let sel = evt.target.closest("multiselect");
+					sel.dispatchEvent(_changeEvent(sel.querySelector("ul")));
+					sel.querySelector("div.selected").refresh();
+					let input = sel.querySelector("input");
+					input.focus();
+					input.reset();
+				});
+				return elem;
+			};
+
+			var _init = function(sel) {
+				sel.innerHTML = _tpl;
+				let list = sel.querySelector("ul");
+				let selected = sel.querySelector("div.selected");
+				let input = sel.querySelector("input");
+
+				/**
+				 * @param {Array} options a list of option pairs {value,text}
+				 */
+				sel.setOptions = function(options) {
+					let locale = document.documentElement.dataset.locale || "en";
+					options = options.filter((o, i, self) => self.findIndex(t => t.value === o.value) === i);
+					options.sort((a,b) => a.text.localeCompare(b.text, locale, {numeric: true}));
+					let frag = document.createDocumentFragment();
+					options.forEach(item => frag.appendChild(_createOption(item.value, item.text)));
+					frag.appendChild(list.lastElementChild);
+					list.innerHTML = "";
+					list.appendChild(frag);
+					list.refresh();
+					selected.refresh();
+				};
+
+				/**
+				 * @param {string} val unique option identifier
+				 * @param {string} text option's display text
+				 * @param {boolean} isSelected true if selected by default
+				 */
+				sel.addOption = function(val, text, isSelected) {
+					let last = list.lastElementChild;
+					list.appendChild(_createOption(val, text, isSelected));
+					let locale = document.documentElement.dataset.locale || "en";
+					let opts = Array.from(list.children);
+					opts.sort((a,b) => a.textContent.localeCompare(b.textContent, locale, {numeric: true}));
+					opts.forEach(o => list.appendChild(o));
+					list.appendChild(last);
+					list.refresh();
+					selected.refresh();
+				};
+
+				/**
+				 * @param {Array} selection a list of option ids
+				 */
+				sel.setSelection = function(selection) {
+					list.children.forEach(c => {
+						if (selection.includes(c.dataset.value)) {
+							c.classList.add("selected")
+						} else {
+							c.classList.remove("selected");
+						}
+					});
+					selected.refresh();
+				};
+
+				sel.addEventListener("focusout", function(evt){
+					if (sel.contains(evt.relatedTarget)) {
+						evt.preventDefault();
+					} else {
+						selected.style.display = "block";
+						input.style.display = "none";
+						list.style.display = "none";
+						input.reset();
+					}
+				});
+
+				list.reset = function() {
+					list.lastElementChild.textContent = "";
+					list.refresh();
+				};
+
+				list.refresh = function() {
+					let val = list.lastElementChild.textContent.toLowerCase();
+					let items = list.querySelectorAll("li:not(:last-child");
+					items.forEach(c => {
+						c.style.display = c.textContent.toLowerCase().includes(val) ? "list-item" : "none";
+					});
+
+					let visible = false;
+					if (list.children.length < 2) {
+						visible = true;
+					} else if (val != "") {
+						let match = Array.from(items).filter(c => c.textContent.toLowerCase() == val);
+						visible = (match.length == 0);
+					}
+
+					list.lastElementChild.style.display = visible ? "list-item" : "none";
+					list.style.top = `-${list.clientHeight + 2}px`;
+				};
+
+				list.lastElementChild.addEventListener("click", function(){
+					let val = list.lastElementChild.textContent;
+					input.focus();
+					sel.addOption(val, val, true);
+					sel.dispatchEvent(_changeEvent(list));
+					input.reset();
+				});
+
+				selected.refresh = function() {
+					let all = Array.from(list.querySelectorAll(".selected"));
+					selected.innerHTML = all.map(c => `<span>${c.textContent}</span>`).join("");
+				};
+
+				selected.addEventListener("click", function(){
+					selected.style.display = "none";
+					list.style.display = "block";
+					list.style.top = `-${list.clientHeight + 2}px`;
+					input.style.display = "block";
+					input.focus();
+				});
+
+				input.reset = function() {
+					input.value = "";
+					list.reset();
+				};
+
+				input.addEventListener("input", function(){
+					list.lastElementChild.textContent = input.value;
+					list.refresh();
+				});
 			};
 
 			return {
@@ -594,81 +732,7 @@ OCA.Books.UI = (function() {
 					let all = document.querySelectorAll("#app-sidebar multiselect");
 					for (let i = 0, sel; sel = all[i]; i++) {
 						if (sel.children.length == 0) {
-							sel.innerHTML = _tpl;
-							let list = sel.querySelector("ul");
-							let selected = sel.querySelector(".selected");
-							let input = sel.querySelector("input");
-
-							sel.refresh = function() {
-								let all = Array.from(list.querySelectorAll(".selected"));
-								selected.innerHTML = all.map(c => `<span>${c.textContent}</span>`).join("");
-								input.value = "";
-							};
-
-							sel.setOptions = function(options) {
-								let locale = document.documentElement.dataset.locale || "en";
-								options = options.filter((o, i, self) => self.findIndex(t => t.value === o.value) === i);
-								options.sort((a,b) => a.text.localeCompare(b.text, locale, {numeric: true}));
-								let frag = document.createDocumentFragment();
-								options.forEach(item => {
-									let elem = document.createElement("li");
-									elem.dataset.value = item.value;
-									elem.textContent = item.text;
-									elem.tabIndex = 0;
-									elem.addEventListener("click", function(evt){
-										evt.target.classList.toggle("selected");
-										sel.refresh();
-										sel.dispatchEvent(_changeEvent(list));
-										input.focus();
-									});
-									frag.appendChild(elem);
-								});
-								list.innerHTML = "";
-								list.appendChild(frag);
-								sel.refresh();
-							};
-
-							sel.setSelection = function(selection) {
-								list.children.forEach(c => {
-									if (selection.includes(c.dataset.value)) {
-										c.classList.add("selected")
-									} else {
-										 c.classList.remove("selected");
-									}
-								});
-								sel.refresh();
-							};
-
-							sel.addEventListener("focusout", function(evt){
-								if (sel.contains(evt.relatedTarget)) {
-									evt.preventDefault();
-								} else {
-									selected.style.display = "block";
-									input.style.display = "none";
-									input.value = "";
-									list.style.display = "none";
-									list.children.forEach(c => c.style.display = "list-item");
-								}
-							});
-
-							selected.addEventListener("click", function(){
-								selected.style.display = "none";
-								input.style.display = "block";
-								input.focus();
-								list.style.display = "block";
-								list.style.top = `-${list.clientHeight + 2}px`;
-							});
-
-							input.addEventListener("input", function(){
-								list.children.forEach(c => {
-									if (c.textContent.toLowerCase().includes(input.value.toLowerCase())) {
-										c.style.display = "list-item";
-									} else {
-										c.style.display = "none";
-									}
-								});
-								list.style.top = `-${list.clientHeight + 2}px`;
-							});
+							_init(sel);
 						}
 					}
 				}
