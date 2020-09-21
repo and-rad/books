@@ -230,7 +230,7 @@ OCA.Books.UI = (function() {
 		clearTimeout(_timeoutHandleSlider);
 
 		let width = document.querySelector("#reader-progress-bar").getBoundingClientRect().width;
-		let pos = Math.min(Math.max(evt.pageX - 44, 0), width);
+		let pos = Math.min(Math.max((evt.pageX || evt.changedTouches[0].pageX) - 44, 0), width);
 		document.querySelector("#reader-progress-handle").style.left = (pos - 7) + "px";
 		document.querySelector("#reader-progress-overlay").style.width = pos + "px" ;
 
@@ -242,8 +242,11 @@ OCA.Books.UI = (function() {
 	var _onProgressHandleReleased = function() {
 		let handle = document.querySelector("#reader-progress-handle");
 		handle.removeEventListener("mousemove", _onProgressHandleMoved);
+		handle.removeEventListener("touchmove", _onProgressHandleMoved);
 		handle.removeEventListener("mouseup", _onProgressHandleReleased);
+		handle.removeEventListener("touchend", _onProgressHandleReleased);
 		handle.removeEventListener("mouseleave", _onProgressHandleReleased);
+		handle.removeEventListener("touchcancel", _onProgressHandleReleased);
 		document.querySelector("#reader-progress-bar").classList.remove("active");
 	}
 
@@ -265,6 +268,13 @@ OCA.Books.UI = (function() {
 		init: function() {
 			this.Style.init();
 			this.Multiselect.init();
+
+			document.querySelector("#font-settings").addEventListener("change", function(evt){
+				OCA.Books.UI.Style.setFontSize(evt.target.value);
+			});
+			document.querySelector("#color-settings").addEventListener("change", function(evt){
+				OCA.Books.UI.Style.setTheme(evt.target.value);
+			});
 			document.querySelector("#settings-item-scan").addEventListener("click", function() {
 				OCA.Books.UI.showLoadingScreen();
 				OCA.Books.Backend.scan(document.querySelector("#path-settings").value, (function(){
@@ -295,6 +305,7 @@ OCA.Books.UI = (function() {
 					}
 				}, true);
 			});
+
 			document.querySelector("#reader-prev").addEventListener("click", function(){
 				OCA.Books.Core.prevPage();
 			});
@@ -304,15 +315,10 @@ OCA.Books.UI = (function() {
 			document.querySelector("#reader-close").addEventListener("click", function(){
 				OCA.Books.Core.close();
 			});
-			document.querySelector("#reader-progress-handle").addEventListener("mousedown", function(){
-				OCA.Books.UI.activateSlider();
-			});
-			document.querySelector("#font-settings").addEventListener("change", function(evt){
-				OCA.Books.UI.Style.setFontSize(evt.target.value);
-			});
-			document.querySelector("#color-settings").addEventListener("change", function(evt){
-				OCA.Books.UI.Style.setTheme(evt.target.value);
-			});
+			let handle = document.querySelector("#reader-progress-handle");
+			handle.addEventListener("mousedown", OCA.Books.UI.activateSlider);
+			handle.addEventListener("touchstart", OCA.Books.UI.activateSlider);
+
 			document.querySelector("#app-sidebar > header > a").addEventListener("click", function(evt){
 				evt.preventDefault();
 				_closeSidebar();
@@ -491,8 +497,11 @@ OCA.Books.UI = (function() {
 		activateSlider: function() {
 			let handle = document.querySelector("#reader-progress-handle");
 			handle.addEventListener("mousemove", _onProgressHandleMoved);
+			handle.addEventListener("touchmove", _onProgressHandleMoved);
 			handle.addEventListener("mouseup", _onProgressHandleReleased);
+			handle.addEventListener("touchend", _onProgressHandleReleased);
 			handle.addEventListener("mouseleave", _onProgressHandleReleased);
+			handle.addEventListener("touchcancel", _onProgressHandleReleased);
 			document.querySelector("#reader-progress-bar").classList.add("active");
 		},
 
