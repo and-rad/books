@@ -684,9 +684,11 @@ OCA.Books.UI = (function() {
 					});
 
 					let visible = false;
-					if (list.children.length < 2) {
+					if (val == "") {
+						visible = false;
+					} else if (list.children.length < 2) {
 						visible = true;
-					} else if (val != "") {
+					} else {
 						let match = Array.from(items).filter(c => c.textContent.toLowerCase() == val);
 						visible = (match.length == 0);
 					}

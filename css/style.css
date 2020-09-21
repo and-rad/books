@@ -46,7 +46,7 @@ multiselect > ul {
 	z-index: inherit;
 	width: 100%;
 	max-height: 20em;
-	min-height: 2em;
+	min-height: calc(18px + 1.6em);
 	display: none;
 	overflow-y: auto;
 }
