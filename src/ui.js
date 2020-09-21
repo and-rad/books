@@ -337,8 +337,12 @@ OCA.Books.UI = (function() {
 			shelves.setOptions(OCA.Books.Core.getMeta("shelf").map(s => ({value:s[0],text:s[1]})));
 			shelves.addEventListener("changed", function(evt){
 				let id = parseInt(document.querySelector("#app-sidebar").dataset.id);
-				OCA.Books.Core.getBook(id).shelves = evt.detail;
-				_refreshCategory("shelf");
+				OCA.Books.Backend.saveShelves(id, evt.detail, function(obj){
+					if (obj.success) {
+						OCA.Books.Core.getBook(id).shelves = evt.detail;
+						_refreshCategory("shelf");
+					}
+				});
 			});
 
 			let cats = document.querySelectorAll("#list-category > li > a");

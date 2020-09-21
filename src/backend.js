@@ -43,6 +43,13 @@ OCA.Books.Backend = (function() {
 			});
 		},
 
+		saveShelves: function(id, values, callback) {
+			let data = `id=${id}&shelves[]=${values.join("&shelves[]=")}`;
+			_post(generateUrl("apps/books/api/0.1/shelves"), data, function() {
+				callback(JSON.parse(this.response));
+			});
+		},
+
 		saveStatus: function(id, value, callback) {
 			let data = `id=${id}&status=${value}`;
 			_post(generateUrl("apps/books/api/0.1/status"), data, function() {

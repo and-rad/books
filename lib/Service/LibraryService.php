@@ -152,6 +152,34 @@ class LibraryService {
 		return false;
 	}
 
+	public function saveShelves(int $id, array $shelves) : bool {
+		if ($this->node->nodeExists($this::DBNAME)) {
+			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
+			$db->exec("begin");
+
+			$stmt = $db->prepare('delete from shelf where book_id=?');
+			$stmt->bindValue(1, $id);
+			$ok = ($stmt->execute() !== false);
+
+			$shelves = array_filter($shelves);
+			if ($ok && count($shelves) > 0) {
+				$vals = array_fill(0, count($shelves), sprintf('(?,%d)',$id));
+				$query = sprintf('insert into shelf (shelf,book_id) values %s', implode(',', $vals));
+				$stmt = $db->prepare($query);
+				for ($i = 0; $i < count($shelves); $i++) {
+					$stmt->bindValue($i+1, $shelves[$i]);
+				}
+				$ok = ($stmt->execute() !== false);
+			}
+
+			$db->exec($ok ? "commit" : "rollback");
+			$db->close();
+			$this->node->get($this::DBNAME)->touch();
+			return $ok !== false;
+		}
+		return false;
+	}
+
 	public function saveStatus(int $id, string $value) : bool {
 		if ($this->node->nodeExists($this::DBNAME)) {
 			$db = new SQLite3($this->abs($this->node).$this::DBNAME);
