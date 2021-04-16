@@ -19,7 +19,7 @@
 		"watch": "NODE_ENV=development webpack --progress --watch --config webpack.dev.js"
 	},
 	"dependencies": {
-		"@nextcloud/dialogs": "^2.0.1",
+		"@nextcloud/dialogs": "^3.1.2",
 		"@nextcloud/router": "^1.2.0",
 		"codemirror": "^5.57.0"
 	},
